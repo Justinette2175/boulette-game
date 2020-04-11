@@ -2,17 +2,19 @@ type DataAction = "update" | "set" | "delete";
 
 export type Username = string;
 export type TeamId = string;
-export type ComputerId = string;
 export type MessageId = string;
 export type RoundIndex = number;
 export type GameId = string;
+export type UserId = string;
 
 export interface Word {
+  id?: string;
   text: string;
   writtenBy: Username;
 }
 
 export interface User {
+  id?: UserId;
   name: Username;
   teamId?: TeamId;
 }
@@ -49,7 +51,6 @@ export interface MessageReducer {
 }
 
 export interface ComputerReducer {
-  id: ComputerId;
   users: Array<Username>;
 }
 

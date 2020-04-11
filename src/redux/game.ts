@@ -1,70 +1,102 @@
 import { createReducer, createAction } from "redux-act";
 import firebase from "firebase";
 import "firebase/firestore";
-import { Game, GameId, Username, TeamId, Store, User, Word } from "../types";
+import {
+  Game,
+  GameId,
+  Username,
+  TeamId,
+  Store,
+  User,
+  Word,
+  Team,
+  UserId,
+} from "../types";
 import Firebase from "../services/firebase";
 import { NUMBER_OF_ROUNDS } from "../constants";
 
 import { addUserToComputer } from "./computer";
 
+const INITIAL_TEAMS = [
+  {
+    name: "The Birds",
+    id: "1",
+  },
+  {
+    name: "The Bees",
+    id: "2",
+  },
+];
+
+const db = Firebase.db;
+
 export const updateGame = createAction<Game>("UPDATE_GAME");
+export const updateUsers = createAction<Array<User>>("UPDATE_USERS");
+export const updateTeams = createAction<Array<Team>>("UPDATE_TEAMS");
 export const updateUserTeam = createAction<{
   username: Username;
   teamId: TeamId;
 }>();
 
-const getNewGameInfo = (ownerName: Username): Game => {
-  const owner = { name: ownerName };
-  return {
-    owner: ownerName,
-    teams: [
-      {
-        name: "The Birds",
-        id: "1",
-      },
-      {
-        name: "The Bees",
-        id: "2",
-      },
-    ],
-    users: [owner],
-  };
-};
-
-const addUserAndListen = (gameId: GameId, userName: Username) => {
-  return async (dispatch: any) => {
-    dispatch(updateGame({ id: gameId }));
-    dispatch(addUserToComputer(userName));
-    Firebase.listenToDocument("games", gameId, (g) => {
-      dispatch(updateGame(g.data()));
-    });
-  };
+const listenToGame = (dispatch: any, gameRef: any) => {
+  gameRef.onSnapshot(function (c: any) {
+    dispatch(updateGame(c.data()));
+  });
+  gameRef.collection("users").onSnapshot(function (c: any) {
+    const users: Array<User> = [];
+    c.forEach((u: any) => users.push({ id: u.id, ...u.data() }));
+    dispatch(updateUsers(users));
+  });
+  gameRef.collection("teams").onSnapshot(function (c: any) {
+    const teams: Array<Team> = [];
+    c.forEach((t: any) => teams.push({ id: t.id, ...t.data() }));
+    dispatch(updateTeams(teams));
+  });
 };
 
 export const createGame = function (ownerName: Username) {
   return async (dispatch: any, getState: () => Store) => {
     const initialGameId = getState().game.id;
+    const owner = { name: ownerName };
     if (!initialGameId) {
-      const data = getNewGameInfo(ownerName);
-      const gameId: GameId = await Firebase.create("games", data);
-      if (gameId) {
-        dispatch(addUserAndListen(gameId, ownerName));
+      let batch = db.batch();
+      const newGameRef = db.collection("games").doc();
+      const ownerUserRef = newGameRef.collection("users").doc();
+      batch.set(newGameRef, { owner: ownerUserRef.id });
+      batch.set(ownerUserRef, owner);
+      INITIAL_TEAMS.forEach((t) => {
+        let teamRef = newGameRef.collection("teams").doc(t.id);
+        batch.set(teamRef, t);
+      });
+      try {
+        await batch.commit();
+        dispatch(updateGame({ id: newGameRef.id }));
+        dispatch(addUserToComputer(ownerUserRef.id));
+        listenToGame(dispatch, newGameRef);
+      } catch (e) {
+        console.log("error", e);
       }
     }
   };
 };
 
 export const joinGame = function (name: Username, gameId: GameId) {
+  const gameRef = db.collection("games").doc(gameId);
   return async (dispatch: any) => {
-    const game = await Firebase.get("games", gameId);
-    if (!!game) {
-      const newUser: User = {
-        name,
-      };
-      await Firebase.updateData("games", gameId, {
-        users: firebase.firestore.FieldValue.arrayUnion(newUser),
+    try {
+      await db.runTransaction(async function (transaction: any) {
+        const gameDoc = await transaction.get(gameRef);
+        if (!gameDoc.exists) {
+          throw "Document does not exist!";
+        }
+        dispatch(updateGame({ id: gameId }));
+        const newUserRef = gameRef.collection("users").doc();
+        dispatch(addUserToComputer(newUserRef.id));
+        await transaction.set(newUserRef, { name });
+        listenToGame(dispatch, gameRef);
       });
-      dispatch(addUserAndListen(gameId, name));
+    } catch (e) {
+      console.log(e);
     }
   };
 };
@@ -76,10 +108,13 @@ export const addPlayerOnComputer = function (name: Username) {
       const newUser: User = {
         name,
       };
-      await Firebase.updateData("games", gameId, {
-        users: firebase.firestore.FieldValue.arrayUnion(newUser),
-      });
-      dispatch(addUserToComputer(name));
+      const newUserRef = db
+        .collection("games")
+        .doc(gameId)
+        .collection("users")
+        .doc();
+      await newUserRef.set(newUser);
+      dispatch(addUserToComputer(newUserRef.id));
     }
   };
 };
@@ -94,10 +129,12 @@ export const startGame = function () {
   };
 };
 
-export const assignUserToTeam = function (u: User, teamId: TeamId) {
+export const assignUserToTeam = function (userId: UserId, teamId: TeamId) {
   return async (dispatch: any, getState: () => Store) => {
     const gameId = getState().game.id;
-    dispatch(updateUserTeam({ username: u.name, teamId: teamId }));
+    const gameRef = db.collection("games").doc(gameId);
+    await gameRef.collection("users").doc(userId).update({ teamId });
+    console.log("I updated user");
   };
 };
 
@@ -126,13 +163,8 @@ const game = createReducer<Game>({}, initialState);
 
 game.on(updateGame, (state, payload) => ({ ...state, ...payload }));
 
-game.on(updateUserTeam, (state, payload) => {
-  const indexOfUser = state.users.findIndex((u) => u.name === payload.username);
-  const newUser = state.users[indexOfUser];
-  newUser.teamId = payload.teamId;
-  let newUsers = state.users;
-  newUsers.splice(indexOfUser, 1, newUser);
-  return { ...state, users: newUsers };
-});
+game.on(updateUsers, (state, payload) => ({ ...state, users: payload }));
+
+game.on(updateTeams, (state, payload) => ({ ...state, teams: payload }));
 
 export default game;

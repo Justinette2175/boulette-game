@@ -1,7 +1,8 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Store, Username, User, Team, Word, TeamId } from "../../types";
 import { Button, Box, Typography } from "@material-ui/core";
+import { assignUserToTeam } from "../../redux/game";
 
 import { userStillHasWordsToWrite } from "../../utils";
 
@@ -11,6 +12,7 @@ interface IProps {
 }
 
 const PreparingUser: React.FC<IProps> = ({ user, onOpenAddWords }) => {
+  const dispatch = useDispatch();
   const gameWords: Array<Word> = useSelector(
     (state: Store) => state.game.words
   );
@@ -19,16 +21,16 @@ const PreparingUser: React.FC<IProps> = ({ user, onOpenAddWords }) => {
     (state: Store) => state.computer.users
   );
 
-  const userIsOnComputer = computerUsers.indexOf(user.name) > -1;
+  const userIsOnComputer = computerUsers.indexOf(user.id) > -1;
 
   const assignToTeam = (teamId: TeamId) => {
-    console.log("Assigning to team", teamId);
+    dispatch(assignUserToTeam(user.id, teamId));
   };
 
   return (
     <Box display="flex">
       {userIsOnComputer && user.teamId !== "1" && (
-        <Button>Assign to team 1</Button>
+        <Button onClick={() => assignToTeam("1")}>Assign to team 1</Button>
       )}
       <Box flexGrow="1">
         <Typography variant="body1">{user.name}</Typography>
@@ -37,7 +39,7 @@ const PreparingUser: React.FC<IProps> = ({ user, onOpenAddWords }) => {
         <Button onClick={() => onOpenAddWords(user)}>Add words</Button>
       )}
       {userIsOnComputer && user.teamId !== "2" && (
-        <Button>Assign to team 2</Button>
+        <Button onClick={() => assignToTeam("2")}>Assign to team 2</Button>
       )}
     </Box>
   );
