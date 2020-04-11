@@ -1,26 +1,35 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+import { useSelector } from "react-redux";
+import { Store } from "./types";
 
-function App() {
+import { CssBaseline, Container } from "@material-ui/core";
+
+import StartOrJoinGame from "./views/StartOrJoinGame";
+import PrepareGame from "./views/PrepareGame";
+import Game from "./views/Game";
+
+const App: React.FC = () => {
+  const gameId = useSelector((state: Store) => state.game.id);
+  const gameStarted: boolean = useSelector(
+    (state: Store) => !!state.game.currentRound
+  );
+
+  let view;
+  if (!gameId) {
+    view = <StartOrJoinGame />;
+  } else if (!gameStarted) {
+    view = <PrepareGame />;
+  } else {
+    view = <Game />;
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <CssBaseline />
+      <Container maxWidth="md">{view}</Container>
     </div>
   );
-}
+};
 
 export default App;
