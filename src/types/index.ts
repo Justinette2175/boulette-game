@@ -3,12 +3,12 @@ type DataAction = "update" | "set" | "delete";
 export type Username = string;
 export type TeamId = string;
 export type MessageId = string;
-export type RoundIndex = number;
 export type GameId = string;
 export type UserId = string;
+export type WordId = string;
 
 export interface Word {
-  id?: string;
+  id?: WordId;
   text: string;
   writtenBy: Username;
 }
@@ -17,6 +17,7 @@ export interface User {
   id?: UserId;
   name: Username;
   teamId?: TeamId;
+  createdAt: number;
 }
 
 export interface Message {
@@ -26,16 +27,16 @@ export interface Message {
   timestamp: number;
 }
 
-interface PointsPerTeam {
-  teamId: TeamId;
-  points: number;
+export interface RoundScore {
+  [key: string]: number;
 }
 
 export interface Round {
-  index: RoundIndex;
-  score: Array<PointsPerTeam>;
-  wordsGuessed: Array<Word>;
-  wordsLeft: Array<Word>;
+  id?: string;
+  index: number;
+  score?: RoundScore;
+  wordsGuessed: Array<WordId>;
+  wordsLeft: Array<WordId>;
 }
 
 export interface BatchUpdate {
@@ -57,6 +58,7 @@ export interface ComputerReducer {
 export interface Team {
   id: TeamId;
   name?: string;
+  lastPlayerId?: UserId;
 }
 
 export interface Game {
@@ -65,11 +67,12 @@ export interface Game {
   users?: Array<User>;
   teams?: Array<Team>;
   countdown?: number;
-  currentRound?: RoundIndex;
+  currentRound?: string;
   currentTeam?: TeamId;
   currentUser?: Username;
   words?: Array<Word>;
   owner?: Username;
+  currentWord?: Word;
 }
 
 export interface Store {

@@ -1,22 +1,32 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import firebase from "firebase";
-import "firebase/firestore";
+import { useSelector } from "react-redux";
 
-import { Formik, Form, Field, FieldArray } from "formik";
+import { Formik, Form, FieldArray } from "formik";
 import * as Yup from "yup";
 import { Store, User, Word } from "../../types";
 import { WORDS_PER_PLAYER } from "../../constants";
 import Firebase from "../../services/firebase";
 
+import {
+  Dialog,
+  Box,
+  DialogTitle,
+  DialogContent,
+  Button,
+} from "@material-ui/core";
+import TextInput from "../../components/TextInput";
+
 import { getUserWords } from "../../utils";
+
+const db = Firebase.db;
 
 interface IProps {
   user: User;
-  afterSubmit?: () => void;
+  open: boolean;
+  onClose: () => void;
 }
 
-const WordsSelector: React.FC<IProps> = ({ user, afterSubmit }) => {
+const WordsSelector: React.FC<IProps> = ({ user, open, onClose }) => {
   const gameId = useSelector((state: Store) => state.game.id);
   const gameWords = useSelector((state: Store) => state.game.words);
   const wordsToFill: number =
@@ -27,50 +37,67 @@ const WordsSelector: React.FC<IProps> = ({ user, afterSubmit }) => {
   });
 
   const handleSubmit = async (values: { words: Array<string> }) => {
-    const formattedWords: Array<Word> = values.words.map((w) => ({
-      text: w,
-      writtenBy: user.name,
-    }));
+    onClose();
     try {
-      afterSubmit();
-      await Firebase.updateData("games", gameId, {
-        words: firebase.firestore.FieldValue.arrayUnion(...formattedWords),
+      let batch = db.batch();
+      const wordsRef = db.collection("games").doc(gameId).collection("words");
+      values.words.forEach((w: any) => {
+        const wordRef = wordsRef.doc();
+        batch.set(wordRef, { text: w, writtenBy: user.id });
       });
+      await batch.commit();
     } catch (e) {
-      console.log("Could not add words");
+      console.log("Could not add words", e);
     }
   };
 
+  if (!user) {
+    return null;
+  }
+
   return (
-    <>
-      <h2>Words selector for {user.name}</h2>
-      <h3>You have {wordsToFill} words left</h3>
-      <Formik
-        initialValues={{
-          words: [],
-        }}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ isValid }) => (
-          <Form>
-            <FieldArray
-              name="words"
-              render={(arrayHelpers) => (
-                <>
-                  {Array.apply(null, Array(wordsToFill)).map((_, i) => (
-                    <Field key={`words.${i}`} name={`words.${i}`} />
-                  ))}
-                  <button type="submit" disabled={!isValid}>
-                    Submit
-                  </button>
-                </>
-              )}
-            />
-          </Form>
-        )}
-      </Formik>
-    </>
+    <Dialog
+      onClose={onClose}
+      open={open}
+      maxWidth="xl"
+      PaperProps={{ elevation: 0 }}
+    >
+      <Box p={2}>
+        <DialogTitle>Words selector for {user.name}</DialogTitle>
+        <DialogContent>
+          <h3>You have {wordsToFill} words left</h3>
+          <Formik
+            initialValues={{
+              words: [],
+            }}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ isValid }) => (
+              <Form>
+                <FieldArray
+                  name="words"
+                  render={() => (
+                    <>
+                      {Array.apply(null, Array(wordsToFill)).map((_, i) => (
+                        <TextInput key={`words.${i}`} name={`words.${i}`} />
+                      ))}
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        disabled={!isValid}
+                      >
+                        Submit
+                      </Button>
+                    </>
+                  )}
+                />
+              </Form>
+            )}
+          </Formik>
+        </DialogContent>
+      </Box>
+    </Dialog>
   );
 };
 
