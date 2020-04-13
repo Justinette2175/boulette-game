@@ -3,11 +3,12 @@ import "./App.css";
 import { useSelector } from "react-redux";
 import { Store } from "./types";
 
-import { CssBaseline, Container } from "@material-ui/core";
+import { CssBaseline, Box } from "@material-ui/core";
 
 import StartOrJoinGame from "./views/StartOrJoinGame";
 import PrepareGame from "./views/PrepareGame";
 import Game from "./views/Game";
+import Background from "./components/Background";
 
 const App: React.FC = () => {
   const gameId = useSelector((state: Store) => state.game.id);
@@ -27,7 +28,18 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <CssBaseline />
-      <Container maxWidth="md">{view}</Container>
+      <Background />
+      <Box
+        style={{
+          position: "relative",
+          padding: "30px",
+          height: "100vh",
+          width: "100vw",
+          overflow: "auto",
+        }}
+      >
+        {view}
+      </Box>
     </div>
   );
 };

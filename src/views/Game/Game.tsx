@@ -1,7 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Typography } from "@material-ui/core";
-import { startNextTurn } from "../../redux/game";
+import { Typography, Box } from "@material-ui/core";
 import { Store, User, Team, Round } from "../../types";
 
 import CurrentPlayerView from "./CurrentPlayerView";
@@ -17,6 +16,11 @@ const Game: React.FC = () => {
     }
     return null;
   });
+  const currentPlayerIsOnComputer = useSelector(
+    (state: Store) =>
+      state.game.currentUser &&
+      state.computer.users.indexOf(state.game.currentUser) > -1
+  );
   const currentTeamName = useSelector((state: Store) => {
     if (state.game.currentTeam) {
       const team: Team = state.game.teams.find(
@@ -36,20 +40,23 @@ const Game: React.FC = () => {
     return null;
   });
 
-  const handleClick = () => {
-    dispatch(startNextTurn());
-  };
+  const secondsLeft: number = useSelector(
+    (state: Store) => state.computer.timer
+  );
 
   return (
-    <div>
-      THE GAME HAS NOW STARTED!
+    <Box>
       <Typography variant="h3">{currentTeamName}</Typography>
       <Typography variant="body1">It is {currentPlayerName}'s turn</Typography>
+      {secondsLeft ||
+        (secondsLeft === 0 && (
+          <Typography variant="body1">{secondsLeft} seconds</Typography>
+        ))}
       {currentRoundIndex && (
         <Typography variant="h4">Round {currentRoundIndex}</Typography>
       )}
-      <CurrentPlayerView />
-    </div>
+      {currentPlayerIsOnComputer && <CurrentPlayerView />}
+    </Box>
   );
 };
 

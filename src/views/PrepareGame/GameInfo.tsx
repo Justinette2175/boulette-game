@@ -10,10 +10,9 @@ const GameInfo: React.FC = () => {
     return owner ? owner.name : null;
   });
   return (
-    <Box>
-      <Typography variant="h2">Game</Typography>
-      <Typography variant="body1">Game room number: {gameId}</Typography>
-      <Typography variant="body1">Owner: {gameOwnerName}</Typography>
+    <Box mb={2}>
+      <Typography variant="h2"># {gameId}</Typography>
+      <Typography variant="body1">Game owner: {gameOwnerName}</Typography>
     </Box>
   );
 };

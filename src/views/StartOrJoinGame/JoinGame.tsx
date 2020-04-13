@@ -6,6 +6,7 @@ import { joinGame } from "../../redux/game";
 
 import TextInput from "../../components/TextInput";
 import { Box, Typography, Button } from "@material-ui/core";
+import ButtonsGroup from "../../components/ButtonsGroup";
 
 const JoinGame: React.FC = () => {
   const dispatch = useDispatch();
@@ -20,13 +21,14 @@ const JoinGame: React.FC = () => {
   };
 
   return (
-    <>
-      <Typography variant="h4">Join an existing game</Typography>
+    <Box p={4}>
+      <Typography variant="h2">Join an existing game</Typography>
       <Typography variant="body1">
         If one of your friends has already created a game, ask for their game
         number and join them.
       </Typography>
       <Formik
+        validateOnMount={true}
         initialValues={{
           playerName: "",
           gameId: "",
@@ -54,13 +56,20 @@ const JoinGame: React.FC = () => {
                 />
               </Box>
             </Box>
-            <Button type="submit" variant="contained" disabled={!isValid}>
-              Join Game
-            </Button>
+            <ButtonsGroup>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={!isValid}
+                color="primary"
+              >
+                Join Game
+              </Button>
+            </ButtonsGroup>
           </Form>
         )}
       </Formik>
-    </>
+    </Box>
   );
 };
 

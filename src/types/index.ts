@@ -53,6 +53,7 @@ export interface MessageReducer {
 
 export interface ComputerReducer {
   users: Array<Username>;
+  timer?: number;
 }
 
 export interface Team {
@@ -73,6 +74,7 @@ export interface Game {
   words?: Array<Word>;
   owner?: Username;
   currentWord?: Word;
+  endOfCurrentTurn?: string;
 }
 
 export interface Store {

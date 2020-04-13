@@ -3,8 +3,9 @@ import { useDispatch } from "react-redux";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { addPlayerOnComputer } from "../../redux/game";
-import { Button, Typography } from "@material-ui/core";
+import { Button, Typography, Box, Paper } from "@material-ui/core";
 import TextInput from "../../components/TextInput";
+import ButtonsGroup from "../../components/ButtonsGroup";
 
 const AddPlayerOnComputer: React.FC = () => {
   const dispatch = useDispatch();
@@ -18,27 +19,39 @@ const AddPlayerOnComputer: React.FC = () => {
   };
 
   return (
-    <>
-      <Typography variant="h3">
-        Add additional players on this device
-      </Typography>
-      <Formik
-        initialValues={{
-          name: "",
-        }}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ isValid }) => (
-          <Form>
-            <TextInput id="name" name="name" label="New player name" />
-            <Button type="submit" disabled={!isValid}>
-              Submit
-            </Button>
-          </Form>
-        )}
-      </Formik>
-    </>
+    <Box py={4} maxWidth="500px">
+      <Paper elevation={0}>
+        <Box p={2}>
+          <Typography variant="h2">
+            Add additional players on this device
+          </Typography>
+          <Formik
+            validateOnMount={true}
+            initialValues={{
+              name: "",
+            }}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ isValid }) => (
+              <Form>
+                <TextInput id="name" name="name" label="Player name" />
+                <ButtonsGroup>
+                  <Button
+                    type="submit"
+                    disabled={!isValid}
+                    variant="contained"
+                    color="primary"
+                  >
+                    Submit
+                  </Button>
+                </ButtonsGroup>
+              </Form>
+            )}
+          </Formik>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
 

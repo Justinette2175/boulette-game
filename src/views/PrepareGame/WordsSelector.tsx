@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogContent,
   Button,
+  Typography,
 } from "@material-ui/core";
 import TextInput from "../../components/TextInput";
 
@@ -59,14 +60,20 @@ const WordsSelector: React.FC<IProps> = ({ user, open, onClose }) => {
     <Dialog
       onClose={onClose}
       open={open}
-      maxWidth="xl"
+      maxWidth="md"
       PaperProps={{ elevation: 0 }}
     >
       <Box p={2}>
-        <DialogTitle>Words selector for {user.name}</DialogTitle>
+        <DialogTitle style={{ textAlign: "center" }}>
+          Selecting words for {user.name}
+        </DialogTitle>
         <DialogContent>
-          <h3>You have {wordsToFill} words left</h3>
+          <Typography variant="body1" align="center">
+            Type the words you want to add to the bowl. You have {wordsToFill}
+            words left.
+          </Typography>
           <Formik
+            validateOnMount={true}
             initialValues={{
               words: [],
             }}
@@ -78,18 +85,25 @@ const WordsSelector: React.FC<IProps> = ({ user, open, onClose }) => {
                 <FieldArray
                   name="words"
                   render={() => (
-                    <>
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                    >
                       {Array.apply(null, Array(wordsToFill)).map((_, i) => (
-                        <TextInput key={`words.${i}`} name={`words.${i}`} />
+                        <Box>
+                          <TextInput key={`words.${i}`} name={`words.${i}`} />
+                        </Box>
                       ))}
                       <Button
                         type="submit"
                         variant="contained"
+                        color="primary"
                         disabled={!isValid}
                       >
                         Submit
                       </Button>
-                    </>
+                    </Box>
                   )}
                 />
               </Form>

@@ -3,14 +3,17 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import "./index.css";
 import App from "./App";
+import { MuiThemeProvider } from "@material-ui/core/styles";
 import * as serviceWorker from "./serviceWorker";
-
+import theme from "./theme";
 import configureStore from "./redux/store";
 
 ReactDOM.render(
   <Provider store={configureStore()}>
     <React.StrictMode>
-      <App />
+      <MuiThemeProvider theme={theme}>
+        <App />
+      </MuiThemeProvider>
     </React.StrictMode>
   </Provider>,
   document.getElementById("root")

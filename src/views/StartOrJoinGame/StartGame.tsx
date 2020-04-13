@@ -6,6 +6,7 @@ import { createGame } from "../../redux/game";
 
 import { Box, Button, Typography } from "@material-ui/core";
 import TextInput from "../../components/TextInput";
+import ButtonsGroup from "../../components/ButtonsGroup";
 
 const StartGame: React.FC = () => {
   const dispatch = useDispatch();
@@ -19,10 +20,11 @@ const StartGame: React.FC = () => {
   };
 
   return (
-    <>
-      <Typography variant="h4">Start a new game</Typography>
+    <Box p={4}>
+      <Typography variant="h2">Start a new game</Typography>
       <Typography variant="body1">You'll be able to invite players.</Typography>
       <Formik
+        validateOnMount={true}
         initialValues={{
           ownerName: "",
         }}
@@ -41,13 +43,20 @@ const StartGame: React.FC = () => {
                 />
               </Box>
             </Box>
-            <Button type="submit" variant="contained" disabled={!isValid}>
-              Create Game
-            </Button>
+            <ButtonsGroup>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={!isValid}
+                color="secondary"
+              >
+                Create Game
+              </Button>
+            </ButtonsGroup>
           </Form>
         )}
       </Formik>
-    </>
+    </Box>
   );
 };
 

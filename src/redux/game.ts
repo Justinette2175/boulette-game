@@ -1,5 +1,6 @@
 import { createReducer, createAction } from "redux-act";
 import firebase from "firebase";
+import moment from "moment";
 import "firebase/firestore";
 import {
   Game,
@@ -15,7 +16,8 @@ import {
   WordId,
 } from "../types";
 import Firebase from "../services/firebase";
-import { NUMBER_OF_ROUNDS } from "../constants";
+import { updateTimer } from "./computer";
+import { NUMBER_OF_ROUNDS, SECOND_DURATION_OF_TURN } from "../constants";
 
 import { addUserToComputer } from "./computer";
 
@@ -43,31 +45,42 @@ export const updateUserTeam = createAction<{
   teamId: TeamId;
 }>();
 
-const listenToGame = (dispatch: any, gameRef: any) => {
-  gameRef.onSnapshot(function (c: any) {
-    dispatch(updateGame(c.data()));
-  });
-  gameRef.collection("users").onSnapshot(function (c: any) {
-    const users: Array<User> = [];
-    c.forEach((u: any) => users.push({ id: u.id, ...u.data() }));
-    dispatch(updateGameSubcollection({ values: users, key: "users" }));
-  });
-  gameRef.collection("teams").onSnapshot(function (c: any) {
-    const teams: Array<Team> = [];
-    c.forEach((t: any) => teams.push({ id: t.id, ...t.data() }));
-    dispatch(updateGameSubcollection({ values: teams, key: "teams" }));
-  });
-  gameRef.collection("words").onSnapshot(function (c: any) {
-    const words: Array<Word> = [];
-    c.forEach((w: any) => words.push({ id: w.id, ...w.data() }));
-    dispatch(updateGameSubcollection({ values: words, key: "words" }));
-  });
-  gameRef.collection("rounds").onSnapshot(function (c: any) {
-    console.log("Getting rounds info");
-    const rounds: Array<Round> = [];
-    c.forEach((r: any) => rounds.push({ id: r.id, ...r.data() }));
-    dispatch(updateGameSubcollection({ values: rounds, key: "rounds" }));
-  });
+const listenToGame = (gameRef: any) => {
+  return async (dispatch: any, getState: () => Store) => {
+    gameRef.onSnapshot(function (c: any) {
+      const data = c.data();
+      dispatch(updateGame(data));
+      if (data.endOfCurrentTurn) {
+        const {
+          computer: { timer },
+        } = getState();
+        if (!timer) {
+          dispatch(startCountdown(data.endOfCurrentTurn));
+        }
+      }
+    });
+    gameRef.collection("users").onSnapshot(function (c: any) {
+      const users: Array<User> = [];
+      c.forEach((u: any) => users.push({ id: u.id, ...u.data() }));
+      dispatch(updateGameSubcollection({ values: users, key: "users" }));
+    });
+    gameRef.collection("teams").onSnapshot(function (c: any) {
+      const teams: Array<Team> = [];
+      c.forEach((t: any) => teams.push({ id: t.id, ...t.data() }));
+      dispatch(updateGameSubcollection({ values: teams, key: "teams" }));
+    });
+    gameRef.collection("words").onSnapshot(function (c: any) {
+      const words: Array<Word> = [];
+      c.forEach((w: any) => words.push({ id: w.id, ...w.data() }));
+      dispatch(updateGameSubcollection({ values: words, key: "words" }));
+    });
+    gameRef.collection("rounds").onSnapshot(function (c: any) {
+      console.log("Getting rounds info");
+      const rounds: Array<Round> = [];
+      c.forEach((r: any) => rounds.push({ id: r.id, ...r.data() }));
+      dispatch(updateGameSubcollection({ values: rounds, key: "rounds" }));
+    });
+  };
 };
 
 export const createGame = function (ownerName: Username) {
@@ -87,7 +100,7 @@ export const createGame = function (ownerName: Username) {
         await batch.commit();
         dispatch(updateGame({ id: newGameRef.id }));
         dispatch(addUserToComputer(ownerUserRef.id));
-        listenToGame(dispatch, newGameRef);
+        dispatch(listenToGame(newGameRef));
       } catch (e) {
         console.log("error", e);
       }
@@ -97,7 +110,7 @@ export const createGame = function (ownerName: Username) {
 
 export const joinGame = function (name: Username, gameId: GameId) {
   const gameRef = db.collection("games").doc(gameId);
-  return async (dispatch: any) => {
+  return async (dispatch: any, getState: () => Store) => {
     try {
       await db.runTransaction(async function (transaction: any) {
         const gameDoc = await transaction.get(gameRef);
@@ -108,7 +121,7 @@ export const joinGame = function (name: Username, gameId: GameId) {
         const newUserRef = gameRef.collection("users").doc();
         dispatch(addUserToComputer(newUserRef.id));
         await transaction.set(newUserRef, { name, createdAt: Date.now() });
-        listenToGame(dispatch, gameRef);
+        dispatch(listenToGame(gameRef));
       });
     } catch (e) {
       console.log(e);
@@ -207,6 +220,7 @@ export const assignUserToTeam = function (userId: UserId, teamId: TeamId) {
 };
 
 export const startNextTurn = function () {
+  console.log("starting next turn");
   return async (dispatch: any, getState: () => Store) => {
     const { id: gameId, currentTeam, teams, users } = getState().game;
     let batch = db.batch();
@@ -232,9 +246,56 @@ export const startMiming = function () {
     const nextWord = getNextWord(wordsLeft, words);
     const gameRef = db.collection("games").doc(gameId);
     if (nextWord) {
-      gameRef.update({ currentWord: nextWord });
+      const endOfCurrentTurn = moment()
+        .add(SECOND_DURATION_OF_TURN, "s")
+        .format();
+      console.log("End of current turn is", endOfCurrentTurn);
+      dispatch(startCountdown(endOfCurrentTurn));
+      await gameRef.update({
+        currentWord: nextWord,
+        endOfCurrentTurn,
+      });
     } else {
       console.log("it's the end of the turn...");
+    }
+  };
+};
+
+let timerInterval: any;
+const ONE_SECOND = 1000;
+
+const startCountdown = function (endOfCurrentTurn: string) {
+  return async (dispatch: any, getState: () => Store) => {
+    const {
+      game: { currentUser, id },
+      computer: { users },
+    } = getState();
+    const userIsOnComputer = !!currentUser && users.indexOf(currentUser) > -1;
+    if (!timerInterval) {
+      timerInterval = setInterval(() => {
+        const callback = async function () {
+          const differenceInMilliseconds = moment().diff(
+            moment(endOfCurrentTurn)
+          );
+          const seconds = -moment.duration(differenceInMilliseconds).seconds();
+          if (!seconds || seconds < 0) {
+            console.log("Seconds are lower, I'm dispatching");
+            dispatch(updateTimer(null));
+            if (userIsOnComputer) {
+              await db
+                .collection("games")
+                .doc(id)
+                .update({ endOfCurrentTurn: null, currentWord: null });
+              dispatch(startNextTurn());
+            }
+            clearInterval(timerInterval);
+            timerInterval = null;
+            return;
+          }
+          dispatch(updateTimer(seconds));
+        };
+        callback();
+      }, ONE_SECOND);
     }
   };
 };
@@ -279,6 +340,7 @@ export const markWordAsFound = function (word: Word) {
       if (currentRoundIndex === NUMBER_OF_ROUNDS) {
         console.log("It's the end of the game");
       } else {
+        // Finish round
         const nextRound = rounds.find((r) => r.index === currentRoundIndex + 1);
         batch.update(gameRef, { currentRound: nextRound.id });
       }
@@ -298,6 +360,7 @@ const initialState: Game = {
   currentUser: null,
   words: [],
   teams: [],
+  endOfCurrentTurn: null,
 };
 
 const game = createReducer<Game>({}, initialState);

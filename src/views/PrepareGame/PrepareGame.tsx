@@ -7,7 +7,7 @@ import WordsSelector from "./WordsSelector";
 
 import GameInfo from "./GameInfo";
 import TeamsSelector from "./TeamsSelector";
-import { Button } from "@material-ui/core";
+import { Button, Divider, Box, Paper } from "@material-ui/core";
 
 const PrepareGame: React.FC = () => {
   const dispatch = useDispatch();
@@ -28,19 +28,32 @@ const PrepareGame: React.FC = () => {
   const closeAddWords = () => setWordsModalUser(null);
 
   return (
-    <div>
-      <GameInfo />
-      <TeamsSelector onOpenAddWords={handleOpenAddWords} />
-      <WordsSelector
-        user={wordsModalUser}
-        onClose={closeAddWords}
-        open={!!wordsModalUser}
-      />
-      <AddPlayerOnComputer />
-      {ownerIsOnComputer && (
-        <Button onClick={handleStartGame}>Start the game!</Button>
-      )}
-    </div>
+    <Box height="100%">
+      <Paper style={{ height: "100%", width: "100%" }}>
+        <Box p={4}>
+          <GameInfo />
+          <Divider />
+          <TeamsSelector onOpenAddWords={handleOpenAddWords} />
+          <WordsSelector
+            user={wordsModalUser}
+            onClose={closeAddWords}
+            open={!!wordsModalUser}
+          />
+          <Box display="flex" justifyContent="center">
+            {ownerIsOnComputer && (
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                onClick={handleStartGame}
+              >
+                Start the game!
+              </Button>
+            )}
+          </Box>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
 
