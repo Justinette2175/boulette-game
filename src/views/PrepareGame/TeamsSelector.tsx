@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Store, User, TeamId, Team } from "../../types";
-import { Box, Typography, Paper } from "@material-ui/core";
+import { Box, Typography } from "@material-ui/core";
 import { WORDS_PER_PLAYER } from "../../constants";
 import { GRADIENT_AQUA, GRADIENT_ORANGE } from "../../theme";
 

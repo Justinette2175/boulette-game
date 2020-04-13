@@ -3,6 +3,7 @@ import { createMuiTheme } from "@material-ui/core/styles";
 export const PALETTE_PURPLE = "#8500FF";
 export const PALETTE_AQUA = "#00EDB5";
 export const PALETTE_ORANGE = "#FF4500";
+export const PALETTE_PURPLE_DARK = "#220075";
 export const GRADIENT_AQUA = `linear-gradient(${PALETTE_PURPLE},${PALETTE_AQUA})`;
 export const GRADIENT_ORANGE = `linear-gradient(${PALETTE_PURPLE},${PALETTE_ORANGE})`;
 

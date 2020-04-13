@@ -21,7 +21,16 @@ const Game: React.FC = () => {
 
   return (
     <Box>
-      {!currentWord && <Button onClick={handleStart}>Get Word</Button>}
+      {!currentWord && (
+        <Button
+          color="primary"
+          variant="contained"
+          size="large"
+          onClick={handleStart}
+        >
+          Get Word
+        </Button>
+      )}
       {!!currentWord && (
         <>
           <Paper>{currentWord.text}</Paper>

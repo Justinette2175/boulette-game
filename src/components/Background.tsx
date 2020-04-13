@@ -1,14 +1,14 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { Box } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import Image from "material-ui-image";
 import Bowl from "../assets/images/bowl.png";
 import { GRADIENT_AQUA, GRADIENT_ORANGE } from "../theme";
-
-const useStyles = makeStyles({});
+import { Store } from "../types";
+import { SCORE_BOARD_WIDTH } from "../constants";
 
 const Background = ({}) => {
-  const classes = useStyles();
+  const currentTeam = useSelector((state: Store) => state.game.currentTeam);
   return (
     <Box
       height="100vh"
@@ -20,16 +20,30 @@ const Background = ({}) => {
     >
       <Box display="flex" height="100%" width="100%">
         <Box
-          width="50%"
+          width={
+            !currentTeam
+              ? "50%"
+              : currentTeam === "1"
+              ? `calc(100vw - ${SCORE_BOARD_WIDTH / 2}px)`
+              : `${SCORE_BOARD_WIDTH / 2}px`
+          }
           height="100%"
           style={{
+            transition: "all 1s",
             backgroundImage: GRADIENT_AQUA,
           }}
         ></Box>
         <Box
-          width="50%"
+          width={
+            !currentTeam
+              ? "50%"
+              : currentTeam === "2"
+              ? `calc(100vw - ${SCORE_BOARD_WIDTH / 2}px)`
+              : `${SCORE_BOARD_WIDTH / 2}px`
+          }
           height="100%"
           style={{
+            transition: "all 1s",
             backgroundImage: GRADIENT_ORANGE,
           }}
         ></Box>

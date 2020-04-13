@@ -2,20 +2,15 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Typography, Box } from "@material-ui/core";
 import { Store, User, Team, Round } from "../../types";
+import { SCORE_BOARD_WIDTH } from "../../constants";
 
 import CurrentPlayerView from "./CurrentPlayerView";
+import ScoreBoard from "./ScoreBoard";
+import Timer from "./Timer";
 
 const Game: React.FC = () => {
   const dispatch = useDispatch();
-  const currentPlayerName = useSelector((state: Store) => {
-    if (state.game.currentUser) {
-      const user: User = state.game.users.find(
-        (u) => u.id === state.game.currentUser
-      );
-      return user ? user.name : null;
-    }
-    return null;
-  });
+  const currentTeam = useSelector((state: Store) => state.game.currentTeam);
   const currentPlayerIsOnComputer = useSelector(
     (state: Store) =>
       state.game.currentUser &&
@@ -40,22 +35,18 @@ const Game: React.FC = () => {
     return null;
   });
 
-  const secondsLeft: number = useSelector(
-    (state: Store) => state.computer.timer
-  );
-
   return (
     <Box>
-      <Typography variant="h3">{currentTeamName}</Typography>
-      <Typography variant="body1">It is {currentPlayerName}'s turn</Typography>
-      {secondsLeft ||
-        (secondsLeft === 0 && (
-          <Typography variant="body1">{secondsLeft} seconds</Typography>
-        ))}
-      {currentRoundIndex && (
-        <Typography variant="h4">Round {currentRoundIndex}</Typography>
-      )}
-      {currentPlayerIsOnComputer && <CurrentPlayerView />}
+      <ScoreBoard />
+      <Timer />
+      <Box
+        width={`calc(100% - ${SCORE_BOARD_WIDTH / 2}px)`}
+        position="relative"
+        style={{ transition: "all 1s" }}
+        left={currentTeam === "1" ? 0 : `${SCORE_BOARD_WIDTH / 2}px`}
+      >
+        {currentPlayerIsOnComputer && <CurrentPlayerView />}
+      </Box>
     </Box>
   );
 };
