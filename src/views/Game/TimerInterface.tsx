@@ -1,8 +1,6 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { Box, Typography } from "@material-ui/core";
-import useCurrentRoundIndex from "../../utils/useCurrentRoundIndex";
-import { Store, User, Time } from "../../types";
+import { Time } from "../../types";
 
 interface IProps {
   timeLeft: Time;

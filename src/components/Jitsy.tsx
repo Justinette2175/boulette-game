@@ -1,26 +1,28 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Box } from "@material-ui/core";
+import useCurrentPlayerIsOnDevice from "../utils/useCurrentPlayerIsOnDevice";
+import { Store } from "../types";
+import { useSelector } from "react-redux";
+import { VIDEO_HEIGHT } from "../constants";
 
 const IFRAME_ID = "jitsy-video";
 const JITSY_DOMAIN = "meet.jit.si";
 
-interface IProps {
-  jitsyRoomId: string;
-  deviceName: string;
-}
+const Jitsy: React.FC = () => {
+  const currentPlayerIsOnDevice = useCurrentPlayerIsOnDevice();
+  const gameId = useSelector((state: Store) => state.game.id);
+  const [api, setApi] = useState<any>(null);
 
-const Jitsy: React.FC<IProps> = ({ jitsyRoomId, deviceName }) => {
-  let api;
-  useEffect(() => {
+  const launchJitsy = () => {
     const win = window as any;
     const domain = JITSY_DOMAIN;
     const options = {
-      roomName: jitsyRoomId,
+      roomName: gameId,
       width: 700,
       height: 700,
       parentNode: document.querySelector(`#${IFRAME_ID}`),
       userInfo: {
-        displayName: deviceName,
+        displayName: "",
       },
       interfaceConfigOverwrite: {
         MOBILE_APP_PROMO: false,
@@ -35,14 +37,43 @@ const Jitsy: React.FC<IProps> = ({ jitsyRoomId, deviceName }) => {
         SETTINGS_SECTIONS: ["devices", "moderator"],
       },
     };
-    api = new win.JitsiMeetExternalAPI(domain, options);
-    const devices = api.getAvailableDevices();
-    console.log("participants are", api._participants);
-    console.log("onstage participants", api._onStageParticipant);
-    console.log("available devices are", devices);
+    const a = new win.JitsiMeetExternalAPI(domain, options);
+    setApi(a);
+  };
+
+  useEffect(() => {
+    launchJitsy();
+    return () => {
+      if (api) {
+        api.dispose();
+      }
+    };
   }, []);
 
-  return <div id={IFRAME_ID} />;
+  return (
+    <Box
+      position="absolute"
+      width="100vw"
+      height={VIDEO_HEIGHT}
+      bottom={0}
+      left={0}
+      style={{
+        backgroundColor: "black",
+        transition: "all 1s",
+        transform: `translateY(${currentPlayerIsOnDevice ? "50%" : "0%"})`,
+      }}
+      display="flex"
+      justifyContent="center"
+    >
+      <Box
+        style={{
+          transformOrigin: "50% 0%",
+          transform: `scale(${currentPlayerIsOnDevice ? "50%" : "100%"})`,
+        }}
+        id={IFRAME_ID}
+      />
+    </Box>
+  );
 };
 
 export default Jitsy;
