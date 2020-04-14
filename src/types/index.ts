@@ -68,6 +68,7 @@ export interface Time {
 }
 
 export interface Game {
+  jitsyRoomId?: string;
   id?: GameId;
   rounds?: Array<Round>;
   users?: Array<User>;

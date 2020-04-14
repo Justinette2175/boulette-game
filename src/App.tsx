@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import { useSelector } from "react-redux";
 import { Store } from "./types";
@@ -9,6 +9,7 @@ import StartOrJoinGame from "./views/StartOrJoinGame";
 import PrepareGame from "./views/PrepareGame";
 import Game from "./views/Game";
 import Background from "./components/Background";
+import { app } from "firebase";
 
 const App: React.FC = () => {
   const gameId = useSelector((state: Store) => state.game.id);

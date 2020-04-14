@@ -16,6 +16,7 @@ import {
   WordId,
 } from "../types";
 import Firebase from "../services/firebase";
+import { uuid } from "uuidv4";
 import { updateTimer } from "./computer";
 import { NUMBER_OF_ROUNDS, SECOND_DURATION_OF_TURN } from "../constants";
 
@@ -87,10 +88,11 @@ export const createGame = function (ownerName: Username) {
   return async (dispatch: any, getState: () => Store) => {
     const initialGameId = getState().game.id;
     if (!initialGameId) {
+      const jitsyRoomId = uuid();
       let batch = db.batch();
       const newGameRef = db.collection("games").doc();
       const ownerUserRef = newGameRef.collection("users").doc();
-      batch.set(newGameRef, { owner: ownerUserRef.id });
+      batch.set(newGameRef, { owner: ownerUserRef.id, jitsyRoomId });
       batch.set(ownerUserRef, { name: ownerName, createdAt: Date.now() });
       INITIAL_TEAMS.forEach((t) => {
         let teamRef = newGameRef.collection("teams").doc(t.id);
@@ -352,6 +354,7 @@ export const markWordAsFound = function (word: Word) {
 };
 
 const initialState: Game = {
+  jitsyRoomId: null,
   id: null,
   owner: null,
   rounds: [],
