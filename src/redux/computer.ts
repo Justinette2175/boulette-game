@@ -1,8 +1,8 @@
 import { createReducer, createAction } from "redux-act";
-import { ComputerReducer, Username } from "../types";
+import { ComputerReducer, Username, Time } from "../types";
 
 export const addUserToComputer = createAction<Username>("ADD_USER_TO_COMPUTER");
-export const updateTimer = createAction<number>("UPDATE_TIMER");
+export const updateTimer = createAction<Time>("UPDATE_TIMER");
 
 const initialState: ComputerReducer = {
   users: [],

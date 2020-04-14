@@ -28,11 +28,10 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <CssBaseline />
-      <Background />
+      {/* <Background /> */}
       <Box
         style={{
           position: "relative",
-          padding: "30px",
           height: "100vh",
           width: "100vw",
           overflow: "auto",

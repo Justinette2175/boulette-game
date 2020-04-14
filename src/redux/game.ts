@@ -278,6 +278,7 @@ const startCountdown = function (endOfCurrentTurn: string) {
             moment(endOfCurrentTurn)
           );
           const seconds = -moment.duration(differenceInMilliseconds).seconds();
+
           if (!seconds || seconds < 0) {
             console.log("Seconds are lower, I'm dispatching");
             dispatch(updateTimer(null));
@@ -292,7 +293,8 @@ const startCountdown = function (endOfCurrentTurn: string) {
             timerInterval = null;
             return;
           }
-          dispatch(updateTimer(seconds));
+          const minutes = -moment.duration(differenceInMilliseconds).minutes();
+          dispatch(updateTimer({ seconds, minutes }));
         };
         callback();
       }, ONE_SECOND);

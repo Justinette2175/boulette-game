@@ -61,17 +61,17 @@ export default createMuiTheme({
   typography: {
     h1: {
       fontWeight: 700,
-      fontSize: "2rem",
+      fontSize: "3rem",
       marginBottom: "15px",
     },
     h2: {
       fontWeight: 700,
-      fontSize: "1.7rem",
+      fontSize: "2rem",
       marginBottom: "15px",
     },
     h3: {
       fontWeight: 700,
-      fontSize: "1.4rem",
+      fontSize: "1.5rem",
       marginBottom: "20px",
     },
     h4: {

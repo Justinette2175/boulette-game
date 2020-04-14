@@ -1,17 +1,13 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { Box, Typography } from "@material-ui/core";
-import useCurrentRoundIndex from "../../utils/useCurrentRoundIndex";
-import { Store, User, RoundScore } from "../../types";
-import { PALETTE_PURPLE_DARK } from "../../theme";
-import { SCORE_BOARD_WIDTH } from "../../constants";
+import { Store, User, Time } from "../../types";
+
+import TimerInterface from "./TimerInterface";
 
 const Timer: React.FC = () => {
-  const secondsLeft: number = useSelector(
-    (state: Store) => state.computer.timer
+  const timeLeft: Time = useSelector(
+    (state: Store) => state.computer.timer || null
   );
-
-  const currentTeam = useSelector((state: Store) => state.game.currentTeam);
 
   const currentPlayerName = useSelector((state: Store) => {
     if (state.game.currentUser) {
@@ -24,14 +20,7 @@ const Timer: React.FC = () => {
   });
 
   return (
-    <Box
-      textAlign={currentTeam === "1" ? "left" : "right"}
-      width="100%"
-      style={{ color: "white" }}
-    >
-      <Typography variant="h3">It is {currentPlayerName}'s turn</Typography>
-      {secondsLeft && <Typography variant="h1">{secondsLeft}</Typography>}
-    </Box>
+    <TimerInterface timeLeft={timeLeft} currentPlayerName={currentPlayerName} />
   );
 };
 

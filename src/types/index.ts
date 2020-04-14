@@ -53,13 +53,18 @@ export interface MessageReducer {
 
 export interface ComputerReducer {
   users: Array<Username>;
-  timer?: number;
+  timer?: Time;
 }
 
 export interface Team {
   id: TeamId;
   name?: string;
   lastPlayerId?: UserId;
+}
+
+export interface Time {
+  minutes: number;
+  seconds: number;
 }
 
 export interface Game {
