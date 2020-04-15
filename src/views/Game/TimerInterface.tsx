@@ -12,19 +12,20 @@ const Timer: React.FC<IProps> = ({ timeLeft, currentPlayerName }) => {
     <Box
       width="100%"
       style={{ color: "white" }}
-      p={4}
       textAlign="center"
       display="flex"
       flexDirection="column"
       alignItems="center"
     >
       <Typography variant="h2">It's {currentPlayerName}'s turn</Typography>
-      {timeLeft && (
+      {timeLeft ? (
         <Typography variant="h1">
           {timeLeft.minutes < 10 && 0}
           {timeLeft.minutes}:{timeLeft.seconds < 10 && 0}
           {timeLeft.seconds}
         </Typography>
+      ) : (
+        <Typography variant="h1">00:00</Typography>
       )}
     </Box>
   );

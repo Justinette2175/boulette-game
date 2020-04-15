@@ -229,13 +229,15 @@ export const startNextTurn = function () {
     const newTeamId = currentTeam === "1" ? "2" : "1";
     const nextPlayer = getNextPlayer(newTeamId, teams, users);
     const gameRef = db.collection("games").doc(gameId);
-    batch.update(gameRef, {
-      currentTeam: newTeamId,
-      currentUser: nextPlayer.id,
-    });
-    batch.update(gameRef.collection("teams").doc(newTeamId), {
-      lastPlayerId: nextPlayer.id,
-    });
+    if (nextPlayer) {
+      batch.update(gameRef, {
+        currentTeam: newTeamId,
+        currentUser: nextPlayer.id,
+      });
+      batch.update(gameRef.collection("teams").doc(newTeamId), {
+        lastPlayerId: nextPlayer.id,
+      });
+    }
     await batch.commit();
   };
 };

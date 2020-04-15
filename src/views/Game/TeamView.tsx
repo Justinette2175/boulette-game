@@ -20,6 +20,7 @@ const TeamView: React.FC<IProps> = ({ team }) => {
     <Box
       width={`calc(100vw - ${SCORE_BOARD_WIDTH / 2}px)`}
       height="100vh"
+      p={4}
       style={{ backgroundImage: team1 ? GRADIENT_AQUA : GRADIENT_ORANGE }}
       textAlign={team1 ? "left" : "right"}
     >

@@ -10,6 +10,7 @@ import PrepareGame from "./views/PrepareGame";
 import Game from "./views/Game";
 import Background from "./components/Background";
 import { app } from "firebase";
+import Test from "./views/text";
 
 const App: React.FC = () => {
   const gameId = useSelector((state: Store) => state.game.id);
@@ -39,6 +40,7 @@ const App: React.FC = () => {
         }}
       >
         {view}
+        {/* <Test /> */}
       </Box>
     </div>
   );
