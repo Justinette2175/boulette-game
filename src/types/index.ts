@@ -81,6 +81,7 @@ export interface Game {
   owner?: Username;
   currentWord?: Word;
   endOfCurrentTurn?: string;
+  remainingTimeForNextRound?: Time;
 }
 
 export interface Store {

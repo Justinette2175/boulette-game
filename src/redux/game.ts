@@ -51,6 +51,11 @@ const listenToGame = (gameRef: any) => {
     gameRef.onSnapshot(function (c: any) {
       const data = c.data();
       dispatch(updateGame(data));
+      console.log(
+        "Getting game data",
+        data.endOfCurrentTurn,
+        data.remainingTimeForNextRound
+      );
       if (data.endOfCurrentTurn) {
         const {
           computer: { timer },
@@ -58,6 +63,12 @@ const listenToGame = (gameRef: any) => {
         if (!timer) {
           dispatch(startCountdown(data.endOfCurrentTurn));
         }
+      }
+      console.log();
+      if (!data.endOfCurrentTurn && timerInterval) {
+        console.log("clearing interval");
+        clearInterval(timerInterval);
+        timerInterval = null;
       }
     });
     gameRef.collection("users").onSnapshot(function (c: any) {
@@ -222,7 +233,6 @@ export const assignUserToTeam = function (userId: UserId, teamId: TeamId) {
 };
 
 export const startNextTurn = function () {
-  console.log("starting next turn");
   return async (dispatch: any, getState: () => Store) => {
     const { id: gameId, currentTeam, teams, users } = getState().game;
     let batch = db.batch();
@@ -244,16 +254,27 @@ export const startNextTurn = function () {
 
 export const startMiming = function () {
   return async (dispatch: any, getState: () => Store) => {
-    const { id: gameId, currentRound, words, rounds } = getState().game;
+    const {
+      id: gameId,
+      currentRound,
+      words,
+      rounds,
+      remainingTimeForNextRound,
+    } = getState().game;
     const round = rounds.find((r) => r.id === currentRound);
     const { wordsLeft } = round;
     const nextWord = getNextWord(wordsLeft, words);
     const gameRef = db.collection("games").doc(gameId);
     if (nextWord) {
-      const endOfCurrentTurn = moment()
-        .add(SECOND_DURATION_OF_TURN, "s")
-        .format();
-      console.log("End of current turn is", endOfCurrentTurn);
+      let endOfCurrentTurn;
+      if (remainingTimeForNextRound) {
+        endOfCurrentTurn = moment()
+          .add(remainingTimeForNextRound.seconds, "s")
+          .add(remainingTimeForNextRound.minutes, "m")
+          .format();
+      } else {
+        endOfCurrentTurn = moment().add(SECOND_DURATION_OF_TURN, "s").format();
+      }
       dispatch(startCountdown(endOfCurrentTurn));
       await gameRef.update({
         currentWord: nextWord,
@@ -268,6 +289,21 @@ export const startMiming = function () {
 let timerInterval: any;
 const ONE_SECOND = 1000;
 
+const countDown = function (endOfCurrentTurn: string) {
+  return (dispatch: any) => {
+    const differenceInMilliseconds = moment().diff(moment(endOfCurrentTurn));
+    const seconds = -moment.duration(differenceInMilliseconds).seconds();
+    const minutes = -moment.duration(differenceInMilliseconds).minutes();
+    dispatch(updateTimer({ seconds, minutes }));
+  };
+};
+
+const timerIsFinished = function (endOfCurrentTurn: string): boolean {
+  const differenceInMilliseconds = moment().diff(moment(endOfCurrentTurn));
+  const seconds = -moment.duration(differenceInMilliseconds).seconds();
+  return seconds < 0;
+};
+
 const startCountdown = function (endOfCurrentTurn: string) {
   return async (dispatch: any, getState: () => Store) => {
     const {
@@ -275,30 +311,25 @@ const startCountdown = function (endOfCurrentTurn: string) {
       computer: { users },
     } = getState();
     const userIsOnComputer = !!currentUser && users.indexOf(currentUser) > -1;
+    dispatch(countDown(endOfCurrentTurn));
     if (!timerInterval) {
       timerInterval = setInterval(() => {
         const callback = async function () {
-          const differenceInMilliseconds = moment().diff(
-            moment(endOfCurrentTurn)
-          );
-          const seconds = -moment.duration(differenceInMilliseconds).seconds();
-
-          if (!seconds || seconds < 0) {
-            console.log("Seconds are lower, I'm dispatching");
+          if (timerIsFinished(endOfCurrentTurn)) {
             dispatch(updateTimer(null));
             if (userIsOnComputer) {
-              await db
-                .collection("games")
-                .doc(id)
-                .update({ endOfCurrentTurn: null, currentWord: null });
-              dispatch(startNextTurn());
+              await db.collection("games").doc(id).update({
+                endOfCurrentTurn: null,
+                currentWord: null,
+                remainingTimeForNextRound: null,
+              });
             }
+            dispatch(startNextTurn());
             clearInterval(timerInterval);
             timerInterval = null;
             return;
           }
-          const minutes = -moment.duration(differenceInMilliseconds).minutes();
-          dispatch(updateTimer({ seconds, minutes }));
+          dispatch(countDown(endOfCurrentTurn));
         };
         callback();
       }, ONE_SECOND);
@@ -346,9 +377,14 @@ export const markWordAsFound = function (word: Word) {
       if (currentRoundIndex === NUMBER_OF_ROUNDS) {
         console.log("It's the end of the game");
       } else {
-        // Finish round
+        const remainingTimeForNextRound = getState().computer.timer;
+        console.log("remaining Time for next round", remainingTimeForNextRound);
         const nextRound = rounds.find((r) => r.index === currentRoundIndex + 1);
-        batch.update(gameRef, { currentRound: nextRound.id });
+        batch.update(gameRef, {
+          currentRound: nextRound.id,
+          remainingTimeForNextRound,
+          endOfCurrentTurn: null,
+        });
       }
     }
     await batch.commit();
@@ -361,7 +397,6 @@ const initialState: Game = {
   owner: null,
   rounds: [],
   currentRound: null,
-  countdown: null,
   users: [],
   currentTeam: null,
   currentUser: null,

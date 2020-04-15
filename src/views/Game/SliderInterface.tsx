@@ -31,7 +31,7 @@ const SliderInterface: React.FC<IProps> = ({ currentTeamId, jitsyRoomId }) => {
         <TeamView team="2" />
       </Box>
 
-      <Jitsy />
+      {/* <Jitsy /> */}
     </Box>
   );
 };
