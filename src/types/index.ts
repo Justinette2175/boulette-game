@@ -82,6 +82,7 @@ export interface Game {
   currentWord?: Word;
   endOfCurrentTurn?: string;
   remainingTimeForNextRound?: Time;
+  ended?: boolean;
 }
 
 export interface Store {

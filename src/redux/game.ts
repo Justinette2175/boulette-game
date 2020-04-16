@@ -16,7 +16,6 @@ import {
   WordId,
 } from "../types";
 import Firebase from "../services/firebase";
-import { uuid } from "uuidv4";
 import { updateTimer } from "./computer";
 import { NUMBER_OF_ROUNDS, SECOND_DURATION_OF_TURN } from "../constants";
 
@@ -40,70 +39,21 @@ export const updateGameSubcollection = createAction<{
   values: Array<any>;
   key: string;
 }>("UPDATE_USERS");
+
 export const updateTeams = createAction<Array<Team>>("UPDATE_TEAMS");
 export const updateUserTeam = createAction<{
   username: Username;
   teamId: TeamId;
 }>();
 
-const listenToGame = (gameRef: any) => {
-  return async (dispatch: any, getState: () => Store) => {
-    gameRef.onSnapshot(function (c: any) {
-      const data = c.data();
-      dispatch(updateGame(data));
-      console.log(
-        "Getting game data",
-        data.endOfCurrentTurn,
-        data.remainingTimeForNextRound
-      );
-      if (data.endOfCurrentTurn) {
-        const {
-          computer: { timer },
-        } = getState();
-        if (!timer) {
-          dispatch(startCountdown(data.endOfCurrentTurn));
-        }
-      }
-      console.log();
-      if (!data.endOfCurrentTurn && timerInterval) {
-        console.log("clearing interval");
-        clearInterval(timerInterval);
-        timerInterval = null;
-      }
-    });
-    gameRef.collection("users").onSnapshot(function (c: any) {
-      const users: Array<User> = [];
-      c.forEach((u: any) => users.push({ id: u.id, ...u.data() }));
-      dispatch(updateGameSubcollection({ values: users, key: "users" }));
-    });
-    gameRef.collection("teams").onSnapshot(function (c: any) {
-      const teams: Array<Team> = [];
-      c.forEach((t: any) => teams.push({ id: t.id, ...t.data() }));
-      dispatch(updateGameSubcollection({ values: teams, key: "teams" }));
-    });
-    gameRef.collection("words").onSnapshot(function (c: any) {
-      const words: Array<Word> = [];
-      c.forEach((w: any) => words.push({ id: w.id, ...w.data() }));
-      dispatch(updateGameSubcollection({ values: words, key: "words" }));
-    });
-    gameRef.collection("rounds").onSnapshot(function (c: any) {
-      console.log("Getting rounds info");
-      const rounds: Array<Round> = [];
-      c.forEach((r: any) => rounds.push({ id: r.id, ...r.data() }));
-      dispatch(updateGameSubcollection({ values: rounds, key: "rounds" }));
-    });
-  };
-};
-
 export const createGame = function (ownerName: Username) {
   return async (dispatch: any, getState: () => Store) => {
     const initialGameId = getState().game.id;
     if (!initialGameId) {
-      const jitsyRoomId = uuid();
       let batch = db.batch();
       const newGameRef = db.collection("games").doc();
       const ownerUserRef = newGameRef.collection("users").doc();
-      batch.set(newGameRef, { owner: ownerUserRef.id, jitsyRoomId });
+      batch.set(newGameRef, { owner: ownerUserRef.id });
       batch.set(ownerUserRef, { name: ownerName, createdAt: Date.now() });
       INITIAL_TEAMS.forEach((t) => {
         let teamRef = newGameRef.collection("teams").doc(t.id);
@@ -189,6 +139,36 @@ export const getNextPlayer = (
   return orderedTeamUsers[lastPlayerIndex + 1];
 };
 
+const batchSetLastPlayerIdForTeam = (
+  batch: any,
+  teamId: TeamId,
+  id: UserId,
+  gameRef: any
+) => {
+  batch.update(gameRef.collection("teams").doc(teamId), {
+    lastPlayerId: id,
+  });
+  return batch;
+};
+
+const batchCreateRounds = (batch: any, words: Array<Word>, gameRef: any) => {
+  let firstRoundIndex;
+  const rounds: Array<Round> = makeRounds();
+  rounds.forEach((r) => {
+    const roundRef = gameRef.collection("rounds").doc();
+    if (r.index === 1) {
+      firstRoundIndex = roundRef.id;
+    }
+    const roundData = {
+      ...r,
+      wordsLeft: words.map((w) => w.id),
+      score: { "1": 0, "2": 0 },
+    };
+    batch.set(roundRef, roundData);
+  });
+  return { batch, firstRoundIndex };
+};
+
 export const startGame = function () {
   return async (dispatch: any, getState: () => Store) => {
     const { game } = getState();
@@ -198,25 +178,16 @@ export const startGame = function () {
     let batch = db.batch();
     const newTeamId = "1";
     const currentUser = getNextPlayer(newTeamId, teams, users);
-    let firstRoundIndex;
-    batch.update(gameRef.collection("teams").doc(newTeamId), {
-      lastPlayerId: currentUser.id,
-    });
-    const rounds: Array<Round> = makeRounds();
-    rounds.forEach((r) => {
-      const roundRef = gameRef.collection("rounds").doc();
-      if (r.index === 1) {
-        firstRoundIndex = roundRef.id;
-      }
-      const roundData = {
-        ...r,
-        wordsLeft: words.map((w) => w.id),
-        score: { "1": 0, "2": 0 },
-      };
-      batch.set(roundRef, roundData);
-    });
+    batch = batchSetLastPlayerIdForTeam(
+      batch,
+      newTeamId,
+      currentUser.id,
+      gameRef
+    );
+    const batchRounds = batchCreateRounds(batch, words, gameRef);
+    batch = batchRounds.batch;
     batch.update(gameRef, {
-      currentRound: firstRoundIndex,
+      currentRound: batchRounds.firstRoundIndex,
       currentTeam: newTeamId,
       currentUser: currentUser.id,
     });
@@ -252,6 +223,15 @@ export const startNextTurn = function () {
   };
 };
 
+/***********************
+ * START A USER'S TURN *
+ * - find the next word within the current round's remaining words list
+ * - If there is a next word:
+ *    - Send to db the timestamp for the end of the user's turn either based on remaining seconds or on duration of turn
+ *    - Send to db the next word as current word
+ *- If there isn't a next word ?
+ ***********************/
+
 export const startMiming = function () {
   return async (dispatch: any, getState: () => Store) => {
     const {
@@ -275,10 +255,10 @@ export const startMiming = function () {
       } else {
         endOfCurrentTurn = moment().add(SECOND_DURATION_OF_TURN, "s").format();
       }
-      dispatch(startCountdown(endOfCurrentTurn));
       await gameRef.update({
         currentWord: nextWord,
         endOfCurrentTurn,
+        remainingTimeForNextRound: null,
       });
     } else {
       console.log("it's the end of the turn...");
@@ -287,14 +267,14 @@ export const startMiming = function () {
 };
 
 let timerInterval: any;
-const ONE_SECOND = 1000;
+const COUNTDOWN_INTERVAL = 500;
 
-const countDown = function (endOfCurrentTurn: string) {
+const updateCountDown = function (endOfCurrentTurn: string) {
   return (dispatch: any) => {
     const differenceInMilliseconds = moment().diff(moment(endOfCurrentTurn));
     const seconds = -moment.duration(differenceInMilliseconds).seconds();
     const minutes = -moment.duration(differenceInMilliseconds).minutes();
-    dispatch(updateTimer({ seconds, minutes }));
+    dispatch(updateTimer({ seconds: seconds > 0 ? seconds : 0, minutes }));
   };
 };
 
@@ -304,6 +284,19 @@ const timerIsFinished = function (endOfCurrentTurn: string): boolean {
   return seconds < 0;
 };
 
+const endPlayerTurn = function (userIsOnComputer: boolean, gameId: GameId) {
+  return async (dispatch: any) => {
+    if (userIsOnComputer) {
+      await db.collection("games").doc(gameId).update({
+        endOfCurrentTurn: null,
+        currentWord: null,
+        remainingTimeForNextRound: null,
+      });
+      dispatch(startNextTurn());
+    }
+  };
+};
+
 const startCountdown = function (endOfCurrentTurn: string) {
   return async (dispatch: any, getState: () => Store) => {
     const {
@@ -311,28 +304,18 @@ const startCountdown = function (endOfCurrentTurn: string) {
       computer: { users },
     } = getState();
     const userIsOnComputer = !!currentUser && users.indexOf(currentUser) > -1;
-    dispatch(countDown(endOfCurrentTurn));
+    dispatch(updateCountDown(endOfCurrentTurn));
     if (!timerInterval) {
       timerInterval = setInterval(() => {
         const callback = async function () {
           if (timerIsFinished(endOfCurrentTurn)) {
-            dispatch(updateTimer(null));
-            if (userIsOnComputer) {
-              await db.collection("games").doc(id).update({
-                endOfCurrentTurn: null,
-                currentWord: null,
-                remainingTimeForNextRound: null,
-              });
-            }
-            dispatch(startNextTurn());
-            clearInterval(timerInterval);
-            timerInterval = null;
-            return;
+            dispatch(endPlayerTurn(userIsOnComputer, id));
+          } else {
+            dispatch(updateCountDown(endOfCurrentTurn));
           }
-          dispatch(countDown(endOfCurrentTurn));
         };
         callback();
-      }, ONE_SECOND);
+      }, COUNTDOWN_INTERVAL);
     }
   };
 };
@@ -365,29 +348,100 @@ export const markWordAsFound = function (word: Word) {
     let batch = db.batch();
     const roundRef = gameRef.collection("rounds").doc(currentRound);
     const newTeamScore: number = score[currentTeam] + 1;
+
+    // Update round with new score
+    // Update round with words left
     batch.update(roundRef, {
       wordsLeft: firebase.firestore.FieldValue.arrayRemove(word.id),
       wordsGuessed: firebase.firestore.FieldValue.arrayUnion(word.id),
       [`score.${currentTeam}`]: newTeamScore,
     });
+    // Set next currentWord
     const nextWord = getNextWord(wordsLeft, words);
     batch.update(gameRef, { currentWord: nextWord });
+
+    // Handle end of round
     if (!nextWord) {
       const currentRoundIndex = round.index;
       if (currentRoundIndex === NUMBER_OF_ROUNDS) {
-        console.log("It's the end of the game");
+        batch.update(gameRef, { ended: true });
       } else {
-        const remainingTimeForNextRound = getState().computer.timer;
-        console.log("remaining Time for next round", remainingTimeForNextRound);
-        const nextRound = rounds.find((r) => r.index === currentRoundIndex + 1);
-        batch.update(gameRef, {
-          currentRound: nextRound.id,
-          remainingTimeForNextRound,
-          endOfCurrentTurn: null,
-        });
+        batch = handleEndRound(
+          getState,
+          batch,
+          gameRef,
+          rounds,
+          currentRoundIndex
+        );
       }
     }
     await batch.commit();
+  };
+};
+
+const handleEndRound = function (
+  getState: () => Store,
+  batch: any,
+  gameRef: any,
+  rounds: Array<Round>,
+  currentRoundIndex: number
+) {
+  const remainingTimeForNextRound = getState().computer.timer;
+  const nextRound = rounds.find((r) => r.index === currentRoundIndex + 1);
+  batch.update(gameRef, {
+    currentRound: nextRound.id,
+    remainingTimeForNextRound,
+    endOfCurrentTurn: null,
+  });
+  return batch;
+};
+
+const listenToGame = (gameRef: any) => {
+  return async (dispatch: any, getState: () => Store) => {
+    gameRef.onSnapshot(function (c: any) {
+      const data = c.data();
+      const {
+        game: { endOfCurrentTurn },
+      } = getState();
+      if (
+        data.endOfCurrentTurn &&
+        data.endOfCurrentTurn !== endOfCurrentTurn &&
+        !timerInterval
+      ) {
+        dispatch(startCountdown(data.endOfCurrentTurn));
+      }
+      if (
+        (data.remainingTimeForNextRound || !data.endOfCurrentTurn) &&
+        timerInterval
+      ) {
+        dispatch(updateTimer(null));
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      dispatch(updateGame(data));
+    });
+
+    gameRef.collection("users").onSnapshot(function (c: any) {
+      const users: Array<User> = [];
+      c.forEach((u: any) => users.push({ id: u.id, ...u.data() }));
+      dispatch(updateGameSubcollection({ values: users, key: "users" }));
+    });
+    gameRef.collection("teams").onSnapshot(function (c: any) {
+      const teams: Array<Team> = [];
+      c.forEach((t: any) => teams.push({ id: t.id, ...t.data() }));
+      dispatch(updateGameSubcollection({ values: teams, key: "teams" }));
+    });
+    gameRef.collection("words").onSnapshot(function (c: any) {
+      const words: Array<Word> = [];
+      c.forEach((w: any) => words.push({ id: w.id, ...w.data() }));
+      dispatch(updateGameSubcollection({ values: words, key: "words" }));
+    });
+    gameRef.collection("rounds").onSnapshot(function (c: any) {
+      console.log("Getting rounds info");
+      const rounds: Array<Round> = [];
+      c.forEach((r: any) => rounds.push({ id: r.id, ...r.data() }));
+      dispatch(updateGameSubcollection({ values: rounds, key: "rounds" }));
+    });
   };
 };
 
