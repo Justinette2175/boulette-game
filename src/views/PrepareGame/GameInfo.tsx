@@ -11,7 +11,7 @@ const GameInfo: React.FC = () => {
   });
   return (
     <Box mb={2}>
-      <Typography variant="h2"># {gameId}</Typography>
+      <Typography variant="h4"># {gameId}</Typography>
       <Typography variant="body1">Game owner: {gameOwnerName}</Typography>
     </Box>
   );

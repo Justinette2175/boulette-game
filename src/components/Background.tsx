@@ -4,50 +4,52 @@ import { Box } from "@material-ui/core";
 import Image from "material-ui-image";
 import Bowl from "../assets/images/bowl.png";
 import { GRADIENT_AQUA, GRADIENT_ORANGE } from "../theme";
+import SliderWrapper from "./SliderWrapper";
 import { Store } from "../types";
-import { SCORE_BOARD_WIDTH } from "../constants";
 
 const Background = ({}) => {
   const currentTeam = useSelector((state: Store) => state.game.currentTeam);
+  const gameWinner = useSelector((state: Store) => state.game.winner);
+  console.log("background team", currentTeam);
+  const placement =
+    !!gameWinner || !currentTeam
+      ? "center"
+      : currentTeam === "1"
+      ? "left"
+      : "right";
+  console.log("background team", placement);
+
   return (
     <Box
-      height="100vh"
-      position="absolute"
+      minHeight="100vh"
+      position="fixed"
       top="0"
       left="0"
+      bottom="0"
+      right="0"
       overflow="hidden"
-      width="100%"
     >
-      <Box display="flex" height="100%" width="100%">
-        <Box
-          width={
-            !currentTeam
-              ? "50%"
-              : currentTeam === "1"
-              ? `calc(100vw - ${SCORE_BOARD_WIDTH / 2}px)`
-              : `${SCORE_BOARD_WIDTH / 2}px`
-          }
-          height="100%"
-          style={{
-            transition: "all 1s",
-            backgroundImage: GRADIENT_AQUA,
-          }}
-        ></Box>
-        <Box
-          width={
-            !currentTeam
-              ? "50%"
-              : currentTeam === "2"
-              ? `calc(100vw - ${SCORE_BOARD_WIDTH / 2}px)`
-              : `${SCORE_BOARD_WIDTH / 2}px`
-          }
-          height="100%"
-          style={{
-            transition: "all 1s",
-            backgroundImage: GRADIENT_ORANGE,
-          }}
-        ></Box>
-      </Box>
+      <SliderWrapper
+        leftChild={
+          <Box
+            height="100%"
+            width="100%"
+            style={{
+              backgroundImage: GRADIENT_AQUA,
+            }}
+          ></Box>
+        }
+        rightChild={
+          <Box
+            height="100%"
+            width="100%"
+            style={{
+              backgroundImage: GRADIENT_ORANGE,
+            }}
+          ></Box>
+        }
+        placement={placement}
+      />
       {/* <Box display="flex" justifyContent="center">
         <Box position="absolute" width="800px" bottom="-10%">
           <Image

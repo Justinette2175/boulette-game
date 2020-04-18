@@ -52,26 +52,22 @@ const Jitsy: React.FC = () => {
 
   return (
     <Box
-      position="absolute"
-      width="100vw"
+      position="fixed"
       height={VIDEO_HEIGHT}
       bottom={0}
-      left={0}
+      right={0}
       style={{
         backgroundColor: "black",
         transition: "all 1s",
-        transform: `translateY(${currentPlayerIsOnDevice ? "50%" : "0%"})`,
+        transformOrigin: "100% 100%",
+        transform: `translateY(${
+          currentPlayerIsOnDevice ? "50%" : "0%"
+        }) scale(30%)`,
       }}
       display="flex"
       justifyContent="center"
     >
-      <Box
-        style={{
-          transformOrigin: "50% 0%",
-          transform: `scale(${currentPlayerIsOnDevice ? "50%" : "100%"})`,
-        }}
-        id={IFRAME_ID}
-      />
+      <Box id={IFRAME_ID} />
     </Box>
   );
 };

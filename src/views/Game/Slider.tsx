@@ -5,10 +5,7 @@ import SliderInterface from "./SliderInterface";
 
 const Slider: React.FC = () => {
   const currentTeam = useSelector((state: Store) => state.game.currentTeam);
-  const jitsyRoomId = useSelector((state: Store) => state.game.jitsyRoomId);
-  return (
-    <SliderInterface currentTeamId={currentTeam} jitsyRoomId={jitsyRoomId} />
-  );
+  return <SliderInterface currentTeamId={currentTeam} />;
 };
 
 export default Slider;

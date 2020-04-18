@@ -1,7 +1,9 @@
 import { createReducer, createAction } from "redux-act";
 import firebase from "firebase";
 import moment from "moment";
+import Cookies from "js-cookie";
 import "firebase/firestore";
+import randomString from "randomstring";
 import {
   Game,
   GameId,
@@ -18,8 +20,9 @@ import {
 import Firebase from "../services/firebase";
 import { updateTimer } from "./computer";
 import { NUMBER_OF_ROUNDS, SECOND_DURATION_OF_TURN } from "../constants";
+import { calculateCumulativeScore } from "../utils";
 
-import { addUserToComputer } from "./computer";
+import { addUserToComputerAndSetCookie } from "./computer";
 
 const INITIAL_TEAMS = [
   {
@@ -51,10 +54,19 @@ export const createGame = function (ownerName: Username) {
     const initialGameId = getState().game.id;
     if (!initialGameId) {
       let batch = db.batch();
-      const newGameRef = db.collection("games").doc();
+      const newGameId = randomString.generate({
+        length: 5,
+        charset: "alphabetic",
+        capitalization: "uppercase",
+      });
+      const newGameRef = db.collection("games").doc(newGameId);
       const ownerUserRef = newGameRef.collection("users").doc();
       batch.set(newGameRef, { owner: ownerUserRef.id });
-      batch.set(ownerUserRef, { name: ownerName, createdAt: Date.now() });
+      batch.set(ownerUserRef, {
+        name: ownerName,
+        createdAt: Date.now(),
+        teamId: "1",
+      });
       INITIAL_TEAMS.forEach((t) => {
         let teamRef = newGameRef.collection("teams").doc(t.id);
         batch.set(teamRef, t);
@@ -62,7 +74,8 @@ export const createGame = function (ownerName: Username) {
       try {
         await batch.commit();
         dispatch(updateGame({ id: newGameRef.id }));
-        dispatch(addUserToComputer(ownerUserRef.id));
+        Cookies.set("gameId", newGameRef.id);
+        dispatch(addUserToComputerAndSetCookie(ownerUserRef.id));
         dispatch(listenToGame(newGameRef));
       } catch (e) {
         console.log("error", e);
@@ -71,21 +84,49 @@ export const createGame = function (ownerName: Username) {
   };
 };
 
+const findUserInitialTeam = function (users: Array<any>) {
+  let playersPerTeam = [0, 0];
+  users.forEach((user) => {
+    const d = user.data ? user.data() : user;
+    if (d.teamId === "1") {
+      playersPerTeam[0] += 1;
+    } else if (d.teamId === "2") {
+      playersPerTeam[1] += 1;
+    }
+  });
+  console.log("players per team", playersPerTeam);
+  return playersPerTeam[1] < playersPerTeam[0] ? "2" : "1";
+};
+
 export const joinGame = function (name: Username, gameId: GameId) {
   const gameRef = db.collection("games").doc(gameId);
   return async (dispatch: any, getState: () => Store) => {
     try {
-      await db.runTransaction(async function (transaction: any) {
+      const newUserId = await db.runTransaction(async function (
+        transaction: any
+      ) {
         const gameDoc = await transaction.get(gameRef);
         if (!gameDoc.exists) {
           throw "Document does not exist!";
         }
-        dispatch(updateGame({ id: gameId }));
         const newUserRef = gameRef.collection("users").doc();
-        dispatch(addUserToComputer(newUserRef.id));
-        await transaction.set(newUserRef, { name, createdAt: Date.now() });
-        dispatch(listenToGame(gameRef));
+        await transaction.set(newUserRef, {
+          name,
+          createdAt: Date.now(),
+        });
+        return newUserRef.id;
       });
+      dispatch(listenToGame(gameRef));
+      dispatch(updateGame({ id: gameId }));
+      Cookies.set("gameId", gameId);
+      const currentUsers = await gameRef.collection("users").get();
+      const initialUserTeam = findUserInitialTeam(currentUsers);
+      console.log("Initial user tean is", initialUserTeam);
+      await gameRef
+        .collection("users")
+        .doc(newUserId)
+        .update({ teamId: initialUserTeam });
+      dispatch(addUserToComputerAndSetCookie(newUserId));
     } catch (e) {
       console.log(e);
     }
@@ -94,19 +135,21 @@ export const joinGame = function (name: Username, gameId: GameId) {
 
 export const addPlayerOnComputer = function (name: Username) {
   return async (dispatch: any, getState: () => Store) => {
-    const gameId = getState().game.id;
-    if (!!gameId) {
+    const { id, users } = getState().game;
+    const teamId = findUserInitialTeam(users);
+    if (!!id) {
       const newUser: User = {
         name,
         createdAt: Date.now(),
+        teamId,
       };
       const newUserRef = db
         .collection("games")
-        .doc(gameId)
+        .doc(id)
         .collection("users")
         .doc();
       await newUserRef.set(newUser);
-      dispatch(addUserToComputer(newUserRef.id));
+      dispatch(addUserToComputerAndSetCookie(newUserRef.id));
     }
   };
 };
@@ -364,7 +407,8 @@ export const markWordAsFound = function (word: Word) {
     if (!nextWord) {
       const currentRoundIndex = round.index;
       if (currentRoundIndex === NUMBER_OF_ROUNDS) {
-        batch.update(gameRef, { ended: true });
+        const winningTeamId = getGameWinner(rounds);
+        batch.update(gameRef, { winner: winningTeamId });
       } else {
         batch = handleEndRound(
           getState,
@@ -377,6 +421,17 @@ export const markWordAsFound = function (word: Word) {
     }
     await batch.commit();
   };
+};
+
+const getGameWinner = function (rounds: Array<Round>) {
+  const cumulativeScore = calculateCumulativeScore(rounds);
+  const team1Score = cumulativeScore["1"];
+  const team2Score = cumulativeScore["2"];
+  return team1Score === team2Score
+    ? "both"
+    : team1Score > team2Score
+    ? "1"
+    : "2";
 };
 
 const handleEndRound = function (
@@ -399,54 +454,80 @@ const handleEndRound = function (
 const listenToGame = (gameRef: any) => {
   return async (dispatch: any, getState: () => Store) => {
     gameRef.onSnapshot(function (c: any) {
-      const data = c.data();
-      const {
-        game: { endOfCurrentTurn },
-      } = getState();
-      if (
-        data.endOfCurrentTurn &&
-        data.endOfCurrentTurn !== endOfCurrentTurn &&
-        !timerInterval
-      ) {
-        dispatch(startCountdown(data.endOfCurrentTurn));
-      }
-      if (
-        (data.remainingTimeForNextRound || !data.endOfCurrentTurn) &&
-        timerInterval
-      ) {
-        dispatch(updateTimer(null));
-        clearInterval(timerInterval);
-        timerInterval = null;
-      }
-      dispatch(updateGame(data));
+      dispatch(handleGameUpdate(c));
     });
 
     gameRef.collection("users").onSnapshot(function (c: any) {
-      const users: Array<User> = [];
-      c.forEach((u: any) => users.push({ id: u.id, ...u.data() }));
-      dispatch(updateGameSubcollection({ values: users, key: "users" }));
+      dispatch(handleGameSubcollectionData(c, "users"));
     });
     gameRef.collection("teams").onSnapshot(function (c: any) {
-      const teams: Array<Team> = [];
-      c.forEach((t: any) => teams.push({ id: t.id, ...t.data() }));
-      dispatch(updateGameSubcollection({ values: teams, key: "teams" }));
+      dispatch(handleGameSubcollectionData(c, "teams"));
     });
     gameRef.collection("words").onSnapshot(function (c: any) {
-      const words: Array<Word> = [];
-      c.forEach((w: any) => words.push({ id: w.id, ...w.data() }));
-      dispatch(updateGameSubcollection({ values: words, key: "words" }));
+      dispatch(handleGameSubcollectionData(c, "words"));
     });
     gameRef.collection("rounds").onSnapshot(function (c: any) {
-      console.log("Getting rounds info");
-      const rounds: Array<Round> = [];
-      c.forEach((r: any) => rounds.push({ id: r.id, ...r.data() }));
-      dispatch(updateGameSubcollection({ values: rounds, key: "rounds" }));
+      dispatch(handleGameSubcollectionData(c, "rounds"));
     });
   };
 };
 
+const handleGameUpdate = function (c: any) {
+  return (dispatch: any, getState: () => Store) => {
+    const data = c.data();
+    console.log(data);
+    const {
+      game: { endOfCurrentTurn },
+    } = getState();
+    if (
+      data.endOfCurrentTurn &&
+      data.endOfCurrentTurn !== endOfCurrentTurn &&
+      !timerInterval
+    ) {
+      dispatch(startCountdown(data.endOfCurrentTurn));
+    }
+    if (
+      (data.remainingTimeForNextRound || !data.endOfCurrentTurn) &&
+      timerInterval
+    ) {
+      dispatch(updateTimer(null));
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    dispatch(updateGame({ ...data, id: c.id }));
+  };
+};
+
+const handleGameSubcollectionData = function (
+  c: Array<any>,
+  collectionName = "string"
+) {
+  return (dispatch: any) => {
+    const data: Array<User> = [];
+    c.forEach((u: any) => data.push({ id: u.id, ...u.data() }));
+    dispatch(updateGameSubcollection({ values: data, key: collectionName }));
+  };
+};
+
+export const loadGame = function (gameId: GameId) {
+  return async (dispatch: any) => {
+    const gameRef = db.collection("games").doc(gameId);
+    const game = await gameRef.get();
+    if (game.exists) {
+      dispatch(handleGameUpdate(game));
+      const collections = ["users", "rounds", "teams", "words"];
+      Promise.all(
+        collections.map(async (collectionName) => {
+          const data = await gameRef.collection(collectionName).get();
+          dispatch(handleGameSubcollectionData(data, collectionName));
+        })
+      );
+      dispatch(listenToGame(gameRef));
+    }
+  };
+};
+
 const initialState: Game = {
-  jitsyRoomId: null,
   id: null,
   owner: null,
   rounds: [],

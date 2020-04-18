@@ -1,9 +1,9 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import useCurrentRoundIndex from "../../utils/useCurrentRoundIndex";
-import useCurrentRoundSore from "../../utils/useCurrentRoundScore";
-import useCumulativeScore from "../../utils/useCumulativeScore";
-import { Store } from "../../types";
+import useCurrentRoundIndex from "../utils/useCurrentRoundIndex";
+import useCurrentRoundSore from "../utils/useCurrentRoundScore";
+import useCumulativeScore from "../utils/useCumulativeScore";
+import { Store } from "../types";
 import ScoreBoardInterface from "./ScoreBoardInterface";
 
 const ScoreBoard: React.FC = () => {

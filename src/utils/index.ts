@@ -1,4 +1,4 @@
-import { Game, User, Word } from "../types";
+import { Game, User, Word, Round } from "../types";
 import { WORDS_PER_PLAYER } from "../constants";
 
 export const getUserWords = (words: Array<Word>, u: User) =>
@@ -7,4 +7,19 @@ export const getUserWords = (words: Array<Word>, u: User) =>
 export const userStillHasWordsToWrite = (words: Array<Word>, u: User) => {
   const userWords = getUserWords(words, u);
   return userWords.length < WORDS_PER_PLAYER;
+};
+
+export const calculateCumulativeScore = (rounds: Array<Round>) => {
+  return rounds.reduce((acc: any, r) => {
+    if (r.score) {
+      Object.keys(r.score).forEach((teamId) => {
+        if (acc[teamId]) {
+          acc[teamId] += r.score[teamId];
+        } else {
+          acc[teamId] = r.score[teamId];
+        }
+      });
+    }
+    return acc;
+  }, {});
 };

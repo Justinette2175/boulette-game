@@ -8,10 +8,9 @@ import Background from "../../components/Background";
 const StartOrJoinGame: React.FC = () => {
   return (
     <>
-      <Background />
       <Box
         display="flex"
-        height="100%"
+        height="100vh"
         justifyContent="center"
         alignItems="center"
         position="relative"

@@ -52,7 +52,7 @@ export interface MessageReducer {
 }
 
 export interface ComputerReducer {
-  users: Array<Username>;
+  users: Array<UserId>;
   timer?: Time;
 }
 
@@ -68,7 +68,6 @@ export interface Time {
 }
 
 export interface Game {
-  jitsyRoomId?: string;
   id?: GameId;
   rounds?: Array<Round>;
   users?: Array<User>;
@@ -82,7 +81,7 @@ export interface Game {
   currentWord?: Word;
   endOfCurrentTurn?: string;
   remainingTimeForNextRound?: Time;
-  ended?: boolean;
+  winner?: TeamId;
 }
 
 export interface Store {

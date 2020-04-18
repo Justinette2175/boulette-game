@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, Typography } from "@material-ui/core";
-import { PALETTE_PURPLE_DARK } from "../../theme";
-import { SCORE_BOARD_WIDTH } from "../../constants";
-import { Team, RoundScore, TeamId } from "../../types";
+import { PALETTE_PURPLE_DARK } from "../theme";
+import { SCORE_BOARD_WIDTH } from "../constants";
+import { Team, RoundScore, TeamId } from "../types";
 
 interface IProps {
   orderedTeams: Array<Team>;
@@ -46,17 +46,6 @@ const ScoreBoardInterface: React.FC<IProps> = ({
       display="flex"
       justifyContent="space-between"
       alignItems="start"
-      position="fixed"
-      marginLeft={`${-SCORE_BOARD_WIDTH / 2}px`}
-      top={0}
-      left={
-        !currentTeamId
-          ? "50%"
-          : currentTeamId === "1"
-          ? `calc(100% - ${SCORE_BOARD_WIDTH / 2}px)`
-          : `${SCORE_BOARD_WIDTH / 2}px`
-      }
-      style={{ transition: "all 1s" }}
     >
       {teamsMarkup[0]}
       <Box

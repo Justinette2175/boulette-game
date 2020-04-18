@@ -3,11 +3,23 @@ import { useDispatch } from "react-redux";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { addPlayerOnComputer } from "../../redux/game";
-import { Button, Typography, Box, Paper } from "@material-ui/core";
+import {
+  Button,
+  Typography,
+  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+} from "@material-ui/core";
 import TextInput from "../../components/TextInput";
 import ButtonsGroup from "../../components/ButtonsGroup";
 
-const AddPlayerOnComputer: React.FC = () => {
+interface IProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+const AddPlayerOnComputer: React.FC<IProps> = ({ open, onClose }) => {
   const dispatch = useDispatch();
 
   const validationSchema = Yup.object().shape({
@@ -15,16 +27,23 @@ const AddPlayerOnComputer: React.FC = () => {
   });
 
   const handleSubmit = (values: { name: string }) => {
+    onClose();
     dispatch(addPlayerOnComputer(values.name));
   };
 
   return (
-    <Box py={4} maxWidth="500px">
-      <Paper elevation={0}>
-        <Box p={2}>
-          <Typography variant="h2">
-            Add additional players on this device
-          </Typography>
+    <Dialog
+      onClose={onClose}
+      open={open}
+      maxWidth="md"
+      PaperProps={{ elevation: 0 }}
+    >
+      <Box p={2}>
+        <DialogTitle style={{ textAlign: "center" }}>
+          Add additional players on this device
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1"></Typography>
           <Formik
             validateOnMount={true}
             initialValues={{
@@ -49,9 +68,9 @@ const AddPlayerOnComputer: React.FC = () => {
               </Form>
             )}
           </Formik>
-        </Box>
-      </Paper>
-    </Box>
+        </DialogContent>
+      </Box>
+    </Dialog>
   );
 };
 

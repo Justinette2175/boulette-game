@@ -69,7 +69,7 @@ const WordsSelector: React.FC<IProps> = ({ user, open, onClose }) => {
         </DialogTitle>
         <DialogContent>
           <Typography variant="body1" align="center">
-            Type the words you want to add to the bowl. You have {wordsToFill}
+            Type the words you want to add to the bowl. You have {wordsToFill}{" "}
             words left.
           </Typography>
           <Formik

@@ -1,19 +1,10 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Store, Username, User, Word, TeamId } from "../../types";
-import {
-  Button,
-  Box,
-  Typography,
-  IconButton,
-  Divider,
-} from "@material-ui/core";
-import { ChevronRight, ChevronLeft, PlaylistAdd } from "@material-ui/icons";
-
-import { assignUserToTeam } from "../../redux/game";
+import { Button, Box, Typography } from "@material-ui/core";
+import { PlaylistAdd } from "@material-ui/icons";
 
 import { userStillHasWordsToWrite } from "../../utils";
-import { GRADIENT_AQUA, GRADIENT_ORANGE } from "../../theme";
 
 interface IProps {
   user: User;
@@ -22,7 +13,6 @@ interface IProps {
 }
 
 const PreparingUser: React.FC<IProps> = ({ user, onOpenAddWords, hasTeam }) => {
-  const dispatch = useDispatch();
   const gameWords: Array<Word> = useSelector(
     (state: Store) => state.game.words
   );
@@ -33,72 +23,34 @@ const PreparingUser: React.FC<IProps> = ({ user, onOpenAddWords, hasTeam }) => {
 
   const userIsOnComputer = computerUsers.indexOf(user.id) > -1;
 
-  const assignToTeam = (teamId: TeamId) => {
-    dispatch(assignUserToTeam(user.id, teamId));
-  };
-
   return (
     <>
       <Box
         paddingY="5px"
-        borderTop={"1px solid"}
-        borderColor={hasTeam ? "white" : "black"}
+        display="flex"
+        p={1}
+        mb={1}
+        style={{ backgroundColor: "rgba(255, 255, 255, 0.15)" }}
+        justifyContent="space-between"
+        alignItems="center"
       >
         <Typography
-          variant="body1"
-          align="center"
+          variant="h4"
+          component="p"
           style={{ color: hasTeam ? "white" : "inherit" }}
         >
           {user.name}
         </Typography>
-        {userIsOnComputer && (
-          <Box
-            width="100%"
-            display="flex"
-            mt={1}
-            justifyContent="space-between"
+        {userIsOnComputer && userStillHasWordsToWrite(gameWords, user) && (
+          <Button
+            size="small"
+            onClick={() => onOpenAddWords(user)}
+            variant="contained"
+            color="secondary"
+            startIcon={<PlaylistAdd fontSize="small" />}
           >
-            <Box flex="1">
-              {user.teamId !== "1" && (
-                <IconButton
-                  onClick={() => assignToTeam("1")}
-                  size="small"
-                  style={{
-                    marginRight: "10px",
-                    backgroundImage: GRADIENT_AQUA,
-                  }}
-                >
-                  <ChevronLeft style={{ color: "white" }} />
-                </IconButton>
-              )}
-            </Box>
-            {userStillHasWordsToWrite(gameWords, user) && (
-              <Button
-                size="small"
-                onClick={() => onOpenAddWords(user)}
-                variant="contained"
-                color="primary"
-                startIcon={<PlaylistAdd fontSize="small" />}
-              >
-                Words
-              </Button>
-            )}
-
-            <Box alignSelf="flex-end" flex="1" style={{ textAlign: "right" }}>
-              {user.teamId !== "2" && (
-                <IconButton
-                  size="small"
-                  onClick={() => assignToTeam("2")}
-                  style={{
-                    marginLeft: "10px",
-                    backgroundImage: GRADIENT_ORANGE,
-                  }}
-                >
-                  <ChevronRight style={{ color: "white" }} />
-                </IconButton>
-              )}
-            </Box>
-          </Box>
+            Words
+          </Button>
         )}
       </Box>
     </>
