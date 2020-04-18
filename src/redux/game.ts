@@ -16,13 +16,14 @@ import {
   Word,
   Round,
   WordId,
+  Time,
 } from "../types";
 import Firebase from "../services/firebase";
 import { updateTimer } from "./computer";
 import { NUMBER_OF_ROUNDS, SECOND_DURATION_OF_TURN } from "../constants";
 import { calculateCumulativeScore } from "../utils";
 
-import { addUserToComputerAndSetCookie } from "./computer";
+import { addUserToComputerAndSetCookie, regularTimer } from "./computer";
 
 const INITIAL_TEAMS = [
   {
@@ -74,7 +75,7 @@ export const createGame = function (ownerName: Username) {
       try {
         await batch.commit();
         dispatch(updateGame({ id: newGameRef.id }));
-        Cookies.set("gameId", newGameRef.id);
+        Cookies.set("gameId", newGameRef.id, { expires: 1 });
         dispatch(addUserToComputerAndSetCookie(ownerUserRef.id));
         dispatch(listenToGame(newGameRef));
       } catch (e) {
@@ -118,7 +119,7 @@ export const joinGame = function (name: Username, gameId: GameId) {
       });
       dispatch(listenToGame(gameRef));
       dispatch(updateGame({ id: gameId }));
-      Cookies.set("gameId", gameId);
+      Cookies.set("gameId", gameId, { expires: 1 });
       const currentUsers = await gameRef.collection("users").get();
       const initialUserTeam = findUserInitialTeam(currentUsers);
       console.log("Initial user tean is", initialUserTeam);
@@ -409,6 +410,8 @@ export const markWordAsFound = function (word: Word) {
       if (currentRoundIndex === NUMBER_OF_ROUNDS) {
         const winningTeamId = getGameWinner(rounds);
         batch.update(gameRef, { winner: winningTeamId });
+        Cookies.remove("gameId");
+        Cookies.remove("users");
       } else {
         batch = handleEndRound(
           getState,
@@ -490,7 +493,7 @@ const handleGameUpdate = function (c: any) {
       (data.remainingTimeForNextRound || !data.endOfCurrentTurn) &&
       timerInterval
     ) {
-      dispatch(updateTimer(null));
+      dispatch(updateTimer(data.remainingTimeForNextRound || regularTimer));
       clearInterval(timerInterval);
       timerInterval = null;
     }

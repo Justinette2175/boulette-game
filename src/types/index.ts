@@ -72,7 +72,6 @@ export interface Game {
   rounds?: Array<Round>;
   users?: Array<User>;
   teams?: Array<Team>;
-  countdown?: number;
   currentRound?: string;
   currentTeam?: TeamId;
   currentUser?: Username;

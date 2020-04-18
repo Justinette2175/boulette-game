@@ -1,13 +1,25 @@
 import { createReducer, createAction } from "redux-act";
+import moment from "moment";
 import { ComputerReducer, Username, Time, UserId } from "../types";
+import { SECOND_DURATION_OF_TURN } from "../constants";
 import Cookies from "js-cookie";
 
 export const addUserToComputer = createAction<UserId>("ADD_USER_TO_COMPUTER");
 export const updateTimer = createAction<Time>("UPDATE_TIMER");
 
+const makeTimerObjectFromSeconds = (seconds: number): Time => {
+  const duration = moment.duration(seconds, "seconds");
+  return {
+    minutes: duration.minutes(),
+    seconds: duration.seconds(),
+  };
+};
+
+export const regularTimer = makeTimerObjectFromSeconds(SECOND_DURATION_OF_TURN);
+
 const initialState: ComputerReducer = {
   users: [],
-  timer: null,
+  timer: regularTimer,
 };
 
 const computer = createReducer<ComputerReducer>({}, initialState);
@@ -18,7 +30,7 @@ export const addUserToComputerAndSetCookie = function (userId: UserId) {
     if (users.indexOf(userId) < 0) {
       users.push(userId);
     }
-    Cookies.set("users", users);
+    Cookies.set("users", users, { expires: 1 });
     dispatch(addUserToComputer(userId));
   };
 };
