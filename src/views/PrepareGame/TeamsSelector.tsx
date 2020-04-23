@@ -32,55 +32,47 @@ const TeamsSelector: React.FC<IProps> = ({ onOpenAddWords }) => {
       ));
   };
 
+  const renderTeamColumn = (team: Team, index: string) => {
+    const isTeam1 = index === "1";
+    return (
+      <Box
+        mr={1}
+        width="300px"
+        height="400px"
+        overflow="auto"
+        style={{ backgroundImage: isTeam1 ? GRADIENT_AQUA : GRADIENT_ORANGE }}
+        p={2}
+      >
+        {team && (
+          <>
+            <Box mb={2}>
+              <Typography
+                variant="caption"
+                align="center"
+                style={{ color: NEON_GREEN, display: "block" }}
+              >
+                Team {index}
+              </Typography>
+              <Typography
+                variant="h3"
+                align="center"
+                style={{ color: NEON_GREEN }}
+              >
+                {team.name}
+              </Typography>
+            </Box>
+            {renderTeamUsers(team.id)}
+          </>
+        )}
+      </Box>
+    );
+  };
+
   return (
     <Box pb={4}>
       <Box width="100%" display="flex" justifyContent="center" mt={2}>
-        <Box
-          mr={1}
-          width="300px"
-          height="400px"
-          overflow="auto"
-          style={{ backgroundImage: GRADIENT_AQUA }}
-          p={2}
-        >
-          <Box mb={2}>
-            <Typography
-              variant="caption"
-              align="center"
-              style={{ color: NEON_GREEN, display: "block" }}
-            >
-              Team 1
-            </Typography>
-            <Typography
-              variant="h3"
-              align="center"
-              style={{ color: NEON_GREEN }}
-            >
-              {team1 ? team1.name : ""}
-            </Typography>
-          </Box>
-          {renderTeamUsers("1")}
-        </Box>
-        <Box
-          p={2}
-          ml={1}
-          width="300px"
-          height="400px"
-          overflow="auto"
-          style={{ backgroundImage: GRADIENT_ORANGE }}
-        >
-          <Typography
-            variant="caption"
-            align="center"
-            style={{ color: NEON_GREEN, display: "block" }}
-          >
-            Team 2
-          </Typography>
-          <Typography variant="h3" align="center" style={{ color: NEON_GREEN }}>
-            {team2 ? team2.name : ""}
-          </Typography>
-          {renderTeamUsers("2")}
-        </Box>
+        {renderTeamColumn(team1, "1")}
+        {renderTeamColumn(team2, "2")}
       </Box>
     </Box>
   );

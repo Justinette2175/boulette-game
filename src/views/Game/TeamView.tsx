@@ -17,7 +17,6 @@ interface IProps {
 
 const TeamView: React.FC<IProps> = ({ team }) => {
   const team1: boolean = team === "1";
-  const currentPlayerIsOnDevice = useCurrentPlayerIsOnDevice();
   const activeTeam = useSelector((state: Store) => state.game.currentTeam);
 
   const theme = useTheme();
@@ -26,14 +25,12 @@ const TeamView: React.FC<IProps> = ({ team }) => {
   return (
     <Box
       width={matches ? `calc(100vw - ${SCORE_BOARD_WIDTH / 2}px)` : "100vw"}
-      height="100vh"
       position="relative"
       p={4}
+      height="100%"
       textAlign={team1 ? "left" : "right"}
     >
-      {activeTeam === team && (
-        <Box>{currentPlayerIsOnDevice && <CurrentPlayerView />}</Box>
-      )}
+      {activeTeam === team && <CurrentPlayerView />}
       {team === "2" && matches && (
         <Box position="absolute" left={`${-SCORE_BOARD_WIDTH / 2}px`} top="0">
           <ScoreBoard />

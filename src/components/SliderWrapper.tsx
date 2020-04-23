@@ -25,6 +25,8 @@ const SliderWrapper: React.FC<IProps> = ({
       width="200vw"
       display="flex"
       position="relative"
+      alignItems="stretch"
+      height="100%"
       style={{ transition: "all 1s" }}
       right={
         placement === "center"
@@ -34,12 +36,8 @@ const SliderWrapper: React.FC<IProps> = ({
           : `calc(100vw - ${distance}px)`
       }
     >
-      <Box width={`calc(100vw - ${distance / 2}px)`} height="100vh">
-        {leftChild}
-      </Box>
-      <Box width={`calc(100vw - ${distance / 2}px)`} height="100vh">
-        {rightChild}
-      </Box>
+      <Box width={`calc(100vw - ${distance / 2}px)`}>{leftChild}</Box>
+      <Box width={`calc(100vw - ${distance / 2}px)`}>{rightChild}</Box>
     </Box>
   );
 };

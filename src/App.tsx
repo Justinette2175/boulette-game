@@ -64,9 +64,6 @@ const App: React.FC = () => {
         {view}
         {/* {gameId && <JitsyNew />} */}
       </Box>
-      {/* <Box position="fixed" top="0" left="0">
-        <Bowl />
-      </Box> */}
     </div>
   );
 };

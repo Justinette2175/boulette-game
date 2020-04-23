@@ -1,8 +1,10 @@
 import React from "react";
-import { Button, Box } from "@material-ui/core";
+import { Box, Typography } from "@material-ui/core";
 import { Word } from "../../types";
 import WordTransitionWrapper from "../../components/WordTransitionWrapper";
 import Timer from "./Timer";
+import Bowl from "../../components/Bowl";
+import { NEON_YELLOW } from "../../theme";
 
 interface IProps {
   onFound: () => void;
@@ -11,41 +13,71 @@ interface IProps {
 }
 
 const Game: React.FC<IProps> = ({ onFound, onStart, currentWord }) => {
-  console.log("current word is", currentWord);
+  const handleBowlClick = () => {
+    if (currentWord) {
+      onFound();
+    } else {
+      onStart();
+    }
+  };
   return (
-    <>
+    <Box position="relative" height="100%">
       <Timer />
       <Box
         display="flex"
         flexDirection="column"
         justifyContent="center"
         alignItems="center"
+        position="relative"
+        zIndex={300}
+        mt={4}
       >
         {!currentWord && (
-          <Button
-            color="primary"
-            variant="contained"
-            size="large"
-            onClick={onStart}
-          >
-            Start my turn
-          </Button>
+          <>
+            <Typography
+              variant="h3"
+              align="center"
+              style={{ color: NEON_YELLOW }}
+            >
+              Tap the bowl to start your turn.
+            </Typography>
+            <Typography
+              variant="body1"
+              align="center"
+              style={{ color: NEON_YELLOW }}
+              gutterBottom
+            >
+              When a word appears, have your teammates guess. You can review
+              this round's instructions by clicking on the round number at the
+              top.
+            </Typography>
+          </>
         )}
         {!!currentWord && (
           <>
-            <WordTransitionWrapper currentWord={currentWord} />
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              onClick={onFound}
+            <Typography
+              variant="body1"
+              align="center"
+              style={{ color: NEON_YELLOW }}
+              gutterBottom
             >
-              Mark as found
-            </Button>
+              Tap the bowl when your teammates guess the word to count a point.
+            </Typography>
+            <WordTransitionWrapper currentWord={currentWord} />
           </>
         )}
       </Box>
-    </>
+      <Box
+        position="absolute"
+        bottom="-50px"
+        width="100%"
+        display="flex"
+        justifyContent="center"
+        onClick={handleBowlClick}
+      >
+        <Bowl />
+      </Box>
+    </Box>
   );
 };
 

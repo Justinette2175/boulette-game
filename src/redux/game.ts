@@ -284,28 +284,33 @@ export const startMiming = function () {
       words,
       rounds,
       remainingTimeForNextRound,
+      currentWord,
     } = getState().game;
-    const round = rounds.find((r) => r.id === currentRound);
-    const { wordsLeft } = round;
-    const nextWord = getNextWord(wordsLeft, words);
-    const gameRef = db.collection("games").doc(gameId);
-    if (nextWord) {
-      let endOfCurrentTurn;
-      if (remainingTimeForNextRound) {
-        endOfCurrentTurn = moment()
-          .add(remainingTimeForNextRound.seconds, "s")
-          .add(remainingTimeForNextRound.minutes, "m")
-          .format();
+    if (!currentWord) {
+      const round = rounds.find((r) => r.id === currentRound);
+      const { wordsLeft } = round;
+      const nextWord = getNextWord(wordsLeft, words);
+      const gameRef = db.collection("games").doc(gameId);
+      if (nextWord) {
+        let endOfCurrentTurn;
+        if (remainingTimeForNextRound) {
+          endOfCurrentTurn = moment()
+            .add(remainingTimeForNextRound.seconds, "s")
+            .add(remainingTimeForNextRound.minutes, "m")
+            .format();
+        } else {
+          endOfCurrentTurn = moment()
+            .add(SECOND_DURATION_OF_TURN, "s")
+            .format();
+        }
+        await gameRef.update({
+          currentWord: nextWord,
+          endOfCurrentTurn,
+          remainingTimeForNextRound: null,
+        });
       } else {
-        endOfCurrentTurn = moment().add(SECOND_DURATION_OF_TURN, "s").format();
+        console.log("it's the end of the turn...");
       }
-      await gameRef.update({
-        currentWord: nextWord,
-        endOfCurrentTurn,
-        remainingTimeForNextRound: null,
-      });
-    } else {
-      console.log("it's the end of the turn...");
     }
   };
 };

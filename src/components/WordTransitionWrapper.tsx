@@ -13,11 +13,11 @@ const WordTransitionWrapper: React.FC<IProps> = ({ currentWord }) => {
     <Box position="relative" width="350px" height="200px">
       <TransitionMotion
         willLeave={() => ({
-          top: spring(-200),
+          top: spring(-300),
           opacity: spring(0),
         })}
         willEnter={() => ({
-          top: 200,
+          top: 300,
           opacity: 0,
         })}
         styles={[
