@@ -61,7 +61,7 @@ const EndGameModal: React.FC<EndGameModalProps> = ({ open, onClose }) => {
 const EndGame: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   return (
-    <Box position="fixed" bottom="0" right="0">
+    <Box position="fixed" bottom="0" right="0" zIndex={100}>
       <Button
         variant="contained"
         color="primary"

@@ -24,6 +24,7 @@ const SliderInterface: React.FC<IProps> = ({ currentTeamId }) => {
       display="flex"
       height="100vh"
       flexDirection="column"
+      zIndex={100}
     >
       {matches && (
         <Box display="flex" width="100%" justifyContent="center">

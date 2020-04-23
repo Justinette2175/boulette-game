@@ -22,7 +22,6 @@ const Game: React.FC<IProps> = ({ onFound, onStart, currentWord }) => {
   };
   return (
     <Box position="relative" height="100%">
-      <Timer />
       <Box
         display="flex"
         flexDirection="column"
