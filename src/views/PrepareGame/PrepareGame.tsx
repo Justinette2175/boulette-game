@@ -16,8 +16,9 @@ const PrepareGame: React.FC = () => {
   const gameOwner = useSelector((state: Store) => state.game.owner);
   const players = useSelector((state: Store) => state.game.users);
   const words = useSelector((state: Store) => state.game.words);
-  const allWordsAreSet =
-    players.length * WORDS_PER_PLAYER === words.length && players.length >= 4;
+  // const allWordsAreSet =
+  //   players.length * WORDS_PER_PLAYER === words.length && players.length >= 4;
+  const allWordsAreSet = players.length <= words.length;
   const computerUsers = useSelector((state: Store) => state.computer.users);
   const ownerIsOnComputer = computerUsers.indexOf(gameOwner) > -1;
 

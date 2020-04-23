@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Store, User, TeamId, Team } from "../../types";
 import { Box, Typography, Button } from "@material-ui/core";
-import { WORDS_PER_PLAYER } from "../../constants";
+import { NEON_GREEN } from "../../theme";
 import { GRADIENT_AQUA, GRADIENT_ORANGE } from "../../theme";
 
 import PreparingUser from "./PreparingUser";
@@ -47,11 +47,15 @@ const TeamsSelector: React.FC<IProps> = ({ onOpenAddWords }) => {
             <Typography
               variant="caption"
               align="center"
-              style={{ color: "white", display: "block" }}
+              style={{ color: NEON_GREEN, display: "block" }}
             >
               Team 1
             </Typography>
-            <Typography variant="h3" align="center" style={{ color: "white" }}>
+            <Typography
+              variant="h3"
+              align="center"
+              style={{ color: NEON_GREEN }}
+            >
               {team1 ? team1.name : ""}
             </Typography>
           </Box>
@@ -68,11 +72,11 @@ const TeamsSelector: React.FC<IProps> = ({ onOpenAddWords }) => {
           <Typography
             variant="caption"
             align="center"
-            style={{ color: "white", display: "block" }}
+            style={{ color: NEON_GREEN, display: "block" }}
           >
             Team 2
           </Typography>
-          <Typography variant="h3" align="center" style={{ color: "white" }}>
+          <Typography variant="h3" align="center" style={{ color: NEON_GREEN }}>
             {team2 ? team2.name : ""}
           </Typography>
           {renderTeamUsers("2")}

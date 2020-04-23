@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@material-ui/core";
 import { Time } from "../../types";
+import { NEON_YELLOW } from "../../theme";
 
 interface IProps {
   timeLeft: Time;
@@ -11,7 +12,7 @@ const Timer: React.FC<IProps> = ({ timeLeft, currentPlayerName }) => {
   return (
     <Box
       width="100%"
-      style={{ color: "white" }}
+      style={{ color: NEON_YELLOW }}
       textAlign="center"
       display="flex"
       flexDirection="column"

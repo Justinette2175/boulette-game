@@ -1,13 +1,12 @@
 const options = {
   hosts: {
-    domain: "jitsi-meet.example.com",
-    muc: "conference.jitsi-meet.example.com", // FIXME: use XEP-0030
+    domain: "meet.jitsi",
+    muc: "muc.meet.jitsi",
   },
-  bosh: "//jitsi-meet.example.com/http-bind", // FIXME: use xep-0156 for that
-  serviceUrl: "//jitsi-meet.example.com/http-bind",
-  // The name of client node advertised in XEP-0115 'c' stanza
-  clientNode: "http://jitsi.org/jitsimeet",
+  serviceUrl: "https://jitsi.boulette.ca/http-bind",
 };
+
+const token = "2de64e29e2251ace115286bf7c86ca17";
 
 const confOptions = {
   openBridgeChannel: true,

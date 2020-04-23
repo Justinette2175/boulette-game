@@ -54,6 +54,7 @@ export interface MessageReducer {
 export interface ComputerReducer {
   users: Array<UserId>;
   timer?: Time;
+  instructionsVisible: boolean;
 }
 
 export interface Team {

@@ -6,6 +6,9 @@ import Cookies from "js-cookie";
 
 export const addUserToComputer = createAction<UserId>("ADD_USER_TO_COMPUTER");
 export const updateTimer = createAction<Time>("UPDATE_TIMER");
+export const updateInstructionsVisibility = createAction<boolean>(
+  "UPDATE_INSTRUCTIONS_VISIBILITY"
+);
 
 const makeTimerObjectFromSeconds = (seconds: number): Time => {
   const duration = moment.duration(seconds, "seconds");
@@ -20,6 +23,7 @@ export const regularTimer = makeTimerObjectFromSeconds(SECOND_DURATION_OF_TURN);
 const initialState: ComputerReducer = {
   users: [],
   timer: regularTimer,
+  instructionsVisible: false,
 };
 
 const computer = createReducer<ComputerReducer>({}, initialState);
@@ -42,6 +46,11 @@ computer.on(addUserToComputer, (state, payload) => ({
 
 computer.on(updateTimer, (state, payload) => {
   return { ...state, timer: payload };
+});
+
+computer.on(updateInstructionsVisibility, (state, payload) => {
+  console.log("clicked");
+  return { ...state, instructionsVisible: payload };
 });
 
 export default computer;

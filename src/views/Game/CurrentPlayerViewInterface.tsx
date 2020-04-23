@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Box } from "@material-ui/core";
 import { Word } from "../../types";
 import WordTransitionWrapper from "../../components/WordTransitionWrapper";
+import Timer from "./Timer";
 
 interface IProps {
   onFound: () => void;
@@ -12,36 +13,39 @@ interface IProps {
 const Game: React.FC<IProps> = ({ onFound, onStart, currentWord }) => {
   console.log("current word is", currentWord);
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      justifyContent="center"
-      alignItems="center"
-    >
-      {!currentWord && (
-        <Button
-          color="primary"
-          variant="contained"
-          size="large"
-          onClick={onStart}
-        >
-          Start my turn
-        </Button>
-      )}
-      {!!currentWord && (
-        <>
-          <WordTransitionWrapper currentWord={currentWord} />
+    <>
+      <Timer />
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+      >
+        {!currentWord && (
           <Button
-            variant="contained"
             color="primary"
+            variant="contained"
             size="large"
-            onClick={onFound}
+            onClick={onStart}
           >
-            Mark as found
+            Start my turn
           </Button>
-        </>
-      )}
-    </Box>
+        )}
+        {!!currentWord && (
+          <>
+            <WordTransitionWrapper currentWord={currentWord} />
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={onFound}
+            >
+              Mark as found
+            </Button>
+          </>
+        )}
+      </Box>
+    </>
   );
 };
 

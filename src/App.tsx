@@ -15,6 +15,7 @@ import Background from "./components/Background";
 import Jitsy from "./components/Jitsy";
 import GameEnded from "./views/GameEnded";
 import JitsyNew from "./components/JitsyNew";
+import Bowl from "./components/Bowl";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -63,6 +64,9 @@ const App: React.FC = () => {
         {view}
         {/* {gameId && <JitsyNew />} */}
       </Box>
+      {/* <Box position="fixed" top="0" left="0">
+        <Bowl />
+      </Box> */}
     </div>
   );
 };

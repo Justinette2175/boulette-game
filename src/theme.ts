@@ -6,6 +6,9 @@ export const PALETTE_ORANGE = "#FF4500";
 export const PALETTE_PURPLE_DARK = "#220075";
 export const GRADIENT_AQUA = `linear-gradient(${PALETTE_PURPLE},${PALETTE_AQUA})`;
 export const GRADIENT_ORANGE = `linear-gradient(${PALETTE_PURPLE},${PALETTE_ORANGE})`;
+export const NEON_PINK = "#fe019a";
+export const NEON_YELLOW = "#FCFF00";
+export const NEON_GREEN = "#39FF14";
 
 export default createMuiTheme({
   palette: {
@@ -18,7 +21,7 @@ export default createMuiTheme({
       main: "#8500FF",
     },
     secondary: {
-      main: "#FF8D00",
+      main: NEON_PINK,
     },
     background: {
       default: "#F7F7F5",
@@ -62,17 +65,14 @@ export default createMuiTheme({
     h1: {
       fontWeight: 700,
       fontSize: "3rem",
-      marginBottom: "15px",
     },
     h2: {
       fontWeight: 700,
       fontSize: "2rem",
-      marginBottom: "15px",
     },
     h3: {
       fontWeight: 700,
       fontSize: "1.5rem",
-      marginBottom: "20px",
     },
     h4: {
       fontSize: "1.3rem",
