@@ -9,6 +9,8 @@ export const updateTimer = createAction<Time>("UPDATE_TIMER");
 export const updateInstructionsVisibility = createAction<boolean>(
   "UPDATE_INSTRUCTIONS_VISIBILITY"
 );
+export const resetTimer = createAction("RESET_TIMER");
+export const updateJitsyId = createAction<string>("UPDATE_JITSY_IT");
 
 const makeTimerObjectFromSeconds = (seconds: number): Time => {
   const duration = moment.duration(seconds, "seconds");
@@ -48,9 +50,18 @@ computer.on(updateTimer, (state, payload) => {
   return { ...state, timer: payload };
 });
 
+computer.on(resetTimer, (state) => ({
+  ...state,
+  timer: regularTimer,
+}));
+
 computer.on(updateInstructionsVisibility, (state, payload) => {
-  console.log("clicked");
   return { ...state, instructionsVisible: payload };
+});
+
+computer.on(updateJitsyId, (state, payload) => {
+  console.log("updateing jitsy", payload);
+  return { ...state, jitsyId: payload };
 });
 
 export default computer;

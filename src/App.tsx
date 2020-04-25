@@ -3,7 +3,6 @@ import "./App.css";
 import { useSelector, useDispatch } from "react-redux";
 import { Store } from "./types";
 import Cookies from "js-cookie";
-import { loadGame } from "./redux/game";
 import { addUserToComputer } from "./redux/computer";
 
 import { CssBaseline, Box } from "@material-ui/core";
@@ -12,10 +11,12 @@ import StartOrJoinGame from "./views/StartOrJoinGame";
 import PrepareGame from "./views/PrepareGame";
 import Game from "./views/Game";
 import Background from "./components/Background";
-import Jitsy from "./components/Jitsy";
 import GameEnded from "./views/GameEnded";
 import JitsyNew from "./components/JitsyNew";
-import Bowl from "./components/Bowl";
+import CallInterface from "./components/CallInterface";
+import EndGame from "./components/EndGame";
+
+import GameService from "./services/game";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -26,10 +27,11 @@ const App: React.FC = () => {
   const gameEnded = useSelector((state: Store) => !!state.game.winner);
   const storedGameId = Cookies.get("gameId");
   const storedUsers: Array<string> = Cookies.getJSON("users");
+  let j;
 
   useEffect(() => {
     if (storedGameId) {
-      dispatch(loadGame(storedGameId));
+      GameService.loadGame(storedGameId);
     }
     if (storedUsers) {
       storedUsers.forEach((u) => dispatch(addUserToComputer(u)));
@@ -38,7 +40,7 @@ const App: React.FC = () => {
 
   let view;
   if (storedGameId && !gameId) {
-    view = <div>Loading stuff</div>;
+    view = null;
   } else if (!gameId) {
     view = <StartOrJoinGame />;
   } else if (!gameStarted) {
@@ -63,7 +65,10 @@ const App: React.FC = () => {
       >
         {view}
         {/* {gameId && <JitsyNew />} */}
+        <Box id="video"></Box>
       </Box>
+      {gameId && <CallInterface jitsy={j} />}
+      {gameId && <EndGame />}
     </div>
   );
 };

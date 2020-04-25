@@ -1,23 +1,20 @@
 import React from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { useDispatch } from "react-redux";
-import { joinGame } from "../../redux/game";
+import GameService from "../../services/game";
 
 import TextInput from "../../components/TextInput";
 import { Box, Typography, Button } from "@material-ui/core";
 import ButtonsGroup from "../../components/ButtonsGroup";
 
 const JoinGame: React.FC = () => {
-  const dispatch = useDispatch();
-
   const validationSchema = Yup.object().shape({
     playerName: Yup.string().required("Required"),
     gameId: Yup.string().required("Required"),
   });
 
   const handleSubmit = (values: any) => {
-    dispatch(joinGame(values.playerName, values.gameId));
+    GameService.joinGame(values.playerName, values.gameId);
   };
 
   return (

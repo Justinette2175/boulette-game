@@ -6,10 +6,10 @@ import App from "./App";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import * as serviceWorker from "./serviceWorker";
 import theme from "./theme";
-import configureStore from "./redux/store";
+import store from "./redux/store";
 
 ReactDOM.render(
-  <Provider store={configureStore()}>
+  <Provider store={store}>
     <React.StrictMode>
       <MuiThemeProvider theme={theme}>
         <App />

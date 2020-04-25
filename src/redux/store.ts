@@ -3,7 +3,7 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
 import rootReducer from "./rootReducer";
 
-export default function configureStore() {
+export function configureStore() {
   return createStore(
     rootReducer,
     composeWithDevTools(
@@ -12,3 +12,5 @@ export default function configureStore() {
     )
   );
 }
+
+export default configureStore();

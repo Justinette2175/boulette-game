@@ -1,20 +1,18 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { markWordAsFound, startMiming } from "../../redux/game";
+import { useSelector } from "react-redux";
 import { Store } from "../../types";
-
+import GameService from "../../services/game";
 import CurrentPlayerViewInterface from "./CurrentPlayerViewInterface";
 
 const Game: React.FC = () => {
-  const dispatch = useDispatch();
   const currentWord = useSelector((state: Store) => state.game.currentWord);
 
   const handleStart = () => {
-    dispatch(startMiming());
+    GameService.startMiming();
   };
 
   const handleFound = () => {
-    dispatch(markWordAsFound(currentWord));
+    GameService.handleFoundWord(currentWord);
   };
 
   return (

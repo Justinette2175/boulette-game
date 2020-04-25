@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { Store, User } from "../../types";
 import AddPlayerOnComputer from "./AddPlayerOnComputer";
-import { startGame } from "../../redux/game";
+import GameService from "../../services/game";
 import WordsSelector from "./WordsSelector";
 
 import GameInfo from "./GameInfo";
@@ -12,7 +12,6 @@ import { Button, Divider, Box, Paper, Typography } from "@material-ui/core";
 import { WORDS_PER_PLAYER } from "../../constants";
 
 const PrepareGame: React.FC = () => {
-  const dispatch = useDispatch();
   const gameOwner = useSelector((state: Store) => state.game.owner);
   const players = useSelector((state: Store) => state.game.users);
   const words = useSelector((state: Store) => state.game.words);
@@ -26,7 +25,7 @@ const PrepareGame: React.FC = () => {
   const [addPlayerIsVisible, setAddPlayerIsVisible] = useState<boolean>(false);
 
   const handleStartGame = () => {
-    dispatch(startGame());
+    GameService.startGame();
   };
 
   const handleOpenAddWords = (user: User) => {

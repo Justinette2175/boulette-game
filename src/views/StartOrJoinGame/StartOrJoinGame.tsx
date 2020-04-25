@@ -3,7 +3,6 @@ import { StaggeredMotion, spring, presets } from "react-motion";
 import JoinGame from "./JoinGame";
 import StartGame from "./StartGame";
 import { Box, Paper, Grid } from "@material-ui/core";
-import Background from "../../components/Background";
 
 const StartOrJoinGame: React.FC = () => {
   return (

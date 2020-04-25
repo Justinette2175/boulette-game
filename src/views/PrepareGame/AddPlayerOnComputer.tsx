@@ -1,8 +1,8 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { addPlayerOnComputer } from "../../redux/game";
+import GameService from "../../services/game";
+
 import {
   Button,
   Typography,
@@ -20,15 +20,13 @@ interface IProps {
 }
 
 const AddPlayerOnComputer: React.FC<IProps> = ({ open, onClose }) => {
-  const dispatch = useDispatch();
-
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Required"),
   });
 
   const handleSubmit = (values: { name: string }) => {
     onClose();
-    dispatch(addPlayerOnComputer(values.name));
+    GameService.addPlayerOnDevice(values.name);
   };
 
   return (

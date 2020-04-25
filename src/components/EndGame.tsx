@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import {
   Button,
   Dialog,
@@ -9,17 +10,15 @@ import {
   DialogActions,
 } from "@material-ui/core";
 
+import GameService from "../services/game";
+
 interface EndGameModalProps {
   open: boolean;
   onClose: () => void;
 }
 const EndGameModal: React.FC<EndGameModalProps> = ({ open, onClose }) => {
-  const handleLeaveGame = () => {
-    console.log("handle leave");
-  };
-
   const handleEndGame = () => {
-    console.log("handle leave");
+    GameService.terminateGame();
   };
 
   return (
@@ -40,9 +39,6 @@ const EndGameModal: React.FC<EndGameModalProps> = ({ open, onClose }) => {
             onClick={onClose}
           >
             Continue playing
-          </Button>
-          <Button size="small" onClick={handleLeaveGame} color="primary">
-            Leave
           </Button>
           <Button
             size="small"
@@ -68,7 +64,7 @@ const EndGame: React.FC = () => {
         size="small"
         onClick={() => setModalOpen(true)}
       >
-        Leave game
+        End game
       </Button>
       <EndGameModal
         open={modalOpen}

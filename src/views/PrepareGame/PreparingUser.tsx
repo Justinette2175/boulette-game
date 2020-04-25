@@ -1,6 +1,6 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Store, Username, User, Word, TeamId } from "../../types";
+import { useSelector } from "react-redux";
+import { Store, Username, User, Word } from "../../types";
 import { Button, Box, Typography } from "@material-ui/core";
 import { PlaylistAdd } from "@material-ui/icons";
 

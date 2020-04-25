@@ -1,3 +1,6 @@
+import Store from "../../redux/store";
+import { updateJitsyId } from "../../redux/computer";
+
 const options = {
   hosts: {
     domain: "meet.jitsi",
@@ -64,7 +67,7 @@ class Jitsy {
     this.remoteTracks = {};
   }
 
-  onLocalTracks(tracks: any) {
+  onLocalTracks = (tracks: any) => {
     this.localTracks = tracks;
     for (let i = 0; i < this.localTracks.length; i++) {
       this.localTracks[i].addEventListener(
@@ -102,9 +105,18 @@ class Jitsy {
         this.room.addTrack(this.localTracks[i]);
       }
     }
-  }
+  };
 
-  onRemoteTrack(track: any) {
+  logMyUserId = () => {
+    console.log("trying to log");
+    if (this.room) {
+      console.log("this.room exists");
+      const myUserId = this.room.myUserId();
+      Store.dispatch(updateJitsyId(myUserId));
+    }
+  };
+
+  onRemoteTrack = (track: any) => {
     console.log("remote track added!");
     if (track.isLocal()) {
       return;
@@ -145,18 +157,23 @@ class Jitsy {
       document.getElementById("video").appendChild(newElement);
     }
     track.attach(document.getElementById(`${id}`));
-  }
+  };
 
-  onConferenceJoined() {
-    console.log("conference joined!");
-    this.isJoined = true;
-    for (let i = 0; i < this.localTracks.length; i++) {
-      this.room.addTrack(this.localTracks[i]);
+  onConferenceJoined = () => {
+    if (!this.isJoined) {
+      this.isJoined = true;
+      for (let i = 0; i < this.localTracks.length; i++) {
+        this.room.addTrack(this.localTracks[i]);
+      }
+      this.logMyUserId();
     }
-  }
+  };
 
-  onConnectionSuccess() {
-    this.room = this.connection.initJitsiConference(this.gameId, confOptions);
+  onConnectionSuccess = () => {
+    this.room = this.connection.initJitsiConference(
+      this.gameId.toLowerCase(),
+      confOptions
+    );
     this.room.on(JitsiMeetJS.events.conference.TRACK_ADDED, this.onRemoteTrack);
     this.room.on(JitsiMeetJS.events.conference.TRACK_REMOVED, (track: any) => {
       console.log(`track removed!!!${track}`);
@@ -190,9 +207,9 @@ class Jitsy {
       console.log(`${this.room.getPhoneNumber()} - ${this.room.getPhonePin()}`)
     );
     this.room.join();
-  }
+  };
 
-  onUserLeft(id: string) {
+  onUserLeft = (id: string) => {
     console.log("user left");
     if (!this.remoteTracks[id]) {
       return;
@@ -202,9 +219,9 @@ class Jitsy {
     for (let i = 0; i < tracks.length; i++) {
       tracks[i].detach(document.querySelector(`#${id}${tracks[i].getType()}`));
     }
-  }
+  };
 
-  disconnect() {
+  disconnect = () => {
     console.log("disconnect!");
     this.connection.removeEventListener(
       JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED,
@@ -218,11 +235,11 @@ class Jitsy {
       JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED,
       this.disconnect
     );
-  }
+  };
 
-  onConnectionFailed() {
+  onConnectionFailed = () => {
     console.error("Connection Failed!");
-  }
+  };
 
   /**
    * This function is called when the connection fail.

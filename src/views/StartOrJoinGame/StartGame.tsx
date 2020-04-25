@@ -1,8 +1,7 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { createGame } from "../../redux/game";
+import GameService from "../../services/game";
 
 import { Box, Button, Typography } from "@material-ui/core";
 import TextInput from "../../components/TextInput";
@@ -10,14 +9,12 @@ import ButtonsGroup from "../../components/ButtonsGroup";
 import WordOnPaper from "../../components/WordOnPaper";
 
 const StartGame: React.FC = () => {
-  const dispatch = useDispatch();
-
   const validationSchema = Yup.object().shape({
     ownerName: Yup.string().required("Required"),
   });
 
   const handleSubmit = (values: any) => {
-    dispatch(createGame(values.ownerName));
+    GameService.createGame(values.ownerName);
   };
 
   return (
