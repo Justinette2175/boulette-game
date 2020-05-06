@@ -11,13 +11,14 @@ import {
   WordId,
   Round,
   Time,
+  JitsyId,
 } from "../../types";
 import FirebaseGameInterface from "../firebase/FirebaseGameInterface";
 import { calculateCumulativeScore } from "../../utils";
 
 import { NUMBER_OF_ROUNDS, SECOND_DURATION_OF_TURN } from "../../constants";
 
-import { updateTimer, addUserToComputer } from "../../redux/computer";
+import { addUserToComputer, updateId } from "../../redux/computer";
 import { updateGame, updateGameSubcollection } from "../../redux/game";
 import CookiesService from "../cookies/CookiesService";
 import Countdown from "./Countdown";
@@ -153,15 +154,26 @@ class Game {
   };
 
   addPlayerOnDevice = async (name: string) => {
+    const { jitsyId } = ReduxStore.getState().computer;
     const teamId = this._findUserInitialTeam();
     const newUser: User = {
       name,
       createdAt: Date.now(),
       teamId,
+      jitsyId,
     };
     const newUserRef = this.store.usersRef.doc();
     await newUserRef.set(newUser);
     this._addUserToComputer(newUserRef.id);
+  };
+
+  storeJitsyId = async (jitsyId: JitsyId) => {
+    console.log("store jitsyId", jitsyId);
+    const { users } = ReduxStore.getState().computer;
+    ReduxStore.dispatch(updateId(jitsyId));
+    users.forEach((u) => {
+      this.store.usersRef.doc(u).update({ jitsyId });
+    });
   };
 
   startMiming = async () => {
@@ -218,7 +230,6 @@ class Game {
   };
 
   terminate = () => {
-    console.log("terminating game");
     this._end();
   };
 
@@ -262,7 +273,7 @@ class Game {
     }
   };
 
-  _addUserToComputer = (userId: UserId) => {
+  _addUserToComputer = async (userId: UserId) => {
     CookiesService.addUserToUsers(userId);
     ReduxStore.dispatch(addUserToComputer(userId));
   };

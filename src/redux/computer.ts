@@ -1,6 +1,6 @@
 import { createReducer, createAction } from "redux-act";
 import moment from "moment";
-import { ComputerReducer, Username, Time, UserId } from "../types";
+import { ComputerReducer, Time, UserId } from "../types";
 import { SECOND_DURATION_OF_TURN } from "../constants";
 import Cookies from "js-cookie";
 
@@ -10,7 +10,9 @@ export const updateInstructionsVisibility = createAction<boolean>(
   "UPDATE_INSTRUCTIONS_VISIBILITY"
 );
 export const resetTimer = createAction("RESET_TIMER");
-export const updateJitsyId = createAction<string>("UPDATE_JITSY_IT");
+export const updateId = createAction<string>("UPDATE_ID");
+
+export const resetComputer = createAction("RESET_COMPUTER");
 
 const makeTimerObjectFromSeconds = (seconds: number): Time => {
   const duration = moment.duration(seconds, "seconds");
@@ -26,6 +28,7 @@ const initialState: ComputerReducer = {
   users: [],
   timer: regularTimer,
   instructionsVisible: false,
+  jitsyId: null,
 };
 
 const computer = createReducer<ComputerReducer>({}, initialState);
@@ -59,9 +62,10 @@ computer.on(updateInstructionsVisibility, (state, payload) => {
   return { ...state, instructionsVisible: payload };
 });
 
-computer.on(updateJitsyId, (state, payload) => {
-  console.log("updateing jitsy", payload);
+computer.on(updateId, (state, payload) => {
   return { ...state, jitsyId: payload };
 });
+
+computer.on(resetComputer, () => initialState);
 
 export default computer;

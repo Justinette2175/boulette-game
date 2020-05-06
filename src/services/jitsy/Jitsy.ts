@@ -1,5 +1,4 @@
-import Store from "../../redux/store";
-import { updateJitsyId } from "../../redux/computer";
+import GameService from "../game";
 
 const options = {
   hosts: {
@@ -31,9 +30,16 @@ class Jitsy {
   localTracks: Array<any>;
   remoteTracks: any;
   gameId: string;
-  constructor(gameId: string) {
+  videoComponents: any;
+  audioComponents: any;
+  addExistingTrackId: (id: string) => void;
+  constructor(gameId: string, addExistingTrackId: (id: string) => void) {
+    console.log("constructing");
     this.connection = new JitsiMeetJS.JitsiConnection(null, null, options);
     this.gameId = gameId;
+    this.videoComponents = {};
+    this.audioComponents = {};
+    this.addExistingTrackId = addExistingTrackId;
     this.connection.addEventListener(
       JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED,
       this.onConnectionSuccess
@@ -51,7 +57,7 @@ class Jitsy {
       JitsiMeetJS.events.mediaDevices.DEVICE_LIST_CHANGED,
       this.onDeviceListChanged
     );
-
+    console.log("connection", this.connection);
     this.connection.connect();
 
     JitsiMeetJS.createLocalTracks({ devices: ["audio", "video"] })
@@ -87,18 +93,17 @@ class Jitsy {
         (deviceId: string) =>
           console.log(`track audio output device was changed to ${deviceId}`)
       );
-
       if (this.localTracks[i].getType() === "video") {
         const newElement = document.createElement("video");
         newElement.setAttribute("id", `localVideo${i}`);
         newElement.setAttribute("autoplay", "1");
-        document.getElementById("video").appendChild(newElement);
+        document.getElementById(`local-jitsy`).appendChild(newElement);
         this.localTracks[i].attach(document.getElementById(`localVideo${i}`));
       } else {
         const newElement = document.createElement("audio");
         newElement.setAttribute("id", `localVideo${i}`);
         newElement.setAttribute("autoplay", "1");
-        document.getElementById("video").appendChild(newElement);
+        document.getElementById(`local-jitsy`).appendChild(newElement);
         this.localTracks[i].attach(document.getElementById(`localAudio${i}`));
       }
       if (this.isJoined) {
@@ -108,25 +113,28 @@ class Jitsy {
   };
 
   logMyUserId = () => {
-    console.log("trying to log");
     if (this.room) {
-      console.log("this.room exists");
       const myUserId = this.room.myUserId();
-      Store.dispatch(updateJitsyId(myUserId));
+      GameService.storeJitsyId(myUserId);
     }
   };
 
   onRemoteTrack = (track: any) => {
-    console.log("remote track added!");
+    console.log("on remote track is fired");
     if (track.isLocal()) {
+      console.log("It's a local track");
       return;
     }
-    const participant = track.getParticipantId();
+    const participantId = track.getParticipantId();
+    console.log("Participant id is", participantId);
+    console.log("Participant id type is", typeof participantId);
 
-    if (!this.remoteTracks[participant]) {
-      this.remoteTracks[participant] = [];
+    if (!this.remoteTracks[participantId]) {
+      this.remoteTracks[participantId] = [];
     }
-    const idx = this.remoteTracks[participant].push(track);
+
+    this.remoteTracks[participantId].push(track);
+    this.addExistingTrackId(participantId);
 
     track.addEventListener(
       JitsiMeetJS.events.track.TRACK_AUDIO_LEVEL_CHANGED,
@@ -143,37 +151,55 @@ class Jitsy {
       (deviceId: string) =>
         console.log(`track audio output device was changed to ${deviceId}`)
     );
-    const id = participant + track.getType() + idx;
+  };
 
-    if (track.getType() === "video") {
-      const newElement = document.createElement("video");
-      newElement.setAttribute("id", `${participant}video${idx}`);
-      newElement.setAttribute("autoplay", "1");
-      document.getElementById("video").appendChild(newElement);
+  attachRemoteTrackToComponent = (participantId: string) => {
+    const participantTracks = this.remoteTracks[participantId];
+    if (participantTracks && participantTracks.length > 0) {
+      const participantWrapper = document.getElementById(
+        `${participantId}-jitsi`
+      );
+      if (participantWrapper) {
+        let component: any;
+        participantTracks.forEach((track: any) => {
+          if (track.getType() === "video") {
+            component = participantWrapper.querySelectorAll("video");
+          }
+          // if (track.getType() === "audio") {
+          //   component = participantWrapper.querySelectorAll("audio");
+          // }
+          if (component) {
+            track.attach(component[0]);
+          } else {
+            console.log("The component doesn't exist here!", participantId);
+          }
+        });
+      } else {
+        console.log("participantWrapper doesn't exist!", participantId);
+      }
     } else {
-      const newElement = document.createElement("audio");
-      newElement.setAttribute("id", `${participant}video${idx}`);
-      newElement.setAttribute("autoplay", "1");
-      document.getElementById("video").appendChild(newElement);
+      console.log("There is no track for this user!", participantId);
     }
-    track.attach(document.getElementById(`${id}`));
   };
 
   onConferenceJoined = () => {
+    console.log("On conference joined");
     if (!this.isJoined) {
       this.isJoined = true;
       for (let i = 0; i < this.localTracks.length; i++) {
         this.room.addTrack(this.localTracks[i]);
       }
-      this.logMyUserId();
     }
+    this.logMyUserId();
   };
 
   onConnectionSuccess = () => {
+    console.log("Connection established");
     this.room = this.connection.initJitsiConference(
       this.gameId.toLowerCase(),
       confOptions
     );
+    console.log("This.room", this.room);
     this.room.on(JitsiMeetJS.events.conference.TRACK_ADDED, this.onRemoteTrack);
     this.room.on(JitsiMeetJS.events.conference.TRACK_REMOVED, (track: any) => {
       console.log(`track removed!!!${track}`);

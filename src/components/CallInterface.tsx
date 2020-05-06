@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
+import Jitsy from "../services/jitsy";
 import { Box, Typography } from "@material-ui/core";
 import { Phone } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/styles";
 import { Store, User, TeamId } from "../types";
 import { useSelector } from "react-redux";
 import { NEON_GREEN, NEON_PINK, PALETTE_PURPLE } from "../theme";
+import ParticipantCall from "./ParticipantCall";
 
 const useStyles = makeStyles({
   container: {
@@ -24,10 +26,13 @@ const useStyles = makeStyles({
     color: (props: IProps) => (props.teamId === "1" ? NEON_GREEN : NEON_PINK),
   },
   avatarsContainer: {
-    padding: "5px",
     backgroundColor: "rgba(255, 255, 255, 0.2)",
+    position: "relative",
   },
   userAvatarBox: {
+    position: "absolute",
+    top: 0,
+    right: 0,
     border: "2px solid white",
     borderRadius: "100%",
     height: "40px",
@@ -44,25 +49,61 @@ const useStyles = makeStyles({
 
 interface IProps {
   teamId?: TeamId;
-  jitsy: any;
 }
 
-const CallInterface: React.FC<IProps> = ({ teamId, jitsy }) => {
+const CallInterface: React.FC<IProps> = ({ teamId }) => {
+  const gameId = useSelector((state: Store) => state.game.id);
   const gameUsers = useSelector((state: Store) => state.game.users);
-  const classes = useStyles({ teamId, jitsy });
+  const computerUsers = useSelector((state: Store) => state.computer.users);
+  const classes = useStyles({ teamId });
+  const [jitsy, setJitsy] = useState<Jitsy>();
+  const [existingTracksIds, setExistingTracksIds] = useState<Array<string>>([]);
+
+  const addExistingTrackId = (id: string) => {
+    console.log("adding existing track id", id);
+    const newTracks = [...existingTracksIds, id];
+    setExistingTracksIds(newTracks);
+  };
+
+  useEffect(() => {
+    const j = new Jitsy(gameId, addExistingTrackId);
+    setJitsy(j);
+  }, []);
+
+  const usersByJitsyIds = gameUsers
+    .filter((us) => computerUsers.indexOf(us.id) < 0)
+    .filter((user) => !!user.jitsyId)
+    .reduce((acc: any, u) => {
+      if (u.jitsyId && acc[u.jitsyId]) {
+        acc[u.jitsyId].push(u);
+      } else if (u.jitsyId) {
+        acc[u.jitsyId] = [u];
+      }
+      return acc;
+    }, {});
+
   return (
     <Box className={classes.container}>
-      <Box className={classes.iconContainer}>
-        <Phone />
-      </Box>
       <Box className={classes.avatarsContainer}>
-        {gameUsers.map((u: User) => {
+        {Object.keys(usersByJitsyIds).map((key: string) => {
+          console.log("key of remote tracks is", key);
+          console.log("Remote tracks are", jitsy && jitsy.remoteTracks);
+          const usersOnOneJitsy = usersByJitsyIds[key];
           return (
-            <Box className={classes.userAvatarBox}>
-              <Typography component="span" variant="h3">
-                {u.name.charAt(0)}
-              </Typography>
-              <Box id={`${u.id}-jitsy`}></Box>
+            <Box>
+              {usersOnOneJitsy.map((u: User) => (
+                <Box className={classes.userAvatarBox}>
+                  <Typography component="span" variant="h3">
+                    {u.name.charAt(0)}
+                  </Typography>
+                </Box>
+              ))}
+              {existingTracksIds.indexOf(key) > -1 &&
+                jitsy &&
+                jitsy.remoteTracks &&
+                jitsy.remoteTracks[key] && (
+                  <ParticipantCall jitsyId={key} j={jitsy} />
+                )}
             </Box>
           );
         })}

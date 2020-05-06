@@ -6,13 +6,13 @@ import Cookies from "js-cookie";
 import { addUserToComputer } from "./redux/computer";
 
 import { CssBaseline, Box } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 import StartOrJoinGame from "./views/StartOrJoinGame";
 import PrepareGame from "./views/PrepareGame";
 import Game from "./views/Game";
 import Background from "./components/Background";
 import GameEnded from "./views/GameEnded";
-import JitsyNew from "./components/JitsyNew";
 import CallInterface from "./components/CallInterface";
 import EndGame from "./components/EndGame";
 
@@ -27,7 +27,6 @@ const App: React.FC = () => {
   const gameEnded = useSelector((state: Store) => !!state.game.winner);
   const storedGameId = Cookies.get("gameId");
   const storedUsers: Array<string> = Cookies.getJSON("users");
-  let j;
 
   useEffect(() => {
     if (storedGameId) {
@@ -56,6 +55,15 @@ const App: React.FC = () => {
       <CssBaseline />
       <Background />
       <Box
+        id="local-jitsy"
+        position="fixed"
+        width="200px"
+        height="100px"
+        bottom={0}
+        left={0}
+        zIndex={700}
+      ></Box>
+      <Box
         style={{
           position: "relative",
           minHeight: "100vh",
@@ -64,10 +72,8 @@ const App: React.FC = () => {
         }}
       >
         {view}
-        {/* {gameId && <JitsyNew />} */}
-        <Box id="video"></Box>
       </Box>
-      {gameId && <CallInterface jitsy={j} />}
+      {gameId && <CallInterface />}
       {gameId && <EndGame />}
     </div>
   );

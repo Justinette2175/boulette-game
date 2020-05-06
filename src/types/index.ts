@@ -6,6 +6,7 @@ export type MessageId = string;
 export type GameId = string;
 export type UserId = string;
 export type WordId = string;
+export type JitsyId = string;
 
 export interface Word {
   id?: WordId;
@@ -18,6 +19,7 @@ export interface User {
   name: Username;
   teamId?: TeamId;
   createdAt: number;
+  jitsyId?: JitsyId;
 }
 
 export interface Message {
@@ -55,6 +57,7 @@ export interface ComputerReducer {
   users: Array<UserId>;
   timer?: Time;
   instructionsVisible: boolean;
+  jitsyId: JitsyId;
 }
 
 export interface Team {

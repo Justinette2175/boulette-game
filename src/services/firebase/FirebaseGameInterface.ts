@@ -141,7 +141,7 @@ class FirebaseGameInterface {
       wordsGuessed: firebase.firestore.FieldValue.arrayUnion(guessedWord.id),
       [`score.${currentTeam}`]: newScore,
     });
-    // Set next currentWord
+
     localBatch.update(this.gameRef, { currentWord: nextWord });
     if (batch) {
       return localBatch;

@@ -1,6 +1,6 @@
 import ReduxStore from "../../redux/store";
 import "firebase/firestore";
-import { GameId, Username, Word } from "../../types";
+import { GameId, Username, Word, JitsyId } from "../../types";
 
 import GameObject from "./Game";
 
@@ -46,6 +46,12 @@ class GameService {
   handleFoundWord = (word: Word) => {
     if (this.game) {
       this.game.handleFoundWord(word);
+    }
+  };
+
+  storeJitsyId = (jitsyId: JitsyId) => {
+    if (this.game) {
+      this.game.storeJitsyId(jitsyId);
     }
   };
 

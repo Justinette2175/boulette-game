@@ -4,15 +4,11 @@ import useCurrentPlayerIsOnDevice from "../utils/useCurrentPlayerIsOnDevice";
 import { Store } from "../types";
 import { useSelector } from "react-redux";
 
-import Jitsy from "../services/jisty";
+import Jitsy from "../services/jitsy";
 
 const JitsyNew: React.FC = () => {
-  const currentPlayerIsOnDevice = useCurrentPlayerIsOnDevice();
   const gameId = useSelector((state: Store) => state.game.id);
   let j;
-  useEffect(() => {
-    j = new Jitsy(gameId);
-  }, []);
 
   return <Box id="video" />;
 };
