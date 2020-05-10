@@ -4,6 +4,7 @@ import { Store, User } from "../../types";
 import AddPlayerOnComputer from "./AddPlayerOnComputer";
 import GameService from "../../services/game";
 import WordsSelector from "./WordsSelector";
+import CallInterface from "../../components/CallInterface";
 
 import GameInfo from "./GameInfo";
 import TeamsSelector from "./TeamsSelector";
@@ -108,6 +109,7 @@ const PrepareGame: React.FC = () => {
           </Box>
         </Paper>
       </Box>
+      <CallInterface />
     </Box>
   );
 };

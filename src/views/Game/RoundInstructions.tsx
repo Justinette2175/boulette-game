@@ -62,7 +62,7 @@ const RoundInstructions: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(updateInstructionsVisibility(false));
+    dispatch(updateInstructionsVisibility(true));
   }, [currentRoundIndex]);
 
   if (!currentRoundIndex) {

@@ -8,7 +8,7 @@ const options = {
   serviceUrl: "https://jitsi.boulette.ca/http-bind",
 };
 
-const token = "2de64e29e2251ace115286bf7c86ca17";
+// const token = "2de64e29e2251ace115286bf7c86ca17";
 
 const confOptions = {
   openBridgeChannel: true,
@@ -33,13 +33,18 @@ class Jitsy {
   videoComponents: any;
   audioComponents: any;
   addExistingTrackId: (id: string) => void;
-  constructor(gameId: string, addExistingTrackId: (id: string) => void) {
-    console.log("constructing");
+  setHasLocalTrack: (val: boolean) => void;
+  constructor(
+    gameId: string,
+    addExistingTrackId: (id: string) => void,
+    setHasLocalTrack: (val: boolean) => void
+  ) {
     this.connection = new JitsiMeetJS.JitsiConnection(null, null, options);
     this.gameId = gameId;
     this.videoComponents = {};
     this.audioComponents = {};
     this.addExistingTrackId = addExistingTrackId;
+    this.setHasLocalTrack = setHasLocalTrack;
     this.connection.addEventListener(
       JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED,
       this.onConnectionSuccess
@@ -75,6 +80,8 @@ class Jitsy {
 
   onLocalTracks = (tracks: any) => {
     this.localTracks = tracks;
+    this.setHasLocalTrack(true);
+
     for (let i = 0; i < this.localTracks.length; i++) {
       this.localTracks[i].addEventListener(
         JitsiMeetJS.events.track.TRACK_AUDIO_LEVEL_CHANGED,
@@ -93,19 +100,7 @@ class Jitsy {
         (deviceId: string) =>
           console.log(`track audio output device was changed to ${deviceId}`)
       );
-      if (this.localTracks[i].getType() === "video") {
-        const newElement = document.createElement("video");
-        newElement.setAttribute("id", `localVideo${i}`);
-        newElement.setAttribute("autoplay", "1");
-        document.getElementById(`local-jitsy`).appendChild(newElement);
-        this.localTracks[i].attach(document.getElementById(`localVideo${i}`));
-      } else {
-        const newElement = document.createElement("audio");
-        newElement.setAttribute("id", `localVideo${i}`);
-        newElement.setAttribute("autoplay", "1");
-        document.getElementById(`local-jitsy`).appendChild(newElement);
-        this.localTracks[i].attach(document.getElementById(`localAudio${i}`));
-      }
+
       if (this.isJoined) {
         this.room.addTrack(this.localTracks[i]);
       }
@@ -120,14 +115,10 @@ class Jitsy {
   };
 
   onRemoteTrack = (track: any) => {
-    console.log("on remote track is fired");
     if (track.isLocal()) {
-      console.log("It's a local track");
       return;
     }
     const participantId = track.getParticipantId();
-    console.log("Participant id is", participantId);
-    console.log("Participant id type is", typeof participantId);
 
     if (!this.remoteTracks[participantId]) {
       this.remoteTracks[participantId] = [];
@@ -153,32 +144,45 @@ class Jitsy {
     );
   };
 
-  attachRemoteTrackToComponent = (participantId: string) => {
+  attachLocalTrackToComponent = (componentId: string) => {
+    const localWrapper = document.getElementById(componentId);
+    this._attachTrackToComponent(this.localTracks, localWrapper);
+  };
+
+  attachRemoteTrackToComponent = (
+    participantId: string,
+    componentId: string
+  ) => {
     const participantTracks = this.remoteTracks[participantId];
-    if (participantTracks && participantTracks.length > 0) {
-      const participantWrapper = document.getElementById(
-        `${participantId}-jitsi`
-      );
-      if (participantWrapper) {
+    const participantWrapper = document.getElementById(componentId);
+    this._attachTrackToComponent(participantTracks, participantWrapper);
+  };
+
+  _attachTrackToComponent = (tracks: Array<any>, wrapper: any) => {
+    if (tracks && tracks.length > 0) {
+      if (wrapper) {
         let component: any;
-        participantTracks.forEach((track: any) => {
-          if (track.getType() === "video") {
-            component = participantWrapper.querySelectorAll("video");
+        tracks.forEach((track: any) => {
+          const trackType = track.getType();
+          if (trackType === "video") {
+            component = wrapper.querySelectorAll("video");
           }
-          // if (track.getType() === "audio") {
-          //   component = participantWrapper.querySelectorAll("audio");
+          // if (trackType === "audio") {
+          //   component = wrapper.querySelectorAll("audio");
           // }
           if (component) {
             track.attach(component[0]);
           } else {
-            console.log("The component doesn't exist here!", participantId);
+            console.warn(
+              "Could not find a component to insert track of type " + trackType
+            );
           }
         });
       } else {
-        console.log("participantWrapper doesn't exist!", participantId);
+        throw new Error("Could not find a track wrapper with that ID");
       }
     } else {
-      console.log("There is no track for this user!", participantId);
+      throw new Error("Could not find track for user.");
     }
   };
 

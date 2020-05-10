@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import { addUserToComputer } from "./redux/computer";
 
 import { CssBaseline, Box } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { JitsiProvider } from "./utils/JitsiContext";
 
 import StartOrJoinGame from "./views/StartOrJoinGame";
 import PrepareGame from "./views/PrepareGame";
@@ -52,29 +52,23 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <CssBaseline />
-      <Background />
-      <Box
-        id="local-jitsy"
-        position="fixed"
-        width="200px"
-        height="100px"
-        bottom={0}
-        left={0}
-        zIndex={700}
-      ></Box>
-      <Box
-        style={{
-          position: "relative",
-          minHeight: "100vh",
-          width: "100vw",
-          overflow: "auto",
-        }}
-      >
-        {view}
-      </Box>
-      {gameId && <CallInterface />}
-      {gameId && <EndGame />}
+      <JitsiProvider gameId={gameId}>
+        <>
+          <CssBaseline />
+          <Background />
+          <Box
+            style={{
+              position: "relative",
+              minHeight: "100vh",
+              width: "100vw",
+              overflow: "auto",
+            }}
+          >
+            {view}
+          </Box>
+          {gameId && <EndGame />}
+        </>
+      </JitsiProvider>
     </div>
   );
 };

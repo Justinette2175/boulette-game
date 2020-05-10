@@ -5,6 +5,7 @@ import WordTransitionWrapper from "../../components/WordTransitionWrapper";
 import Timer from "./Timer";
 import Bowl from "../../components/Bowl";
 import { NEON_YELLOW } from "../../theme";
+import LocalCall from "../../components/LocalCall";
 
 interface IProps {
   onFound: () => void;
@@ -21,7 +22,7 @@ const Game: React.FC<IProps> = ({ onFound, onStart, currentWord }) => {
     }
   };
   return (
-    <Box position="relative" height="100%">
+    <Box position="relative" flexGrow={1}>
       <Box
         display="flex"
         flexDirection="column"
@@ -75,6 +76,9 @@ const Game: React.FC<IProps> = ({ onFound, onStart, currentWord }) => {
         onClick={handleBowlClick}
       >
         <Bowl />
+      </Box>
+      <Box position="absolute" bottom={0} left={0}>
+        <LocalCall />
       </Box>
     </Box>
   );

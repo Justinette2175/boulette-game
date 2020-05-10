@@ -10,6 +10,7 @@ import ScoreBoard from "../../components/ScoreBoard";
 import Timer from "./Timer";
 import { Store } from "../../types";
 import useCurrentPlayerIsOnDevice from "../../utils/useCurrentPlayerIsOnDevice";
+import OtherPlayersView from "./OtherPlayersView";
 
 interface IProps {
   team?: "1" | "2";
@@ -29,10 +30,13 @@ const TeamView: React.FC<IProps> = ({ team }) => {
       position="relative"
       p={4}
       height="100%"
+      display="flex"
+      flexDirection="column"
       textAlign={team1 ? "left" : "right"}
     >
       <Timer />
       {activeTeam === team && currentPlayerIsOnDevice && <CurrentPlayerView />}
+      {activeTeam === team && !currentPlayerIsOnDevice && <OtherPlayersView />}
       {team === "2" && matches && (
         <Box position="absolute" left={`${-SCORE_BOARD_WIDTH / 2}px`} top="0">
           <ScoreBoard />

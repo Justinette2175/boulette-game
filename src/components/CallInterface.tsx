@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
-import Jitsy from "../services/jitsy";
+import React, { useContext } from "react";
+import JitsyContext from "../utils/JitsiContext";
 import { Box, Typography } from "@material-ui/core";
 import { Phone } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/styles";
@@ -52,23 +52,11 @@ interface IProps {
 }
 
 const CallInterface: React.FC<IProps> = ({ teamId }) => {
-  const gameId = useSelector((state: Store) => state.game.id);
   const gameUsers = useSelector((state: Store) => state.game.users);
   const computerUsers = useSelector((state: Store) => state.computer.users);
   const classes = useStyles({ teamId });
-  const [jitsy, setJitsy] = useState<Jitsy>();
-  const [existingTracksIds, setExistingTracksIds] = useState<Array<string>>([]);
 
-  const addExistingTrackId = (id: string) => {
-    console.log("adding existing track id", id);
-    const newTracks = [...existingTracksIds, id];
-    setExistingTracksIds(newTracks);
-  };
-
-  useEffect(() => {
-    const j = new Jitsy(gameId, addExistingTrackId);
-    setJitsy(j);
-  }, []);
+  const { jitsy, existingTracksIds } = useContext(JitsyContext);
 
   const usersByJitsyIds = gameUsers
     .filter((us) => computerUsers.indexOf(us.id) < 0)
@@ -86,8 +74,6 @@ const CallInterface: React.FC<IProps> = ({ teamId }) => {
     <Box className={classes.container}>
       <Box className={classes.avatarsContainer}>
         {Object.keys(usersByJitsyIds).map((key: string) => {
-          console.log("key of remote tracks is", key);
-          console.log("Remote tracks are", jitsy && jitsy.remoteTracks);
           const usersOnOneJitsy = usersByJitsyIds[key];
           return (
             <Box>

@@ -8,7 +8,7 @@ const Game: React.FC = () => {
     <>
       <Slider />
       <RoundInstructions />
-      <CurrentPlayerVideo />
+      {/* <CurrentPlayerVideo /> */}
     </>
   );
 };

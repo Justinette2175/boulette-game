@@ -9,19 +9,17 @@ interface IProps {
 }
 const ParticipantCall: React.FC<IProps> = ({ jitsyId, j }) => {
   useEffect(() => {
-    const participantWrapper = document.getElementById(`${jitsyId}-jitsi`);
-    console.log("particiopant wrapper", participantWrapper);
-    console.log("In the useEffect block");
-    console.log("attaching");
-    j.attachRemoteTrackToComponent(jitsyId);
+    try {
+      j.attachRemoteTrackToComponent(jitsyId, `${jitsyId}-jitsi`);
+    } catch (e) {
+      console.warn(e);
+    }
   }, []);
 
   return (
-    <Box>
-      <Box id={`${jitsyId}-jitsi`}>
-        <video autoPlay></video>
-        <audio autoPlay></audio>
-      </Box>
+    <Box id={`${jitsyId}-jitsi`}>
+      <video autoPlay></video>
+      <audio autoPlay></audio>
     </Box>
   );
 };
