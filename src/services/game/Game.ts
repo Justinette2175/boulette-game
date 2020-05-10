@@ -86,6 +86,9 @@ class Game {
       let teamRef = this.store.teamsRef.doc(t.id);
       newBatch.set(teamRef, t);
     });
+
+    newBatch.update(this.store.gameRef, { stage: "WAITING_FOR_PLAYERS" });
+
     try {
       await newBatch.commit();
       ReduxStore.dispatch(updateGame({ id: this.id }));
@@ -132,6 +135,10 @@ class Game {
     }
   };
 
+  startChoseWords = async () => {
+    await this.store.gameRef.update({ stage: "CHOSING_WORDS" });
+  };
+
   start = async () => {
     const { words } = ReduxStore.getState().game;
     let batch = this.store.db.batch();
@@ -146,6 +153,7 @@ class Game {
       batch
     );
     newBatch.update(this.store.gameRef, {
+      stage: "PLAYING",
       currentRound: firstRoundIndex,
       currentTeam: newTeamId,
       currentUser: currentUser.id,

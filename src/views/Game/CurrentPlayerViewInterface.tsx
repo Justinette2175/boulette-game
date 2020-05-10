@@ -4,7 +4,6 @@ import { Word } from "../../types";
 import WordTransitionWrapper from "../../components/WordTransitionWrapper";
 import Timer from "./Timer";
 import Bowl from "../../components/Bowl";
-import { NEON_YELLOW } from "../../theme";
 import LocalCall from "../../components/LocalCall";
 
 interface IProps {
@@ -34,19 +33,10 @@ const Game: React.FC<IProps> = ({ onFound, onStart, currentWord }) => {
       >
         {!currentWord && (
           <>
-            <Typography
-              variant="h3"
-              align="center"
-              style={{ color: NEON_YELLOW }}
-            >
+            <Typography variant="h3" align="center">
               Tap the bowl to start your turn.
             </Typography>
-            <Typography
-              variant="body1"
-              align="center"
-              style={{ color: NEON_YELLOW }}
-              gutterBottom
-            >
+            <Typography variant="body1" align="center" gutterBottom>
               When a word appears, have your teammates guess. You can review
               this round's instructions by clicking on the round number at the
               top.
@@ -55,12 +45,7 @@ const Game: React.FC<IProps> = ({ onFound, onStart, currentWord }) => {
         )}
         {!!currentWord && (
           <>
-            <Typography
-              variant="body1"
-              align="center"
-              style={{ color: NEON_YELLOW }}
-              gutterBottom
-            >
+            <Typography variant="body1" align="center" gutterBottom>
               Tap the bowl when your teammates guess the word to count a point.
             </Typography>
             <WordTransitionWrapper currentWord={currentWord} />

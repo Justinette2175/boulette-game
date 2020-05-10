@@ -1,11 +1,11 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { Box } from "@material-ui/core";
-import { GRADIENT_AQUA, GRADIENT_ORANGE } from "../theme";
+import { Box, useTheme } from "@material-ui/core";
 import SliderWrapper from "./SliderWrapper";
 import { Store } from "../types";
 
 const Background = ({}) => {
+  const theme = useTheme();
   const currentTeam = useSelector((state: Store) => state.game.currentTeam);
   const gameWinner = useSelector((state: Store) => state.game.winner);
   const placement =
@@ -32,7 +32,7 @@ const Background = ({}) => {
             height="100%"
             width="100%"
             style={{
-              backgroundImage: GRADIENT_AQUA,
+              backgroundColor: theme.palette.secondary.light,
             }}
           ></Box>
         }
@@ -41,7 +41,7 @@ const Background = ({}) => {
             height="100%"
             width="100%"
             style={{
-              backgroundImage: GRADIENT_ORANGE,
+              backgroundColor: theme.palette.primary.light,
             }}
           ></Box>
         }

@@ -31,6 +31,12 @@ class GameService {
     }
   }
 
+  choseWords = () => {
+    if (this.game) {
+      this.game.startChoseWords();
+    }
+  };
+
   startGame = () => {
     if (this.game) {
       this.game.start();

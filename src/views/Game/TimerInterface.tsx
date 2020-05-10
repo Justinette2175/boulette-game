@@ -1,24 +1,14 @@
 import React from "react";
 import { Box, Typography } from "@material-ui/core";
 import { Time } from "../../types";
-import { NEON_YELLOW } from "../../theme";
 
 interface IProps {
   timeLeft: Time;
-  currentPlayerName: string;
 }
 
-const Timer: React.FC<IProps> = ({ timeLeft, currentPlayerName }) => {
+const Timer: React.FC<IProps> = ({ timeLeft }) => {
   return (
-    <Box
-      width="100%"
-      style={{ color: NEON_YELLOW }}
-      textAlign="center"
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-    >
-      <Typography variant="h2">It's {currentPlayerName}'s turn</Typography>
+    <>
       {timeLeft ? (
         <Typography variant="h1">
           {timeLeft.minutes < 10 && 0}
@@ -28,7 +18,7 @@ const Timer: React.FC<IProps> = ({ timeLeft, currentPlayerName }) => {
       ) : (
         <Typography variant="h1">00:00</Typography>
       )}
-    </Box>
+    </>
   );
 };
 

@@ -18,10 +18,12 @@ export default createMuiTheme({
       secondary: "rgba(0, 0, 0, 0.45)",
     },
     primary: {
-      main: "#8500FF",
+      main: "#FF3E6C",
+      light: "#FFE6E7",
     },
     secondary: {
-      main: NEON_PINK,
+      main: "#AFFF82",
+      light: "#E3FED6",
     },
     background: {
       default: "#F7F7F5",
@@ -41,16 +43,12 @@ export default createMuiTheme({
     },
     divider: "#000000",
   },
-  shape: {
-    borderRadius: 0,
-  },
   props: {
     MuiButton: {
       disableElevation: true,
     },
   },
   overrides: {
-    MuiButton: { root: { borderRadius: 0 } },
     MuiInputLabel: {
       root: {
         fontSize: "0.8rem",
@@ -62,16 +60,17 @@ export default createMuiTheme({
     },
   },
   typography: {
+    fontFamily: ["Rubik", "sans-serif"].join(","),
     h1: {
-      fontWeight: 700,
+      fontWeight: 500,
       fontSize: "3rem",
+      marginBottom: "24px",
     },
     h2: {
-      fontWeight: 700,
-      fontSize: "2rem",
+      fontSize: "1.5rem",
     },
     h3: {
-      fontWeight: 700,
+      fontWeight: 500,
       fontSize: "1.5rem",
     },
     h4: {
@@ -86,9 +85,8 @@ export default createMuiTheme({
       maxWidth: "400px",
     },
     button: {
-      fontSize: "1rem",
-      textTransform: "uppercase",
-      letterSpacing: "0.06rem",
+      textTransform: "initial",
+      fontWeight: 500,
     },
     caption: {
       lineHeight: "0.9rem",

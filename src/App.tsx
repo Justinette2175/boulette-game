@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import "./App.css";
 import { useSelector, useDispatch } from "react-redux";
-import { Store } from "./types";
+import { Store, GameStages } from "./types";
 import Cookies from "js-cookie";
 import { addUserToComputer } from "./redux/computer";
 
@@ -9,11 +9,11 @@ import { CssBaseline, Box } from "@material-ui/core";
 import { JitsiProvider } from "./utils/JitsiContext";
 
 import StartOrJoinGame from "./views/StartOrJoinGame";
-import PrepareGame from "./views/PrepareGame";
+import AddWordsView from "./views/AddWordsView";
 import Game from "./views/Game";
 import Background from "./components/Background";
 import GameEnded from "./views/GameEnded";
-import CallInterface from "./components/CallInterface";
+import WaitingForPlayersView from "./views/WaitingForPlayersView";
 import EndGame from "./components/EndGame";
 
 import GameService from "./services/game";
@@ -21,10 +21,7 @@ import GameService from "./services/game";
 const App: React.FC = () => {
   const dispatch = useDispatch();
   const gameId = useSelector((state: Store) => state.game.id);
-  const gameStarted: boolean = useSelector(
-    (state: Store) => !!state.game.currentRound
-  );
-  const gameEnded = useSelector((state: Store) => !!state.game.winner);
+  const gameStage: GameStages = useSelector((state: Store) => state.game.stage);
   const storedGameId = Cookies.get("gameId");
   const storedUsers: Array<string> = Cookies.getJSON("users");
 
@@ -42,11 +39,13 @@ const App: React.FC = () => {
     view = null;
   } else if (!gameId) {
     view = <StartOrJoinGame />;
-  } else if (!gameStarted) {
-    view = <PrepareGame />;
-  } else if (gameEnded) {
+  } else if (gameStage === "WAITING_FOR_PLAYERS") {
+    view = <WaitingForPlayersView />;
+  } else if (gameStage === "CHOSING_WORDS") {
+    view = <AddWordsView />;
+  } else if (gameStage === "ENDED") {
     view = <GameEnded />;
-  } else {
+  } else if (gameStage === "PLAYING") {
     view = <Game />;
   }
 

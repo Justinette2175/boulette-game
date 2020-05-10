@@ -9,19 +9,7 @@ const Timer: React.FC = () => {
     (state: Store) => state.computer.timer || null
   );
 
-  const currentPlayerName = useSelector((state: Store) => {
-    if (state.game.currentUser) {
-      const user: User = state.game.users.find(
-        (u) => u.id === state.game.currentUser
-      );
-      return user ? user.name : null;
-    }
-    return null;
-  });
-
-  return (
-    <TimerInterface timeLeft={timeLeft} currentPlayerName={currentPlayerName} />
-  );
+  return <TimerInterface timeLeft={timeLeft} />;
 };
 
 export default Timer;

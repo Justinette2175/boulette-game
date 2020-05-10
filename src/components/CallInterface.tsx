@@ -23,7 +23,6 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    color: (props: IProps) => (props.teamId === "1" ? NEON_GREEN : NEON_PINK),
   },
   avatarsContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.2)",

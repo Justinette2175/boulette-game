@@ -1,16 +1,14 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { Box, Typography } from "@material-ui/core";
+import { Box, Typography, Button } from "@material-ui/core";
 import { SCORE_BOARD_WIDTH } from "../constants";
 import { Team, RoundScore, TeamId } from "../types";
-import { NEON_GREEN, NEON_YELLOW } from "../theme";
 import { updateInstructionsVisibility } from "../redux/computer";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
   viewInstructionsLink: {
     padding: "7px 15px",
-    color: NEON_YELLOW,
     transition: ".25s",
     "&:hover": {
       cursor: "pointer",
@@ -43,18 +41,17 @@ const ScoreBoardInterface: React.FC<IProps> = ({
         <Box
           width="100px"
           style={{
-            color: NEON_GREEN,
             textAlign: t.id === "1" ? "right" : "left",
           }}
         >
-          <Typography variant="body1">{t.name}</Typography>
+          <Typography>{t.name}</Typography>
           {roundScore && (
-            <Typography variant="h1">{roundScore[t.id] || 0}</Typography>
+            <Typography style={{ fontSize: "2rem", fontWeight: 700 }}>
+              {roundScore[t.id] || 0}
+            </Typography>
           )}
           {cumulativeScore && (
-            <Typography variant="h3" component="p">
-              {cumulativeScore[t.id] || 0}
-            </Typography>
+            <Typography>{cumulativeScore[t.id] || 0}</Typography>
           )}
         </Box>
       );
@@ -63,37 +60,35 @@ const ScoreBoardInterface: React.FC<IProps> = ({
   const classes = useStyles();
 
   return (
-    <Box
-      width={`${SCORE_BOARD_WIDTH}px`}
-      display="flex"
-      justifyContent="space-between"
-      alignItems="start"
-    >
-      {teamsMarkup[0]}
+    <Box width={`${SCORE_BOARD_WIDTH}px`} p={2}>
       <Box
-        px={2}
-        py={1}
-        onClick={() => dispatch(updateInstructionsVisibility(true))}
-        className={classes.viewInstructionsLink}
+        border="1px solid black"
+        py={2}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="start"
       >
-        <Typography
-          variant="caption"
-          component="p"
-          align="center"
-          style={{
-            color: NEON_YELLOW,
-          }}
-        >
-          Instructions
-        </Typography>
-        <Typography variant="h4" component="p" align="center">
-          Round
-        </Typography>
-        <Typography variant="h1" component="p" align="center">
-          {currentRoundIndex}
-        </Typography>
+        {teamsMarkup[0]}
+        <Box px={2}>
+          <Typography variant="body1" align="center">
+            Round
+          </Typography>
+          <Typography
+            component="p"
+            style={{ fontSize: "2rem", fontWeight: 700 }}
+            align="center"
+          >
+            {currentRoundIndex}
+          </Typography>
+        </Box>
+        {teamsMarkup[1]}
       </Box>
-      {teamsMarkup[1]}
+      <Button
+        onClick={() => dispatch(updateInstructionsVisibility(true))}
+        size="small"
+      >
+        Read round instructions
+      </Button>
     </Box>
   );
 };

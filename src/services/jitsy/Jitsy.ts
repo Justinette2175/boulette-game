@@ -125,6 +125,7 @@ class Jitsy {
     }
 
     this.remoteTracks[participantId].push(track);
+    console.log("addig track for ", participantId);
     this.addExistingTrackId(participantId);
 
     track.addEventListener(
@@ -153,13 +154,17 @@ class Jitsy {
     participantId: string,
     componentId: string
   ) => {
+    console.log("Trying to attach remote track", participantId);
+    console.log("Remote tracks", this.remoteTracks);
     const participantTracks = this.remoteTracks[participantId];
     const participantWrapper = document.getElementById(componentId);
     this._attachTrackToComponent(participantTracks, participantWrapper);
   };
 
   _attachTrackToComponent = (tracks: Array<any>, wrapper: any) => {
+    console.log("trying to attach");
     if (tracks && tracks.length > 0) {
+      console.log("tracks are", tracks);
       if (wrapper) {
         let component: any;
         tracks.forEach((track: any) => {

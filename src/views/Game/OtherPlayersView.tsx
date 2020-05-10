@@ -1,10 +1,27 @@
 import React from "react";
-import { Box, useTheme, Typography } from "@material-ui/core";
+import { useSelector } from "react-redux";
+import { Box, useTheme, Typography, Grid } from "@material-ui/core";
 import CurrentPlayerVideo from "./CurrentPlayerVideo";
-import { NEON_YELLOW } from "../../theme";
+import { Store, User } from "../../types";
+import UserAvatar from "../../components/UserAvatar";
+import PlayerAndAvatar from "../../components/PlayerAndAvatar";
 
-const OtherPlayersView: React.FC = () => {
+interface IProps {
+  teamId: string;
+}
+
+const OtherPlayersView: React.FC<IProps> = ({ teamId }) => {
   const theme = useTheme();
+  const guessingPlayers = useSelector((state: Store) => {
+    if (state.game.currentUser) {
+      const users = state.game.users;
+      return users.filter((u) => {
+        return u.teamId === teamId && u.id !== state.game.currentUser;
+      });
+    }
+    return [];
+  });
+
   return (
     <Box
       flexGrow={1}
@@ -13,20 +30,20 @@ const OtherPlayersView: React.FC = () => {
       justifyContent="space-between"
       marginX={`-${theme.spacing(4)}px`}
       marginBottom={`-${theme.spacing(6)}px`}
-      marginTop={4}
     >
       <Box display="flex" flexDirection="column" alignItems="center">
-        <Typography variant="h3" align="center" style={{ color: NEON_YELLOW }}>
-          If you're on this team, guess!
+        <Typography variant="h3" align="center">
+          The following players can guess the word
         </Typography>
-        <Typography
-          variant="body1"
-          align="center"
-          style={{ color: NEON_YELLOW }}
-          gutterBottom
-        >
-          When you have the answer, say it so your teammate can mark the points.
-        </Typography>
+        <Box my={2}>
+          <Grid container spacing={2}>
+            {guessingPlayers.map((p) => (
+              <Grid item>
+                <PlayerAndAvatar name={p.name} />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
       </Box>
       <CurrentPlayerVideo />
     </Box>

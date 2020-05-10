@@ -16,9 +16,9 @@ export interface Word {
 
 export interface User {
   id?: UserId;
-  name: Username;
+  name?: Username;
   teamId?: TeamId;
-  createdAt: number;
+  createdAt?: number;
   jitsyId?: JitsyId;
 }
 
@@ -71,8 +71,15 @@ export interface Time {
   seconds: number;
 }
 
+export type GameStages =
+  | "WAITING_FOR_PLAYERS"
+  | "CHOSING_WORDS"
+  | "PLAYING"
+  | "ENDED";
+
 export interface Game {
   id?: GameId;
+  stage?: GameStages;
   rounds?: Array<Round>;
   users?: Array<User>;
   teams?: Array<Team>;
