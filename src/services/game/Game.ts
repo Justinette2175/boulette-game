@@ -405,7 +405,9 @@ class Game {
     const { rounds } = ReduxStore.getState().game;
     const winningTeamId = getGameWinner(rounds);
     CookiesService.clearCookies();
-    this.countdown.reset();
+    if (this.countdown) {
+      this.countdown.reset();
+    }
     this.countdown = null;
     await this.store.gameRef.update({
       currentRound: "5",

@@ -167,9 +167,9 @@ class Jitsy {
           if (trackType === "video") {
             component = wrapper.querySelectorAll("video");
           }
-          // if (trackType === "audio") {
-          //   component = wrapper.querySelectorAll("audio");
-          // }
+          if (trackType === "audio") {
+            component = wrapper.querySelectorAll("audio");
+          }
           if (component) {
             track.attach(component[0]);
           } else {

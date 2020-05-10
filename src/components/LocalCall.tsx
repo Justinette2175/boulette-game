@@ -43,7 +43,6 @@ const LocalCall: React.FC = () => {
   return (
     <Box id="local-jitsi" className={classes.container}>
       <video autoPlay></video>
-      <audio autoPlay></audio>
     </Box>
   );
 };
