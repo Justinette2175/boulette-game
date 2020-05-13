@@ -1,15 +1,15 @@
 import { Game, User, Word, Round } from "../types";
-import { WORDS_PER_PLAYER } from "../constants";
 
 export const getUserWords = (words: Array<Word>, u: User) =>
   u ? words.filter((w) => w.writtenBy === u.id) || [] : [];
 
 export const userStillHasWordsToWrite = (
   words: Array<Word>,
-  u: User
+  u: User,
+  wordsPerPlayer: number
 ): Array<any> => {
   const userWords = getUserWords(words, u);
-  return [userWords.length < WORDS_PER_PLAYER, userWords];
+  return [userWords.length < wordsPerPlayer, userWords];
 };
 
 export const calculateCumulativeScore = (rounds: Array<Round>) => {

@@ -4,18 +4,10 @@ import { Box, Typography, Button } from "@material-ui/core";
 import { SCORE_BOARD_WIDTH } from "../constants";
 import { Team, RoundScore, TeamId } from "../types";
 import { updateInstructionsVisibility } from "../redux/computer";
-import { makeStyles } from "@material-ui/core/styles";
+import { useSelector } from "react-redux";
+import { Store } from "../types";
 
-const useStyles = makeStyles({
-  viewInstructionsLink: {
-    padding: "7px 15px",
-    transition: ".25s",
-    "&:hover": {
-      cursor: "pointer",
-      backgroundColor: "rgba(255, 255, 255, 0.2)",
-    },
-  },
-});
+import COPY from "../copy";
 
 interface IProps {
   orderedTeams: Array<Team>;
@@ -27,13 +19,12 @@ interface IProps {
 
 const ScoreBoardInterface: React.FC<IProps> = ({
   orderedTeams,
-  currentTeamId,
   currentRoundIndex,
   roundScore,
   cumulativeScore,
 }) => {
+  const language = useSelector((state: Store) => state.computer.language);
   const dispatch = useDispatch();
-
   const teamsMarkup = orderedTeams
     .sort((t) => (t.id === "1" ? -1 : 1))
     .map((t) => {
@@ -44,9 +35,17 @@ const ScoreBoardInterface: React.FC<IProps> = ({
             textAlign: t.id === "1" ? "right" : "left",
           }}
         >
-          <Typography>{t.name}</Typography>
+          <Typography
+            style={{ fontWeight: 700 }}
+            color={t.id === "1" ? "secondary" : "primary"}
+          >
+            {t.name}
+          </Typography>
           {roundScore && (
-            <Typography style={{ fontSize: "2rem", fontWeight: 700 }}>
+            <Typography
+              style={{ fontSize: "2rem", fontWeight: 700 }}
+              color={t.id === "1" ? "secondary" : "primary"}
+            >
               {roundScore[t.id] || 0}
             </Typography>
           )}
@@ -57,27 +56,15 @@ const ScoreBoardInterface: React.FC<IProps> = ({
       );
     });
 
-  const classes = useStyles();
-
   return (
     <Box width={`${SCORE_BOARD_WIDTH}px`} p={2}>
-      <Box
-        border="1px solid black"
-        py={2}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="start"
-      >
+      <Box display="flex" justifyContent="space-between" alignItems="start">
         {teamsMarkup[0]}
         <Box px={2}>
           <Typography variant="body1" align="center">
-            Round
+            {COPY.ROUND[language]}
           </Typography>
-          <Typography
-            component="p"
-            style={{ fontSize: "2rem", fontWeight: 700 }}
-            align="center"
-          >
+          <Typography component="p" style={{ fontSize: "2rem" }} align="center">
             {currentRoundIndex}
           </Typography>
         </Box>
@@ -87,7 +74,7 @@ const ScoreBoardInterface: React.FC<IProps> = ({
         onClick={() => dispatch(updateInstructionsVisibility(true))}
         size="small"
       >
-        Read round instructions
+        {COPY.READ_INSTRUCTIONS_BUTTON[language]}
       </Button>
     </Box>
   );

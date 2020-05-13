@@ -2,16 +2,16 @@ import ReduxStore from "../../redux/store";
 import "firebase/firestore";
 import { GameId, Username, Word, JitsyId } from "../../types";
 
-import GameObject from "./Game";
+import GameObject, { createGameArgs } from "./Game";
 
 class GameService {
   game: GameObject;
 
-  createGame = async (ownerName: Username) => {
+  createGame = async (args: createGameArgs) => {
     const initialGameId = ReduxStore.getState().game.id;
     if (!initialGameId) {
       this.game = new GameObject();
-      this.game.create({ ownerName });
+      await this.game.create(args);
     }
   };
 
@@ -22,7 +22,7 @@ class GameService {
 
   joinGame = async (userName: Username, gameId: GameId) => {
     this.game = new GameObject(gameId);
-    this.game.join({ userName });
+    await this.game.join({ userName });
   };
 
   addPlayerOnDevice(name: string) {
@@ -31,33 +31,39 @@ class GameService {
     }
   }
 
-  choseWords = () => {
+  choseWords = async () => {
     if (this.game) {
-      this.game.startChoseWords();
+      await this.game.startChoseWords();
     }
   };
 
-  startGame = () => {
+  reviewTeams = async () => {
     if (this.game) {
-      this.game.start();
+      await this.game.startReviewTeams();
     }
   };
 
-  startMiming = () => {
+  startGame = async () => {
     if (this.game) {
-      this.game.startMiming();
+      await this.game.start();
     }
   };
 
-  handleFoundWord = (word: Word) => {
+  startMiming = async () => {
     if (this.game) {
-      this.game.handleFoundWord(word);
+      await this.game.startMiming();
     }
   };
 
-  storeJitsyId = (jitsyId: JitsyId) => {
+  handleFoundWord = async (word: Word) => {
     if (this.game) {
-      this.game.storeJitsyId(jitsyId);
+      await this.game.handleFoundWord(word);
+    }
+  };
+
+  storeJitsyId = async (jitsyId: JitsyId) => {
+    if (this.game) {
+      await this.game.storeJitsyId(jitsyId);
     }
   };
 

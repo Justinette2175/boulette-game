@@ -5,12 +5,15 @@ import { resetGame } from "../../redux/game";
 import { Box, Typography, Paper, Button } from "@material-ui/core";
 import { Store } from "../../types";
 
+import COPY from "../../copy";
+
 const GameEnded: React.FC = () => {
   const dispatch = useDispatch();
   const teams = useSelector((state: Store) => state.game.teams);
   const winningTeamId = useSelector((state: Store) => state.game.winner);
   const winningTeam = teams.find((t) => t.id === winningTeamId);
   const winningTeamName = winningTeam ? winningTeam.name : null;
+  const language = useSelector((state: Store) => state.computer.language);
 
   const handlePlayAgain = () => {
     dispatch(resetGame());
@@ -27,23 +30,28 @@ const GameEnded: React.FC = () => {
       <Box maxWidth="500px">
         <Paper elevation={0}>
           <Box p={4}>
-            <Typography align="center" variant="h3">
-              It's the end of this game.
+            <Typography variant="body1">
+              {COPY.END_GAME_TITLE[language]}
             </Typography>
-            <Typography align="center" variant="h1">
-              {winningTeamName && `Team ${winningTeamName} wins!`}
-              {winningTeamId && !winningTeamName && "It's a draw!"}
+            <Typography variant="h2">
+              {winningTeamName &&
+                `${COPY.WINNING_TEAM_1[language]} ${winningTeamName} ${COPY.WINNING_TEAM_2[language]}`}
+              {winningTeamId &&
+                !winningTeamName &&
+                COPY.GAME_END_DRAW[language]}
             </Typography>
-            <Typography align="center" variant="body1">
-              Thanks for playing!
+            <Typography variant="body1">
+              {COPY.END_GAME_THANKS[language]}
             </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handlePlayAgain}
-            >
-              Play another game
-            </Button>
+            <Box mt={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handlePlayAgain}
+              >
+                {COPY.PLAY_OTHER_GAME_BUTTON[language]}
+              </Button>
+            </Box>
           </Box>
         </Paper>
       </Box>

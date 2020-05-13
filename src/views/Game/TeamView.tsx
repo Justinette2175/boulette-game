@@ -12,6 +12,8 @@ import { Store, User } from "../../types";
 import useCurrentPlayerIsOnDevice from "../../utils/useCurrentPlayerIsOnDevice";
 import OtherPlayersView from "./OtherPlayersView";
 
+import COPY from "../../copy";
+
 interface IProps {
   team?: "1" | "2";
 }
@@ -20,6 +22,7 @@ const TeamView: React.FC<IProps> = ({ team }) => {
   const team1: boolean = team === "1";
   const activeTeam = useSelector((state: Store) => state.game.currentTeam);
   const currentPlayerIsOnDevice = useCurrentPlayerIsOnDevice();
+  const language = useSelector((state: Store) => state.computer.language);
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
@@ -44,21 +47,30 @@ const TeamView: React.FC<IProps> = ({ team }) => {
       flexDirection="column"
       textAlign={team1 ? "left" : "right"}
     >
-      <Box
-        width="100%"
-        textAlign="center"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-      >
-        {currentPlayer.name && (
-          <Typography variant="h2">It's {currentPlayer.name}'s turn</Typography>
-        )}
-        <Timer />
-      </Box>
-      {activeTeam === team && currentPlayerIsOnDevice && <CurrentPlayerView />}
-      {activeTeam === team && !currentPlayerIsOnDevice && (
-        <OtherPlayersView teamId={team} />
+      {activeTeam === team && (
+        <>
+          <Box
+            width="100%"
+            textAlign="center"
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+          >
+            {currentPlayer.name && (
+              <Typography variant="h2">
+                {COPY.TURN_INDICATOR_1[language]} {currentPlayer.name}
+                {COPY.TURN_INDICATOR_2[language]}
+              </Typography>
+            )}
+            <Timer />
+          </Box>
+          {activeTeam === team && currentPlayerIsOnDevice && (
+            <CurrentPlayerView />
+          )}
+          {activeTeam === team && !currentPlayerIsOnDevice && (
+            <OtherPlayersView teamId={team} />
+          )}
+        </>
       )}
       {team === "2" && matches && (
         <Box position="absolute" left={`${-SCORE_BOARD_WIDTH / 2}px`} top="0">

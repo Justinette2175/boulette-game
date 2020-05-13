@@ -16,12 +16,18 @@ import {
 import FirebaseGameInterface from "../firebase/FirebaseGameInterface";
 import { calculateCumulativeScore } from "../../utils";
 
-import { NUMBER_OF_ROUNDS, SECOND_DURATION_OF_TURN } from "../../constants";
+import { NUMBER_OF_ROUNDS } from "../../constants";
 
 import { addUserToComputer, updateId } from "../../redux/computer";
 import { updateGame, updateGameSubcollection } from "../../redux/game";
 import CookiesService from "../cookies/CookiesService";
 import Countdown from "./Countdown";
+
+export interface createGameArgs {
+  ownerName: string;
+  wordsPerPlayer: number;
+  secondsPerTurn: number;
+}
 
 const makeRounds = (words: Array<Word>): Array<Round> =>
   Array.apply(null, Array(NUMBER_OF_ROUNDS)).map((_, i) => ({
@@ -31,14 +37,17 @@ const makeRounds = (words: Array<Word>): Array<Round> =>
     score: { "1": 0, "2": 0 },
   }));
 
-const getEndOfTurn = (remainingTimeForNextRound: Time) => {
+const getEndOfTurn = (
+  remainingTimeForNextRound: Time,
+  secondsPerTurn: number
+) => {
   if (remainingTimeForNextRound) {
     return moment()
       .add(remainingTimeForNextRound.seconds, "s")
       .add(remainingTimeForNextRound.minutes, "m")
       .format();
   } else {
-    return moment().add(SECOND_DURATION_OF_TURN, "s").format();
+    return moment().add(secondsPerTurn, "s").format();
   }
   return;
 };
@@ -56,11 +65,11 @@ const getGameWinner = (rounds: Array<Round>) => {
 
 const INITIAL_TEAMS = [
   {
-    name: "The Birds",
+    name: "The Greens",
     id: "1",
   },
   {
-    name: "The Bees",
+    name: "The Pinks",
     id: "2",
   },
 ];
@@ -75,7 +84,11 @@ class Game {
     this.store = new FirebaseGameInterface(this.id);
   }
 
-  create = async ({ ownerName }: { ownerName: string }) => {
+  create = async ({
+    ownerName,
+    wordsPerPlayer,
+    secondsPerTurn,
+  }: createGameArgs) => {
     let batch = this.store.db.batch();
     const [ownerId, newBatch] = await this.store.createOwnerUser(
       { ownerName },
@@ -87,7 +100,11 @@ class Game {
       newBatch.set(teamRef, t);
     });
 
-    newBatch.update(this.store.gameRef, { stage: "WAITING_FOR_PLAYERS" });
+    newBatch.update(this.store.gameRef, {
+      stage: "WAITING_FOR_PLAYERS",
+      wordsPerPlayer,
+      secondsPerTurn,
+    });
 
     try {
       await newBatch.commit();
@@ -110,8 +127,19 @@ class Game {
       const newUserId = await this.store.db.runTransaction(
         async (transaction: any) => {
           const gameDoc = await transaction.get(this.store.gameRef);
+          console.log("Game doc is", gameDoc.data());
           if (!gameDoc.exists) {
-            throw "Document does not exist!";
+            throw new Error("This game ID does not exist...");
+          }
+          const gameData = gameDoc.data();
+          if (
+            !gameData ||
+            !gameData.stage ||
+            gameData.stage !== "WAITING_FOR_PLAYERS"
+          ) {
+            throw new Error(
+              "This game has already started, it's too late to join!"
+            );
           }
           const newUserRef = this.store.usersRef.doc();
           await transaction.set(newUserRef, {
@@ -131,12 +159,17 @@ class Game {
         .update({ teamId: initialUserTeam });
       this._addUserToComputer(newUserId);
     } catch (e) {
-      console.log(e);
+      console.log("erro r is", e);
+      throw e;
     }
   };
 
   startChoseWords = async () => {
     await this.store.gameRef.update({ stage: "CHOSING_WORDS" });
+  };
+
+  startReviewTeams = async () => {
+    await this.store.gameRef.update({ stage: "REVIEWING_TEAMS" });
   };
 
   start = async () => {
@@ -191,15 +224,17 @@ class Game {
       rounds,
       remainingTimeForNextRound,
       currentWord,
+      secondsPerTurn,
     } = ReduxStore.getState().game;
     if (!currentWord) {
       const round = rounds.find((r) => r.id === currentRound);
       const { wordsLeft } = round;
       const nextWord = this._getNextWord(wordsLeft, words);
       if (nextWord) {
-        const endOfCurrentTurn = getEndOfTurn(remainingTimeForNextRound);
-        console.log("word is", nextWord);
-        console.log("endOfCurrentTurn", endOfCurrentTurn);
+        const endOfCurrentTurn = getEndOfTurn(
+          remainingTimeForNextRound,
+          secondsPerTurn
+        );
         await this.store.startTurn({
           word: nextWord,
           endOfCurrentTurn: endOfCurrentTurn || null,
@@ -396,16 +431,18 @@ class Game {
   _handleEndOfRound = async () => {
     const { rounds, currentRound } = ReduxStore.getState().game;
     const round = rounds.find((r) => r.id === currentRound);
-    const currentRoundIndex = round.index;
-    if (currentRoundIndex === NUMBER_OF_ROUNDS) {
-      await this._end();
-    } else {
-      const remainingTimeForNextRound = ReduxStore.getState().computer.timer;
-      const nextRound = rounds.find((r) => r.index === currentRoundIndex + 1);
-      await this.store.startRound({
-        remainingTimeForNextRound,
-        nextRoundId: nextRound.id,
-      });
+    if (round) {
+      const currentRoundIndex = round.index;
+      if (currentRoundIndex === NUMBER_OF_ROUNDS) {
+        await this._end();
+      } else {
+        const remainingTimeForNextRound = ReduxStore.getState().computer.timer;
+        const nextRound = rounds.find((r) => r.index === currentRoundIndex + 1);
+        await this.store.startRound({
+          remainingTimeForNextRound,
+          nextRoundId: nextRound.id,
+        });
+      }
     }
   };
 
@@ -418,6 +455,7 @@ class Game {
     }
     this.countdown = null;
     await this.store.gameRef.update({
+      stage: "ENDED",
       currentRound: "5",
       winner: winningTeamId,
     });

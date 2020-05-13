@@ -2,9 +2,13 @@ import React from "react";
 import { Box, Typography } from "@material-ui/core";
 import { Word } from "../../types";
 import WordTransitionWrapper from "../../components/WordTransitionWrapper";
-import Timer from "./Timer";
+import { useSelector } from "react-redux";
+import { Store } from "../../types";
+
 import Bowl from "../../components/Bowl";
 import LocalCall from "../../components/LocalCall";
+
+import COPY from "../../copy";
 
 interface IProps {
   onFound: () => void;
@@ -13,6 +17,8 @@ interface IProps {
 }
 
 const Game: React.FC<IProps> = ({ onFound, onStart, currentWord }) => {
+  const language = useSelector((state: Store) => state.computer.language);
+
   const handleBowlClick = () => {
     if (currentWord) {
       onFound();
@@ -29,32 +35,32 @@ const Game: React.FC<IProps> = ({ onFound, onStart, currentWord }) => {
         alignItems="center"
         position="relative"
         zIndex={300}
-        mt={4}
+        mt={2}
       >
         {!currentWord && (
           <>
-            <Typography variant="h3" align="center">
-              Tap the bowl to start your turn.
+            <Typography variant="h2" align="center">
+              {COPY.TAP_BOWL_INSTRUCTIONS[language]}
             </Typography>
             <Typography variant="body1" align="center" gutterBottom>
-              When a word appears, have your teammates guess. You can review
-              this round's instructions by clicking on the round number at the
-              top.
+              {COPY.TAP_BOWL_INSTRUCTIONS_2[language]}
             </Typography>
           </>
         )}
         {!!currentWord && (
           <>
             <Typography variant="body1" align="center" gutterBottom>
-              Tap the bowl when your teammates guess the word to count a point.
+              {COPY.TAP_BOWL_FOR_NEXT_INSTRUCTIONS[language]}
             </Typography>
-            <WordTransitionWrapper currentWord={currentWord} />
+            <Box mt={4}>
+              <WordTransitionWrapper currentWord={currentWord} />
+            </Box>
           </>
         )}
       </Box>
       <Box
         position="absolute"
-        bottom="-50px"
+        bottom="-150px"
         width="100%"
         display="flex"
         justifyContent="center"

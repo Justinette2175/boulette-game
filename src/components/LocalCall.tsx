@@ -41,7 +41,13 @@ const LocalCall: React.FC = () => {
   useInterval(() => attachJitsyToComponent(), attached ? null : 1000);
 
   return (
-    <Box id="local-jitsi" className={classes.container}>
+    <Box
+      id="local-jitsi"
+      className={classes.container}
+      minWidth="200px"
+      minHeight="110px"
+      style={{ backgroundColor: "black" }}
+    >
       <video autoPlay></video>
     </Box>
   );

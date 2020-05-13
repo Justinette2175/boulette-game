@@ -22,7 +22,7 @@ export default createMuiTheme({
       light: "#FFE6E7",
     },
     secondary: {
-      main: "#AFFF82",
+      main: "#35925A",
       light: "#E3FED6",
     },
     background: {
@@ -62,23 +62,25 @@ export default createMuiTheme({
   typography: {
     fontFamily: ["Rubik", "sans-serif"].join(","),
     h1: {
-      fontWeight: 500,
       fontSize: "3rem",
       marginBottom: "24px",
     },
     h2: {
       fontSize: "1.5rem",
+      marginBottom: "18px",
     },
     h3: {
-      fontWeight: 500,
       fontSize: "1.5rem",
     },
     h4: {
       fontSize: "1.3rem",
+      lineHeight: "1.8rem",
     },
     body1: {
       fontSize: "1rem",
+      lineHeight: "1.6rem",
       maxWidth: "400px",
+      marginBottom: "8px",
     },
     body2: {
       fontSize: "0.9rem",

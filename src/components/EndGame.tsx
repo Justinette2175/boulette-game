@@ -1,44 +1,43 @@
 import React, { useState } from "react";
 
-import {
-  Button,
-  Dialog,
-  Box,
-  DialogTitle,
-  DialogContent,
-  Typography,
-  DialogActions,
-} from "@material-ui/core";
+import { Button, Dialog, Box, Typography, useTheme } from "@material-ui/core";
 
 import GameService from "../services/game";
+
+import { useSelector } from "react-redux";
+import { Store } from "../types";
+
+import COPY from "../copy";
 
 interface EndGameModalProps {
   open: boolean;
   onClose: () => void;
 }
 const EndGameModal: React.FC<EndGameModalProps> = ({ open, onClose }) => {
+  const language = useSelector((state: Store) => state.computer.language);
+
   const handleEndGame = () => {
     GameService.terminateGame();
   };
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <Box p={2}>
-        <DialogTitle>Are you sure you want to leave this game?</DialogTitle>
-        <DialogContent>
-          <Typography variant="body1">
-            You can either leave this game but let others continue, or end the
-            game entirely for all the players. Which one would you like to do?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
+      <Box p={6}>
+        <Typography variant="h2">
+          {COPY.END_GAME_MODAL_SURE[language]}
+        </Typography>
+        <Typography variant="body1">
+          {COPY.END_GAME_MODAL_EXPLANATION[language]}
+        </Typography>
+        <Box display="flex" mt={4} justifyContent="flex-end">
           <Button
             size="small"
             color="primary"
             variant="contained"
             onClick={onClose}
+            style={{ marginRight: "16px" }}
           >
-            Continue playing
+            {COPY.END_GAME_MODAL_CLOSE[language]}
           </Button>
           <Button
             size="small"
@@ -46,25 +45,32 @@ const EndGameModal: React.FC<EndGameModalProps> = ({ open, onClose }) => {
             color="primary"
             autoFocus
           >
-            End game for everyone
+            {COPY.END_GAME_MODAL_CONFIRM[language]}
           </Button>
-        </DialogActions>
+        </Box>
       </Box>
     </Dialog>
   );
 };
 
 const EndGame: React.FC = () => {
+  const language = useSelector((state: Store) => state.computer.language);
   const [modalOpen, setModalOpen] = useState(false);
+  const theme = useTheme();
   return (
-    <Box position="fixed" bottom="0" right="0" zIndex={100}>
+    <Box
+      position="fixed"
+      bottom={theme.spacing(2)}
+      right={theme.spacing(2)}
+      zIndex={100}
+    >
       <Button
         variant="contained"
         color="primary"
         size="small"
         onClick={() => setModalOpen(true)}
       >
-        End game
+        {COPY.END_GAME_BUTTON[language]}
       </Button>
       <EndGameModal
         open={modalOpen}

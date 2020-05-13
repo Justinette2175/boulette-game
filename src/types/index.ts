@@ -58,6 +58,7 @@ export interface ComputerReducer {
   timer?: Time;
   instructionsVisible: boolean;
   jitsyId: JitsyId;
+  language: "EN" | "FR";
 }
 
 export interface Team {
@@ -74,6 +75,7 @@ export interface Time {
 export type GameStages =
   | "WAITING_FOR_PLAYERS"
   | "CHOSING_WORDS"
+  | "REVIEWING_TEAMS"
   | "PLAYING"
   | "ENDED";
 
@@ -92,6 +94,8 @@ export interface Game {
   endOfCurrentTurn?: string;
   remainingTimeForNextRound?: Time;
   winner?: TeamId;
+  wordsPerPlayer?: number;
+  secondsPerTurn?: number;
 }
 
 export interface Store {

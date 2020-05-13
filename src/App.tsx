@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import { useSelector, useDispatch } from "react-redux";
 import { Store, GameStages } from "./types";
 import Cookies from "js-cookie";
 import { addUserToComputer } from "./redux/computer";
 
-import { CssBaseline, Box } from "@material-ui/core";
+import { CssBaseline, Box, useMediaQuery } from "@material-ui/core";
+import { Theme } from "@material-ui/core/styles";
 import { JitsiProvider } from "./utils/JitsiContext";
 
 import StartOrJoinGame from "./views/StartOrJoinGame";
@@ -14,7 +15,9 @@ import Game from "./views/Game";
 import Background from "./components/Background";
 import GameEnded from "./views/GameEnded";
 import WaitingForPlayersView from "./views/WaitingForPlayersView";
+import ViewTeamsView from "./views/ViewTeamsView";
 import EndGame from "./components/EndGame";
+import SmallScreenView from "./views/SmallScreenView";
 
 import GameService from "./services/game";
 
@@ -25,24 +28,46 @@ const App: React.FC = () => {
   const storedGameId = Cookies.get("gameId");
   const storedUsers: Array<string> = Cookies.getJSON("users");
 
-  useEffect(() => {
+  const [urlGameId, setUrlGameId] = useState<string>(null);
+
+  const loadStored = () => {
     if (storedGameId) {
       GameService.loadGame(storedGameId);
     }
     if (storedUsers) {
       storedUsers.forEach((u) => dispatch(addUserToComputer(u)));
     }
+  };
+  useEffect(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    if (
+      urlParams &&
+      urlParams.get("gameId") &&
+      urlParams.get("gameId") !== storedGameId
+    ) {
+      setUrlGameId(urlParams.get("gameId"));
+    } else {
+      setUrlGameId(storedGameId || "");
+      loadStored();
+    }
   }, []);
 
+  const isSmallScreen = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down("sm")
+  );
+
   let view;
-  if (storedGameId && !gameId) {
-    view = null;
-  } else if (!gameId) {
-    view = <StartOrJoinGame />;
+  if (isSmallScreen) {
+    view = <SmallScreenView />;
+  } else if (!gameId && urlGameId !== null && urlGameId !== storedGameId) {
+    view = <StartOrJoinGame gameId={urlGameId} />;
   } else if (gameStage === "WAITING_FOR_PLAYERS") {
     view = <WaitingForPlayersView />;
   } else if (gameStage === "CHOSING_WORDS") {
     view = <AddWordsView />;
+  } else if (gameStage === "REVIEWING_TEAMS") {
+    view = <ViewTeamsView />;
   } else if (gameStage === "ENDED") {
     view = <GameEnded />;
   } else if (gameStage === "PLAYING") {
@@ -65,7 +90,7 @@ const App: React.FC = () => {
           >
             {view}
           </Box>
-          {gameId && <EndGame />}
+          {gameId && !isSmallScreen && <EndGame />}
         </>
       </JitsiProvider>
     </div>
