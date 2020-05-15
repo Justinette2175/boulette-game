@@ -33,7 +33,7 @@ const CurrentPlayerVideo = () => {
         );
         setVideoIsAttached(true);
       } catch (e) {
-        console.warn(e);
+        console.warn(e.message);
       }
     }
   };

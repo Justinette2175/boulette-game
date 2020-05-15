@@ -2,8 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Box, useTheme, Typography, Grid } from "@material-ui/core";
 import CurrentPlayerVideo from "./CurrentPlayerVideo";
-import { Store, User } from "../../types";
-import UserAvatar from "../../components/UserAvatar";
+import { Store } from "../../types";
 import PlayerAndAvatar from "../../components/PlayerAndAvatar";
 
 interface IProps {

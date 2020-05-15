@@ -6,6 +6,7 @@ import PlayerAndAvatar from "../../components/PlayerAndAvatar";
 import { ArrowRight } from "react-feather";
 import GameService from "../../services/game";
 import ContentWrapper from "../../components/ContentWrapper";
+import RemoteCallsStrip from "../../components/RemoteCallsStrip";
 
 import COPY from "../../copy";
 
@@ -16,8 +17,6 @@ const ViewTeamsView: React.FC = () => {
   const computerUserIds = useSelector((state: Store) => state.computer.users);
   const ownerIsOnComputer = computerUserIds.indexOf(gameOwner) > -1;
   const language = useSelector((state: Store) => state.computer.language);
-
-  const theme = useTheme();
 
   const handleStartGame = () => {
     GameService.startGame();
@@ -82,6 +81,9 @@ const ViewTeamsView: React.FC = () => {
           </>
         }
       />
+      <Box position="fixed" style={{ left: 0, bottom: 0, right: 0 }}>
+        <RemoteCallsStrip includeLocal includeNames={false} />
+      </Box>
     </>
   );
 };

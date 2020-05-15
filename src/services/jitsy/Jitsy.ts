@@ -18,6 +18,8 @@ const initOptions = {
   disableAudioLevels: true,
 };
 
+type TrackType = "audio" | "video";
+
 const win = window as any;
 const JitsiMeetJS = win.JitsiMeetJS;
 JitsiMeetJS.init(initOptions);
@@ -154,17 +156,13 @@ class Jitsy {
     participantId: string,
     componentId: string
   ) => {
-    console.log("Trying to attach remote track", participantId);
-    console.log("Remote tracks", this.remoteTracks);
     const participantTracks = this.remoteTracks[participantId];
     const participantWrapper = document.getElementById(componentId);
     this._attachTrackToComponent(participantTracks, participantWrapper);
   };
 
   _attachTrackToComponent = (tracks: Array<any>, wrapper: any) => {
-    console.log("trying to attach");
     if (tracks && tracks.length > 0) {
-      console.log("tracks are", tracks);
       if (wrapper) {
         let component: any;
         tracks.forEach((track: any) => {
@@ -175,12 +173,9 @@ class Jitsy {
           if (trackType === "audio") {
             component = wrapper.querySelectorAll("audio");
           }
-          if (component) {
+          console.log("Component is", component);
+          if (component && component.length > 0) {
             track.attach(component[0]);
-          } else {
-            console.warn(
-              "Could not find a component to insert track of type " + trackType
-            );
           }
         });
       } else {
@@ -281,6 +276,54 @@ class Jitsy {
    */
   onDeviceListChanged(devices: any) {
     console.info("current devices", devices);
+  }
+
+  async _muteTrack(t: any) {
+    const trackType = t.getType();
+    if (trackType === "audio") {
+      await t.mute();
+    }
+  }
+
+  async unmute(types: Array<TrackType>) {
+    if (this.localTracks.length > 0) {
+      const ps = this.localTracks.map(async (t) => {
+        const trackType = t.getType();
+        if (types.indexOf(trackType) > -1) {
+          await t.unmute();
+        }
+      });
+      await Promise.all(ps);
+    }
+  }
+
+  async mute(types: Array<TrackType>) {
+    if (this.localTracks.length > 0) {
+      const ps = this.localTracks.map(async (t) => {
+        const trackType = t.getType();
+        if (types.indexOf(trackType) > -1) {
+          await t.mute();
+        }
+      });
+      await Promise.all(ps);
+    }
+  }
+
+  async toggleMute(types: Array<TrackType>) {
+    if (this.localTracks.length > 0) {
+      const ps = this.localTracks.map(async (t) => {
+        const trackType = t.getType();
+        if (types.indexOf(trackType) > -1) {
+          const isMuted = await t.isMuted();
+          if (isMuted) {
+            await t.unmute();
+          } else {
+            await t.mute();
+          }
+        }
+      });
+      await Promise.all(ps);
+    }
   }
 }
 

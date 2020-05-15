@@ -18,7 +18,13 @@ import { calculateCumulativeScore } from "../../utils";
 
 import { NUMBER_OF_ROUNDS } from "../../constants";
 
-import { addUserToComputer, updateId } from "../../redux/computer";
+import {
+  addUserToComputer,
+  updateId,
+  setVideoMuted,
+  setAudioMuted,
+  resetTimer,
+} from "../../redux/computer";
 import { updateGame, updateGameSubcollection } from "../../redux/game";
 import CookiesService from "../cookies/CookiesService";
 import Countdown from "./Countdown";
@@ -49,7 +55,6 @@ const getEndOfTurn = (
   } else {
     return moment().add(secondsPerTurn, "s").format();
   }
-  return;
 };
 
 const getGameWinner = (rounds: Array<Round>) => {
@@ -342,8 +347,13 @@ class Game {
   _handleGameUpdate = (c: any) => {
     const data = c.data();
     const {
-      game: { endOfCurrentTurn },
+      game: { endOfCurrentTurn, currentUser, stage },
+      computer: { users, videoMuted, audioMuted },
     } = ReduxStore.getState();
+
+    if (data.stage === "PLAYING" && !data.endOfCurrentTurn) {
+      ReduxStore.dispatch(resetTimer());
+    }
     if (
       data.endOfCurrentTurn &&
       data.endOfCurrentTurn !== endOfCurrentTurn &&
@@ -358,6 +368,16 @@ class Game {
       this.countdown.reset(data.remainingTimeForNextRound);
       this.countdown = null;
     }
+    if (stage === "PLAYING" && data.currentUser !== currentUser) {
+      if (audioMuted) {
+        ReduxStore.dispatch(setAudioMuted(false));
+      }
+      if (users.indexOf(currentUser) > -1 && !!videoMuted) {
+        ReduxStore.dispatch(setVideoMuted(false));
+      } else if (users.indexOf(currentUser) < 0 && !videoMuted) {
+        ReduxStore.dispatch(setVideoMuted(true));
+      }
+    }
     ReduxStore.dispatch(updateGame({ ...data, id: c.id }));
   };
 
@@ -370,24 +390,17 @@ class Game {
   };
 
   _startLocalCountDown = (end: string) => {
-    const {
-      game: { currentUser },
-      computer: { users },
-    } = ReduxStore.getState();
-    const userIsOnComputer = !!currentUser && users.indexOf(currentUser) > -1;
-    const onCountdownEnd = () => this._endPlayerTurn(userIsOnComputer, this.id);
+    const onCountdownEnd = () => this._endPlayerTurn(this.id);
     this.countdown = new Countdown(end, onCountdownEnd);
   };
 
-  _endPlayerTurn = async (userIsOnComputer: boolean, gameId: GameId) => {
-    if (userIsOnComputer) {
-      await this.store.gameRef.update({
-        endOfCurrentTurn: null,
-        currentWord: null,
-        remainingTimeForNextRound: null,
-      });
-      this._startNextTurn();
-    }
+  _endPlayerTurn = async (gameId: GameId) => {
+    await this.store.gameRef.update({
+      endOfCurrentTurn: null,
+      currentWord: null,
+      remainingTimeForNextRound: null,
+    });
+    this._startNextTurn();
   };
 
   _startNextTurn = async () => {

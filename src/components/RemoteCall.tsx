@@ -20,9 +20,10 @@ const useStyles = makeStyles((theme: Theme) => {
 
 interface IProps {
   jitsiId: string;
+  audioOnly?: boolean;
 }
 
-const RemoteCall: React.FC<IProps> = ({ jitsiId }) => {
+const RemoteCall: React.FC<IProps> = ({ jitsiId, audioOnly }) => {
   const classes = useStyles();
   const { jitsy } = useContext(JitsyContext);
   const [attached, setAttached] = useState<boolean>(false);
@@ -33,7 +34,7 @@ const RemoteCall: React.FC<IProps> = ({ jitsiId }) => {
         jitsy.attachRemoteTrackToComponent(jitsiId, `${jitsiId}-jitsi`);
         setAttached(true);
       } catch (e) {
-        console.warn(e);
+        console.warn(e.message);
       }
     }
   };
@@ -48,11 +49,12 @@ const RemoteCall: React.FC<IProps> = ({ jitsiId }) => {
     <Box
       id={`${jitsiId}-jitsi`}
       className={classes.container}
-      minWidth="200px"
-      minHeight="110px"
+      minWidth={!audioOnly ? "200px" : "0"}
+      minHeight={!audioOnly ? "110px" : "0"}
       style={{ backgroundColor: "black" }}
     >
-      <video autoPlay></video>
+      {!audioOnly && <video autoPlay></video>}
+      <audio autoPlay></audio>
     </Box>
   );
 };

@@ -1,15 +1,22 @@
 import React from "react";
 import { Box, Grid } from "@material-ui/core";
-import { Store, TeamId } from "../types";
+import { Store } from "../types";
 import { useSelector } from "react-redux";
 import RemoteCall from "./RemoteCall";
 import CallWrapper from "./CallWrapper";
+import LocalCall from "./LocalCall";
 
 interface IProps {
-  teamId?: TeamId;
+  includeLocal?: boolean;
+  includeNames?: boolean;
+  audioOnly?: boolean;
 }
 
-const RemoteCallsStrip: React.FC<IProps> = ({ teamId }) => {
+const RemoteCallsStrip: React.FC<IProps> = ({
+  includeLocal,
+  includeNames = true,
+  audioOnly,
+}) => {
   const gameUsers = useSelector((state: Store) => state.game.users);
   const computerUsers = useSelector((state: Store) => state.computer.users);
 
@@ -27,14 +34,23 @@ const RemoteCallsStrip: React.FC<IProps> = ({ teamId }) => {
 
   return (
     <Box width="100%">
-      <Grid container spacing={2}>
+      <Grid container spacing={1}>
+        {includeLocal && (
+          <Grid item>
+            <LocalCall />
+          </Grid>
+        )}
         {Object.keys(usersByJitsiId).map((key: string) => {
           const usersOnThatJitsi = usersByJitsiId[key];
           return (
             <Grid item>
-              <CallWrapper usersOnThatJitsi={usersOnThatJitsi}>
-                <RemoteCall jitsiId={key} />
-              </CallWrapper>
+              {includeNames ? (
+                <CallWrapper usersOnThatJitsi={usersOnThatJitsi}>
+                  <RemoteCall jitsiId={key} audioOnly={audioOnly} />
+                </CallWrapper>
+              ) : (
+                <RemoteCall jitsiId={key} audioOnly={audioOnly} />
+              )}
             </Grid>
           );
         })}

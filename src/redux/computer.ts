@@ -2,6 +2,7 @@ import { createReducer, createAction } from "redux-act";
 import moment from "moment";
 import { ComputerReducer, Time, UserId, Store } from "../types";
 import Cookies from "js-cookie";
+import ReduxStore from "../redux/store";
 
 export const addUserToComputer = createAction<UserId>("ADD_USER_TO_COMPUTER");
 export const updateTimer = createAction<Time>("UPDATE_TIMER");
@@ -11,6 +12,9 @@ export const updateInstructionsVisibility = createAction<boolean>(
 export const updateId = createAction<string>("UPDATE_ID");
 
 export const resetComputer = createAction("RESET_COMPUTER");
+
+export const setAudioMuted = createAction<boolean>("SET_AUDIO_MUTED");
+export const setVideoMuted = createAction<boolean>("SET_VIDEO_MUTED");
 
 const makeTimerObjectFromSeconds = (seconds: number): Time => {
   const duration = moment.duration(seconds, "seconds");
@@ -26,11 +30,14 @@ const initialState: ComputerReducer = {
   instructionsVisible: false,
   jitsyId: null,
   language: "EN",
+  audioMuted: false,
+  videoMuted: false,
 };
 
 const computer = createReducer<ComputerReducer>({}, initialState);
 
 export const resetTimer = (): any => {
+  console.log("________resettttting timerrr");
   return (dispatch: any, getState: () => Store) => {
     const {
       game: { secondsPerTurn },
@@ -69,6 +76,14 @@ computer.on(updateInstructionsVisibility, (state, payload) => {
 
 computer.on(updateId, (state, payload) => {
   return { ...state, jitsyId: payload };
+});
+
+computer.on(setAudioMuted, (state, payload) => {
+  return { ...state, audioMuted: payload };
+});
+
+computer.on(setVideoMuted, (state, payload) => {
+  return { ...state, videoMuted: payload };
 });
 
 computer.on(resetComputer, () => initialState);

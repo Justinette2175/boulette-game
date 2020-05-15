@@ -41,12 +41,15 @@ const WordsSelector: React.FC<IProps> = ({ user, open, onClose }) => {
 
   const handleSubmit = async (values: { words: Array<string> }) => {
     onClose();
+    console.log("waords are", values);
     try {
       let batch = db.batch();
       const wordsRef = db.collection("games").doc(gameId).collection("words");
       values.words.forEach((w: any) => {
-        const wordRef = wordsRef.doc();
-        batch.set(wordRef, { text: w, writtenBy: user.id });
+        if (w) {
+          const wordRef = wordsRef.doc();
+          batch.set(wordRef, { text: w, writtenBy: user.id });
+        }
       });
       await batch.commit();
     } catch (e) {

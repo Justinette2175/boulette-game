@@ -45,7 +45,7 @@ const TeamView: React.FC<IProps> = ({ team }) => {
       height="100%"
       display="flex"
       flexDirection="column"
-      textAlign={team1 ? "left" : "right"}
+      // textAlign={team1 ? "left" : "right"}
     >
       {activeTeam === team && (
         <>

@@ -10,7 +10,7 @@ const Timer: React.FC<IProps> = ({ timeLeft }) => {
   return (
     <>
       {timeLeft ? (
-        <Typography variant="h1">
+        <Typography variant="h1" style={{ fontFamily: "DM Mono !important" }}>
           {timeLeft.minutes < 10 && 0}
           {timeLeft.minutes}:{timeLeft.seconds < 10 && 0}
           {timeLeft.seconds}

@@ -42,7 +42,7 @@ const PrepareGame: React.FC = () => {
                 <LocalCall />
               </CallWrapper>
               <Box ml={4}>
-                <Grid container spacing={4}>
+                <Grid container spacing={2}>
                   {computerUsers.map((u) => (
                     <Grid item>
                       <PlayerAndAvatar name={u.name} />
@@ -70,26 +70,28 @@ const PrepareGame: React.FC = () => {
             <Typography variant="h2" gutterBottom>
               {COPY.REMOTE_PLAYERS_TITLE[language]}
             </Typography>
-            <RemoteCallsStrip />
-            <GameLink mt={4} />
-            <Box my={6}>
-              <Box mb={2} maxWidth="300px">
-                <Typography variant="h4" component="p">
-                  {ownerIsOnComputer
-                    ? COPY.NEXT_JOIN_PLAYERS_INSTRUCTIONS[language]
-                    : COPY.JOIN_PLAYERS_WAIT_INSTRUCTIONS[language]}
-                </Typography>
+            <Box mt={4}>
+              <RemoteCallsStrip />
+              <GameLink mt={4} />
+              <Box my={6}>
+                <Box mb={2} maxWidth="300px">
+                  <Typography variant="h4" component="p">
+                    {ownerIsOnComputer
+                      ? COPY.NEXT_JOIN_PLAYERS_INSTRUCTIONS[language]
+                      : COPY.JOIN_PLAYERS_WAIT_INSTRUCTIONS[language]}
+                  </Typography>
+                </Box>
+                {ownerIsOnComputer && (
+                  <Button
+                    onClick={handleStartGame}
+                    color="primary"
+                    variant="contained"
+                    endIcon={<ArrowRight />}
+                  >
+                    {COPY.JOIN_PLAYERS_NEXT_BUTTON[language]}
+                  </Button>
+                )}
               </Box>
-              {ownerIsOnComputer && (
-                <Button
-                  onClick={handleStartGame}
-                  color="primary"
-                  variant="contained"
-                  endIcon={<ArrowRight />}
-                >
-                  {COPY.JOIN_PLAYERS_NEXT_BUTTON[language]}
-                </Button>
-              )}
             </Box>
           </>
         }

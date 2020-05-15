@@ -157,7 +157,7 @@ export default {
   },
   GAME_END_DRAW: {
     FR: "",
-    EN: "END_GAME_THANKS",
+    EN: "It's a draw!",
   },
   WINNING_TEAM_1: {
     FR: "",

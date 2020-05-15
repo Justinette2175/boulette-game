@@ -4,6 +4,7 @@ import { Store, User } from "../../types";
 import { userStillHasWordsToWrite } from "../../utils";
 import GameService from "../../services/game";
 import WordsSelector from "./WordsSelector";
+import RemoteCallsStrip from "../../components/RemoteCallsStrip";
 
 import { Button, Box, Typography, Grid } from "@material-ui/core";
 import { Plus, FileText, ArrowRight, CheckCircle } from "react-feather";
@@ -119,6 +120,10 @@ const PrepareGame: React.FC = () => {
         user={wordsModalUser}
         onClose={closeAddWords}
       />
+
+      <Box position="fixed" style={{ left: 0, bottom: 0, right: 0 }}>
+        <RemoteCallsStrip includeLocal includeNames={false} />
+      </Box>
     </>
   );
 };

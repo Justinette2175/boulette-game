@@ -59,6 +59,8 @@ export interface ComputerReducer {
   instructionsVisible: boolean;
   jitsyId: JitsyId;
   language: "EN" | "FR";
+  audioMuted: boolean;
+  videoMuted: boolean;
 }
 
 export interface Team {
