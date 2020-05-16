@@ -42,14 +42,24 @@ const Game: React.FC<IProps> = ({ onFound, onStart, currentWord }) => {
             <Typography variant="h2" align="center">
               {COPY.TAP_BOWL_INSTRUCTIONS[language]}
             </Typography>
-            <Typography variant="body1" align="center" gutterBottom>
+            <Typography
+              variant="body1"
+              align="center"
+              gutterBottom
+              style={{ maxWidth: "320px" }}
+            >
               {COPY.TAP_BOWL_INSTRUCTIONS_2[language]}
             </Typography>
           </>
         )}
         {!!currentWord && (
           <>
-            <Typography variant="body1" align="center" gutterBottom>
+            <Typography
+              variant="body1"
+              align="center"
+              gutterBottom
+              style={{ maxWidth: "320px" }}
+            >
               {COPY.TAP_BOWL_FOR_NEXT_INSTRUCTIONS[language]}
             </Typography>
             <Box mt={4}>

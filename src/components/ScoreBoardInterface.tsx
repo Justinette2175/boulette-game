@@ -58,7 +58,13 @@ const ScoreBoardInterface: React.FC<IProps> = ({
     });
 
   return (
-    <Box width={`${SCORE_BOARD_WIDTH}px`} p={2}>
+    <Box
+      width={`${SCORE_BOARD_WIDTH}px`}
+      p={2}
+      display="flex"
+      alignItems="center"
+      flexDirection="column"
+    >
       <Box display="flex" justifyContent="space-between" alignItems="start">
         {teamsMarkup[0]}
         <Box px={2}>

@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "material-ui-image";
 import Bol from "../assets/images/bol.png";
 import BolBlanc from "../assets/images/bol-blanc.png";
 import BolVert from "../assets/images/bol-vert.png";

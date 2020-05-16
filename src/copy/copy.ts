@@ -141,7 +141,7 @@ export default {
   },
   READ_INSTRUCTIONS_BUTTON: {
     FR: "",
-    EN: "Read round instructions",
+    EN: "Round instructions",
   },
   ROUND: {
     FR: "",
@@ -177,12 +177,11 @@ export default {
   },
   END_GAME_MODAL_SURE: {
     FR: "",
-    EN: "Are you sure you want to leave this game?",
+    EN: "Are you sure you want to end this game?",
   },
   END_GAME_MODAL_EXPLANATION: {
     FR: "",
-    EN:
-      "You can either leave this game but let others continue, or end the game entirely for all the players. Which one would you like to do?",
+    EN: "If you end this game, the game will stop for all the players.",
   },
   END_GAME_MODAL_CLOSE: {
     FR: "",
@@ -190,6 +189,6 @@ export default {
   },
   END_GAME_MODAL_CONFIRM: {
     FR: "",
-    EN: "End game for everyone",
+    EN: "End game",
   },
 };

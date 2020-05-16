@@ -351,6 +351,8 @@ class Game {
       computer: { users, videoMuted, audioMuted },
     } = ReduxStore.getState();
 
+    ReduxStore.dispatch(updateGame({ ...data, id: c.id }));
+
     if (data.stage === "PLAYING" && !data.endOfCurrentTurn) {
       ReduxStore.dispatch(resetTimer());
     }
@@ -378,7 +380,6 @@ class Game {
         ReduxStore.dispatch(setVideoMuted(true));
       }
     }
-    ReduxStore.dispatch(updateGame({ ...data, id: c.id }));
   };
 
   _handleGameSubcollectionData = (c: Array<any>, collectionName = "string") => {

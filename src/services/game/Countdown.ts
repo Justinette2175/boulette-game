@@ -19,40 +19,38 @@ class Countdown {
   start = () => {
     this.interval = setInterval(() => {
       const callback = async () => {
-        if (this.isFinished()) {
-          console.log("timer is finished, on end is", this.onEnd);
+        if (this._isFinished()) {
           this.onEnd();
-          this.reset();
+          // this.reset();
         } else {
-          this.updateLocally();
+          this._updateLocally();
         }
       };
       callback();
     }, COUNTDOWN_INTERVAL);
   };
 
-  updateLocally = () => {
+  _updateLocally = () => {
     const differenceInMilliseconds = moment().diff(moment(this.endTime));
     let seconds = -moment.duration(differenceInMilliseconds).seconds();
+    let milliseconds = moment.duration(differenceInMilliseconds).milliseconds();
     let minutes = -moment.duration(differenceInMilliseconds).minutes();
-    if (seconds < 0) {
-      seconds = 0;
+    if (seconds < -1 || milliseconds > 0) {
+      seconds = -1;
     }
-    if (minutes < 0) {
+    if (minutes < 0 || minutes === -0) {
       minutes = 0;
     }
-    if (seconds < 0 && minutes < 0) {
-      this.reset();
-    }
-    ReduxStore.dispatch(
-      updateTimer({ seconds: seconds > 0 ? seconds : 0, minutes })
-    );
+    ReduxStore.dispatch(updateTimer({ seconds, minutes }));
   };
 
-  isFinished = (): boolean => {
+  _isFinished = (): boolean => {
     const differenceInMilliseconds = moment().diff(moment(this.endTime));
-    const seconds = -moment.duration(differenceInMilliseconds).seconds();
-    return seconds < 0;
+    const milliseconds = moment
+      .duration(differenceInMilliseconds)
+      .asMilliseconds();
+    console.log("milliseconds", milliseconds);
+    return milliseconds > 0;
   };
 
   reset = (remainingTimeForNextRound?: Time) => {

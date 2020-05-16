@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 import ReduxStore from "../redux/store";
 
 export const addUserToComputer = createAction<UserId>("ADD_USER_TO_COMPUTER");
-export const updateTimer = createAction<Time>("UPDATE_TIMER");
+export const setTimer = createAction<Time>("UPDATE_TIMER");
 export const updateInstructionsVisibility = createAction<boolean>(
   "UPDATE_INSTRUCTIONS_VISIBILITY"
 );
@@ -38,6 +38,13 @@ const initialState: ComputerReducer = {
 
 const computer = createReducer<ComputerReducer>({}, initialState);
 
+export const updateTimer = (time: Time): any => {
+  return (dispatch: any) => {
+    console.log("Time received is", time);
+    dispatch(setTimer({ minutes: time.minutes, seconds: time.seconds + 1 }));
+  };
+};
+
 export const resetTimer = (): any => {
   return (dispatch: any, getState: () => Store) => {
     const {
@@ -46,7 +53,7 @@ export const resetTimer = (): any => {
 
     if (secondsPerTurn) {
       const timer = makeTimerObjectFromSeconds(secondsPerTurn);
-      dispatch(updateTimer(timer));
+      dispatch(setTimer(timer));
     }
   };
 };
@@ -67,7 +74,7 @@ computer.on(addUserToComputer, (state, payload) => ({
   users: [...state.users, payload],
 }));
 
-computer.on(updateTimer, (state, payload) => {
+computer.on(setTimer, (state, payload) => {
   return { ...state, timer: payload };
 });
 
