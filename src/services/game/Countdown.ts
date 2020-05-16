@@ -9,25 +9,29 @@ class Countdown {
   endTime: string;
   interval: any;
   onEnd: () => void;
-
-  constructor(endTime: string, onCountdownEnd: () => void) {
-    this.endTime = endTime;
-    this.onEnd = onCountdownEnd;
-    this.start();
+  running: boolean;
+  constructor(remainingTimeForNextRound?: Time) {
+    this.reset(remainingTimeForNextRound);
+    this.running = false;
   }
 
-  start = () => {
-    this.interval = setInterval(() => {
-      const callback = async () => {
-        if (this._isFinished()) {
-          this.onEnd();
-          // this.reset();
-        } else {
+  start = (endTime: string, onCountdownEnd?: () => void) => {
+    if (!this.running) {
+      this.onEnd = onCountdownEnd;
+      this.endTime = endTime;
+      this.running = true;
+      this.interval = setInterval(() => {
+        const callback = async () => {
+          const finished = this._isFinished();
           this._updateLocally();
-        }
-      };
-      callback();
-    }, COUNTDOWN_INTERVAL);
+          if (finished) {
+            this.onEnd();
+            this._clearInterval();
+          }
+        };
+        callback();
+      }, COUNTDOWN_INTERVAL);
+    }
   };
 
   _updateLocally = () => {
@@ -49,19 +53,25 @@ class Countdown {
     const milliseconds = moment
       .duration(differenceInMilliseconds)
       .asMilliseconds();
-    console.log("milliseconds", milliseconds);
     return milliseconds > 0;
   };
 
-  reset = (remainingTimeForNextRound?: Time) => {
+  _clearInterval = () => {
     if (this.interval) {
       clearInterval(this.interval);
     }
-    if (remainingTimeForNextRound) {
-      ReduxStore.dispatch(updateTimer(remainingTimeForNextRound));
-    } else {
-      ReduxStore.dispatch(resetTimer());
-    }
+  };
+
+  reset = (remainingTimeForNextRound?: Time) => {
+    this.running = false;
+    this._clearInterval();
+    setTimeout(() => {
+      if (remainingTimeForNextRound) {
+        ReduxStore.dispatch(updateTimer(remainingTimeForNextRound));
+      } else {
+        ReduxStore.dispatch(resetTimer());
+      }
+    }, 1000);
   };
 }
 

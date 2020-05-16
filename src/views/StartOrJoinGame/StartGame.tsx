@@ -67,6 +67,7 @@ const StartGame: React.FC = () => {
               label={COPY.SECONDS_PER_TURN_LABEL[language]}
               name="secondsPerTurn"
               options={[
+                { label: "10", value: 10 },
                 { label: "30", value: 30 },
                 { label: "45", value: 45 },
                 { label: "60", value: 60 },

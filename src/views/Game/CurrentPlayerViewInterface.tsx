@@ -18,6 +18,11 @@ interface IProps {
 
 const Game: React.FC<IProps> = ({ onFound, onStart, currentWord }) => {
   const language = useSelector((state: Store) => state.computer.language);
+  const timer = useSelector((state: Store) => state.computer.timer);
+
+  const shouldDisplayInstructions = (): boolean => {
+    return timer && (timer.seconds > 0 || timer.minutes > 0);
+  };
 
   const handleBowlClick = () => {
     if (currentWord) {
@@ -37,7 +42,7 @@ const Game: React.FC<IProps> = ({ onFound, onStart, currentWord }) => {
         zIndex={300}
         mt={2}
       >
-        {!currentWord && (
+        {!currentWord && shouldDisplayInstructions() && (
           <>
             <Typography variant="h2" align="center">
               {COPY.TAP_BOWL_INSTRUCTIONS[language]}

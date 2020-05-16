@@ -23,7 +23,6 @@ import {
   updateId,
   setVideoMuted,
   setAudioMuted,
-  resetTimer,
 } from "../../redux/computer";
 import { updateGame, updateGameSubcollection } from "../../redux/game";
 import CookiesService from "../cookies/CookiesService";
@@ -49,7 +48,7 @@ const getEndOfTurn = (
 ) => {
   if (remainingTimeForNextRound) {
     return moment()
-      .add(remainingTimeForNextRound.seconds, "s")
+      .add(remainingTimeForNextRound.seconds + 1, "s")
       .add(remainingTimeForNextRound.minutes, "m")
       .format();
   } else {
@@ -347,29 +346,22 @@ class Game {
   _handleGameUpdate = (c: any) => {
     const data = c.data();
     const {
-      game: { endOfCurrentTurn, currentUser, stage },
+      game: { currentUser, stage },
       computer: { users, videoMuted, audioMuted },
     } = ReduxStore.getState();
 
-    ReduxStore.dispatch(updateGame({ ...data, id: c.id }));
-
     if (data.stage === "PLAYING" && !data.endOfCurrentTurn) {
-      ReduxStore.dispatch(resetTimer());
+      if (this.countdown) {
+        this.countdown.reset(data.remainingTimeForNextRound || null);
+      } else {
+        this.countdown = new Countdown(data.remainingTimeForNextRound || null);
+      }
     }
-    if (
-      data.endOfCurrentTurn &&
-      data.endOfCurrentTurn !== endOfCurrentTurn &&
-      !this.countdown
-    ) {
+    if (data.endOfCurrentTurn) {
+      console.log("Game update data.end of current");
       this._startLocalCountDown(data.endOfCurrentTurn);
     }
-    if (
-      (data.remainingTimeForNextRound || !data.endOfCurrentTurn) &&
-      this.countdown
-    ) {
-      this.countdown.reset(data.remainingTimeForNextRound);
-      this.countdown = null;
-    }
+
     if (stage === "PLAYING" && data.currentUser !== currentUser) {
       if (audioMuted) {
         ReduxStore.dispatch(setAudioMuted(false));
@@ -380,6 +372,8 @@ class Game {
         ReduxStore.dispatch(setVideoMuted(true));
       }
     }
+
+    ReduxStore.dispatch(updateGame({ ...data, id: c.id }));
   };
 
   _handleGameSubcollectionData = (c: Array<any>, collectionName = "string") => {
@@ -392,7 +386,10 @@ class Game {
 
   _startLocalCountDown = (end: string) => {
     const onCountdownEnd = () => this._endPlayerTurn(this.id);
-    this.countdown = new Countdown(end, onCountdownEnd);
+    if (!this.countdown) {
+      this.countdown = new Countdown();
+    }
+    this.countdown.start(end, onCountdownEnd);
   };
 
   _endPlayerTurn = async (gameId: GameId) => {
@@ -451,6 +448,7 @@ class Game {
         await this._end();
       } else {
         const remainingTimeForNextRound = ReduxStore.getState().computer.timer;
+        remainingTimeForNextRound.seconds -= 1;
         const nextRound = rounds.find((r) => r.index === currentRoundIndex + 1);
         await this.store.startRound({
           remainingTimeForNextRound,
@@ -467,7 +465,6 @@ class Game {
     if (this.countdown) {
       this.countdown.reset();
     }
-    this.countdown = null;
     await this.store.gameRef.update({
       stage: "ENDED",
       currentRound: "5",

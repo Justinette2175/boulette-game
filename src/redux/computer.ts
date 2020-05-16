@@ -40,7 +40,6 @@ const computer = createReducer<ComputerReducer>({}, initialState);
 
 export const updateTimer = (time: Time): any => {
   return (dispatch: any) => {
-    console.log("Time received is", time);
     dispatch(setTimer({ minutes: time.minutes, seconds: time.seconds + 1 }));
   };
 };
