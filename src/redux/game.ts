@@ -1,14 +1,14 @@
 import { createReducer, createAction } from "redux-act";
 import "firebase/firestore";
 import { Game, Username, TeamId, Team } from "../types";
+import CookiesService from "../services/cookies";
+import { resetComputer } from "./computer";
 
 export const updateGame = createAction<Game>("UPDATE_GAME");
 export const updateGameSubcollection = createAction<{
   values: Array<any>;
   key: string;
 }>("UPDATE_USERS");
-
-export const resetGame = createAction("RESET_GAME");
 
 export const updateTeams = createAction<Array<Team>>("UPDATE_TEAMS");
 export const updateUserTeam = createAction<{
@@ -27,6 +27,18 @@ const initialState: Game = {
   words: [],
   teams: [],
   endOfCurrentTurn: null,
+  stage: null,
+  winner: null,
+  wordsPerPlayer: null,
+  secondsPerTurn: null,
+};
+
+export const resetGame = () => {
+  return (dispatch: any) => {
+    CookiesService.clearCookies();
+    dispatch(resetComputer());
+    dispatch(updateGame(initialState));
+  };
 };
 
 const game = createReducer<Game>({}, initialState);
@@ -37,7 +49,5 @@ game.on(updateGameSubcollection, (state, payload) => ({
   ...state,
   [payload.key]: payload.values,
 }));
-
-game.on(resetGame, () => initialState);
 
 export default game;

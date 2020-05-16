@@ -2,7 +2,6 @@ import { createReducer, createAction } from "redux-act";
 import moment from "moment";
 import { ComputerReducer, Time, UserId, Store } from "../types";
 import Cookies from "js-cookie";
-import ReduxStore from "../redux/store";
 
 export const addUserToComputer = createAction<UserId>("ADD_USER_TO_COMPUTER");
 export const setTimer = createAction<Time>("UPDATE_TIMER");
