@@ -5,7 +5,13 @@ import { Store, GameStages } from "./types";
 import Cookies from "js-cookie";
 import { addUserToComputer } from "./redux/computer";
 
-import { CssBaseline, Box, useMediaQuery } from "@material-ui/core";
+import {
+  CssBaseline,
+  Box,
+  useMediaQuery,
+  Typography,
+  useTheme,
+} from "@material-ui/core";
 import { Theme } from "@material-ui/core/styles";
 import { JitsiProvider } from "./utils/JitsiContext";
 
@@ -16,8 +22,9 @@ import Background from "./components/Background";
 import GameEnded from "./views/GameEnded";
 import WaitingForPlayersView from "./views/WaitingForPlayersView";
 import ViewTeamsView from "./views/ViewTeamsView";
-import EndGame from "./components/EndGame";
 import SmallScreenView from "./views/SmallScreenView";
+
+import PermissionsModal from "./components/PermissionsModal";
 
 import GameService from "./services/game";
 import SettingsContainer from "./components/SettingsContainer";
@@ -39,6 +46,7 @@ const App: React.FC = () => {
       storedUsers.forEach((u) => dispatch(addUserToComputer(u)));
     }
   };
+
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
@@ -54,9 +62,9 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const isSmallScreen = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down("sm")
-  );
+  const theme = useTheme();
+
+  const isSmallScreen = useMediaQuery((t: Theme) => t.breakpoints.down("sm"));
 
   let view;
   if (isSmallScreen) {
@@ -79,6 +87,16 @@ const App: React.FC = () => {
     <div className="App">
       <JitsiProvider gameId={gameId}>
         <>
+          <Box
+            position="fixed"
+            zIndex={theme.zIndex.snackbar}
+            top={theme.spacing(2)}
+            left={theme.spacing(2)}
+          >
+            <Typography variant="h3" style={{ opacity: 0.5 }}>
+              boulette.ca
+            </Typography>
+          </Box>
           <CssBaseline />
           <Background />
           <Box
@@ -92,6 +110,7 @@ const App: React.FC = () => {
             {view}
           </Box>
           <SettingsContainer />
+          <PermissionsModal />
         </>
       </JitsiProvider>
     </div>

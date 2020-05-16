@@ -191,4 +191,13 @@ export default {
     FR: "",
     EN: "End game",
   },
+  ENABLE_MEDIA_TITLE: {
+    FR: "",
+    EN: "I need access to your camera",
+  },
+  ENABLE_MEDIA_CONTENT: {
+    FR: "",
+    EN:
+      "Please give media permissions by clicking on the icon at the left of the URL bar and allowing microphone and camera sharing.",
+  },
 };

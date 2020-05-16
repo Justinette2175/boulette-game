@@ -11,6 +11,7 @@ const StartOrJoinGame: React.FC<IProps> = ({ gameId }) => {
     <ContentWrapper
       leftChild={<JoinGame gameId={gameId} />}
       rightChild={!gameId ? <StartGame /> : null}
+      maxWidth={500}
     />
   );
 };

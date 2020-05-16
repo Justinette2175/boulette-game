@@ -1,4 +1,6 @@
 import GameService from "../game";
+import ReduxStore from "../../redux/store";
+import { updatePermissionsModal } from "../../redux/computer";
 
 const options = {
   hosts: {
@@ -64,21 +66,27 @@ class Jitsy {
       JitsiMeetJS.events.mediaDevices.DEVICE_LIST_CHANGED,
       this.onDeviceListChanged
     );
-    console.log("connection", this.connection);
     this.connection.connect();
-
-    JitsiMeetJS.createLocalTracks({ devices: ["audio", "video"] })
-      .then((tracks: any) => this.onLocalTracks(tracks))
-      .catch((error: Error) => {
-        throw error;
-      });
 
     this.isJoined = false;
     this.room = null;
 
     this.localTracks = [];
     this.remoteTracks = {};
+
+    this.createLocalTracks();
   }
+
+  createLocalTracks = async () => {
+    try {
+      const tracks: any = await JitsiMeetJS.createLocalTracks({
+        devices: ["audio", "video"],
+      });
+      this.onLocalTracks(tracks);
+    } catch (e) {
+      ReduxStore.dispatch(updatePermissionsModal(true));
+    }
+  };
 
   onLocalTracks = (tracks: any) => {
     this.localTracks = tracks;
@@ -127,7 +135,6 @@ class Jitsy {
     }
 
     this.remoteTracks[participantId].push(track);
-    console.log("addig track for ", participantId);
     this.addExistingTrackId(participantId);
 
     track.addEventListener(
@@ -173,7 +180,6 @@ class Jitsy {
           if (trackType === "audio") {
             component = wrapper.querySelectorAll("audio");
           }
-          console.log("Component is", component);
           if (component && component.length > 0) {
             track.attach(component[0]);
           }
@@ -187,7 +193,6 @@ class Jitsy {
   };
 
   onConferenceJoined = () => {
-    console.log("On conference joined");
     if (!this.isJoined) {
       this.isJoined = true;
       for (let i = 0; i < this.localTracks.length; i++) {
@@ -198,12 +203,10 @@ class Jitsy {
   };
 
   onConnectionSuccess = () => {
-    console.log("Connection established");
     this.room = this.connection.initJitsiConference(
       this.gameId.toLowerCase(),
       confOptions
     );
-    console.log("This.room", this.room);
     this.room.on(JitsiMeetJS.events.conference.TRACK_ADDED, this.onRemoteTrack);
     this.room.on(JitsiMeetJS.events.conference.TRACK_REMOVED, (track: any) => {
       console.log(`track removed!!!${track}`);
@@ -213,7 +216,6 @@ class Jitsy {
       this.onConferenceJoined
     );
     this.room.on(JitsiMeetJS.events.conference.USER_JOINED, (id: string) => {
-      console.log("user join");
       this.remoteTracks[id] = [];
     });
     this.room.on(JitsiMeetJS.events.conference.USER_LEFT, this.onUserLeft);
@@ -240,7 +242,6 @@ class Jitsy {
   };
 
   onUserLeft = (id: string) => {
-    console.log("user left");
     if (!this.remoteTracks[id]) {
       return;
     }
@@ -252,7 +253,6 @@ class Jitsy {
   };
 
   disconnect = () => {
-    console.log("disconnect!");
     this.connection.removeEventListener(
       JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED,
       this.onConnectionSuccess

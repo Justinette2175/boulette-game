@@ -5,8 +5,13 @@ import { Box, Grid } from "@material-ui/core";
 interface IProps {
   leftChild?: React.ReactNode;
   rightChild?: React.ReactNode;
+  maxWidth?: number;
 }
-const ContentWrapper: React.FC<IProps> = ({ leftChild, rightChild }) => {
+const ContentWrapper: React.FC<IProps> = ({
+  leftChild,
+  rightChild,
+  maxWidth,
+}) => {
   return (
     <>
       <Box
@@ -15,7 +20,6 @@ const ContentWrapper: React.FC<IProps> = ({ leftChild, rightChild }) => {
         justifyContent="center"
         alignItems="center"
         position="relative"
-        p={2}
       >
         <Grid container spacing={3} style={{ width: "100%" }}>
           <StaggeredMotion
@@ -36,9 +40,10 @@ const ContentWrapper: React.FC<IProps> = ({ leftChild, rightChild }) => {
                   <Box width="100%" display="flex" justifyContent="center">
                     <Box
                       position="relative"
-                      maxWidth="500px"
                       width="100%"
                       style={{ transform: `translateY(${val[0].h}px)` }}
+                      p={4}
+                      maxWidth={maxWidth ? `${maxWidth}px` : "auto"}
                     >
                       {leftChild}
                     </Box>
@@ -48,9 +53,10 @@ const ContentWrapper: React.FC<IProps> = ({ leftChild, rightChild }) => {
                   <Box width="100%" display="flex" justifyContent="center">
                     <Box
                       position="relative"
-                      maxWidth="500px"
                       width="100%"
                       style={{ transform: `translateY(${val[1].h}px)` }}
+                      maxWidth={maxWidth ? `${maxWidth}px` : "auto"}
+                      p={4}
                     >
                       {rightChild}
                     </Box>

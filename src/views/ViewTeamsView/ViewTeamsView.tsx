@@ -43,6 +43,7 @@ const ViewTeamsView: React.FC = () => {
   return (
     <>
       <ContentWrapper
+        maxWidth={600}
         leftChild={
           <>
             <Box height="100px">

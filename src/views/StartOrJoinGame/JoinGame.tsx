@@ -34,7 +34,7 @@ const JoinGame: React.FC<IProps> = ({ gameId }) => {
   };
 
   return (
-    <Box p={4}>
+    <>
       {error && (
         <Box mb={2}>
           <Alert severity="error">{error.message}</Alert>
@@ -80,7 +80,7 @@ const JoinGame: React.FC<IProps> = ({ gameId }) => {
           </Form>
         )}
       </Formik>
-    </Box>
+    </>
   );
 };
 

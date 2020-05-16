@@ -8,6 +8,9 @@ export const setTimer = createAction<Time>("UPDATE_TIMER");
 export const updateInstructionsVisibility = createAction<boolean>(
   "UPDATE_INSTRUCTIONS_VISIBILITY"
 );
+export const updatePermissionsModal = createAction<boolean>(
+  "UPDATE_PERMISSIONS_MODAL"
+);
 export const updateId = createAction<string>("UPDATE_ID");
 
 export const resetComputer = createAction("RESET_COMPUTER");
@@ -33,6 +36,7 @@ const initialState: ComputerReducer = {
   language: "EN",
   audioMuted: false,
   videoMuted: false,
+  permissionsModal: false,
 };
 
 const computer = createReducer<ComputerReducer>({}, initialState);
@@ -67,35 +71,63 @@ export const addUserToComputerAndSetCookie = function (userId: UserId) {
   };
 };
 
-computer.on(addUserToComputer, (state, payload) => ({
-  ...state,
-  users: [...state.users, payload],
-}));
+computer.on(
+  addUserToComputer,
+  (state, payload): ComputerReducer => ({
+    ...state,
+    users: [...state.users, payload],
+  })
+);
 
-computer.on(setTimer, (state, payload) => {
-  return { ...state, timer: payload };
-});
+computer.on(
+  setTimer,
+  (state, payload): ComputerReducer => {
+    return { ...state, timer: payload };
+  }
+);
 
-computer.on(updateInstructionsVisibility, (state, payload) => {
-  return { ...state, instructionsVisible: payload };
-});
+computer.on(
+  updateInstructionsVisibility,
+  (state, payload): ComputerReducer => {
+    return { ...state, instructionsVisible: payload };
+  }
+);
 
-computer.on(updateId, (state, payload) => {
-  return { ...state, jitsyId: payload };
-});
+computer.on(
+  updateId,
+  (state, payload): ComputerReducer => {
+    return { ...state, jitsyId: payload };
+  }
+);
 
-computer.on(setAudioMuted, (state, payload) => {
-  return { ...state, audioMuted: payload };
-});
+computer.on(
+  setAudioMuted,
+  (state, payload): ComputerReducer => {
+    return { ...state, audioMuted: payload };
+  }
+);
 
-computer.on(setVideoMuted, (state, payload) => {
-  return { ...state, videoMuted: payload };
-});
+computer.on(
+  setVideoMuted,
+  (state, payload): ComputerReducer => {
+    return { ...state, videoMuted: payload };
+  }
+);
 
-computer.on(resetComputer, () => initialState);
+computer.on(resetComputer, (): ComputerReducer => initialState);
 
-computer.on(updateLanguage, (state, payload) => {
-  return { ...state, language: payload };
-});
+computer.on(
+  updateLanguage,
+  (state, payload): ComputerReducer => {
+    return { ...state, language: payload };
+  }
+);
+
+computer.on(
+  updatePermissionsModal,
+  (state, payload): ComputerReducer => {
+    return { ...state, permissionsModal: payload };
+  }
+);
 
 export default computer;

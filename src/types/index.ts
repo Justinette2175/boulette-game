@@ -61,6 +61,7 @@ export interface ComputerReducer {
   language: "EN" | "FR";
   audioMuted: boolean;
   videoMuted: boolean;
+  permissionsModal: boolean;
 }
 
 export interface Team {

@@ -42,17 +42,30 @@ const ScoreBoardInterface: React.FC<IProps> = ({
           >
             {t.name}
           </Typography>
-          {roundScore && (
-            <Typography
-              style={{ fontSize: "2rem", fontWeight: 700 }}
-              color={t.id === "1" ? "secondary" : "primary"}
-            >
-              {roundScore[t.id] || 0}
-            </Typography>
-          )}
-          {cumulativeScore && (
-            <Typography>{cumulativeScore[t.id] || 0}</Typography>
-          )}
+          <Box
+            display="flex"
+            justifyContent={t.id === "1" ? "flex-end" : "flex-start"}
+          >
+            {roundScore && (
+              <Box
+                order={t.id === "1" ? 1 : 0}
+                marginLeft={t.id === "1" ? 2 : 0}
+                marginRight={t.id === "1" ? 0 : 2}
+              >
+                <Typography
+                  style={{ fontSize: "2rem", fontWeight: 700 }}
+                  color={t.id === "1" ? "secondary" : "primary"}
+                >
+                  {roundScore[t.id] || 0}
+                </Typography>
+              </Box>
+            )}
+            {cumulativeScore && (
+              <Box order={t.id === "1" ? 0 : 1}>
+                <Typography>{cumulativeScore[t.id] || 0}</Typography>
+              </Box>
+            )}
+          </Box>
         </Box>
       );
     });

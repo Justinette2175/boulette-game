@@ -33,14 +33,6 @@ const initialState: Game = {
   secondsPerTurn: null,
 };
 
-export const resetGame = () => {
-  return (dispatch: any) => {
-    CookiesService.clearCookies();
-    dispatch(resetComputer());
-    dispatch(updateGame(initialState));
-  };
-};
-
 const game = createReducer<Game>({}, initialState);
 
 game.on(updateGame, (state, payload) => ({ ...state, ...payload }));

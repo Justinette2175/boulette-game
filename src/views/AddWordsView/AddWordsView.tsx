@@ -37,6 +37,7 @@ const PrepareGame: React.FC = () => {
   return (
     <>
       <ContentWrapper
+        maxWidth={600}
         leftChild={
           <>
             <Typography variant="h2">
