@@ -1,5 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
+import { BookOpen } from "react-feather";
 import { Box, Typography, Button } from "@material-ui/core";
 import { SCORE_BOARD_WIDTH } from "../constants";
 import { Team, RoundScore, TeamId } from "../types";
@@ -73,6 +74,8 @@ const ScoreBoardInterface: React.FC<IProps> = ({
       <Button
         onClick={() => dispatch(updateInstructionsVisibility(true))}
         size="small"
+        variant="outlined"
+        startIcon={<BookOpen size={14} />}
       >
         {COPY.READ_INSTRUCTIONS_BUTTON[language]}
       </Button>

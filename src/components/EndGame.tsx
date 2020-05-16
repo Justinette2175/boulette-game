@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
-import { Button, Dialog, Box, Typography, useTheme } from "@material-ui/core";
+import { Button, Dialog, Box, Typography } from "@material-ui/core";
+import { LogOut } from "react-feather";
 
 import GameService from "../services/game";
 
@@ -56,19 +57,15 @@ const EndGameModal: React.FC<EndGameModalProps> = ({ open, onClose }) => {
 const EndGame: React.FC = () => {
   const language = useSelector((state: Store) => state.computer.language);
   const [modalOpen, setModalOpen] = useState(false);
-  const theme = useTheme();
+
   return (
-    <Box
-      position="fixed"
-      bottom={theme.spacing(2)}
-      right={theme.spacing(2)}
-      zIndex={100}
-    >
+    <>
       <Button
         variant="contained"
         color="primary"
         size="small"
         onClick={() => setModalOpen(true)}
+        startIcon={<LogOut size={14} />}
       >
         {COPY.END_GAME_BUTTON[language]}
       </Button>
@@ -76,7 +73,7 @@ const EndGame: React.FC = () => {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
       ></EndGameModal>
-    </Box>
+    </>
   );
 };
 

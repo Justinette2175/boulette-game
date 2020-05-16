@@ -16,6 +16,8 @@ export const resetComputer = createAction("RESET_COMPUTER");
 export const setAudioMuted = createAction<boolean>("SET_AUDIO_MUTED");
 export const setVideoMuted = createAction<boolean>("SET_VIDEO_MUTED");
 
+export const updateLanguage = createAction<"FR" | "EN">("UPDATE_LANGUAGE");
+
 const makeTimerObjectFromSeconds = (seconds: number): Time => {
   const duration = moment.duration(seconds, "seconds");
   return {
@@ -37,7 +39,6 @@ const initialState: ComputerReducer = {
 const computer = createReducer<ComputerReducer>({}, initialState);
 
 export const resetTimer = (): any => {
-  console.log("________resettttting timerrr");
   return (dispatch: any, getState: () => Store) => {
     const {
       game: { secondsPerTurn },
@@ -87,5 +88,9 @@ computer.on(setVideoMuted, (state, payload) => {
 });
 
 computer.on(resetComputer, () => initialState);
+
+computer.on(updateLanguage, (state, payload) => {
+  return { ...state, language: payload };
+});
 
 export default computer;

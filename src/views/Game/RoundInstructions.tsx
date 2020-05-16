@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import { Store } from "../../types";
 import useCurrentRoundIndex from "../../utils/useCurrentRoundIndex";
-import roundInstructionsCopy from "../../utils/copy/roundInstructions";
+import roundInstructionsCopy from "../../copy/roundInstructions";
 import { updateInstructionsVisibility } from "../../redux/computer";
 
 const instructions = roundInstructionsCopy as any;

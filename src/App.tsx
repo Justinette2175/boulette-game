@@ -20,6 +20,7 @@ import EndGame from "./components/EndGame";
 import SmallScreenView from "./views/SmallScreenView";
 
 import GameService from "./services/game";
+import SettingsContainer from "./components/SettingsContainer";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -90,7 +91,7 @@ const App: React.FC = () => {
           >
             {view}
           </Box>
-          {gameId && !isSmallScreen && <EndGame />}
+          <SettingsContainer />
         </>
       </JitsiProvider>
     </div>
