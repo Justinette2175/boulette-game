@@ -14,11 +14,11 @@ const SmallScreenView: React.FC = () => {
           like cell phones yet... For now, try switching to a device with a
           large screen, like a laptop, or a tablet in horizontal orientation.
         </Typography>
-        <Typography variant="body1" gutterBottom>
+        {/* <Typography variant="body1" gutterBottom>
           If you want to stay aware of new features, sign up to the boulette.ca
           newsletter!
         </Typography>
-        <NewsletterSubscriber />
+        <NewsletterSubscriber /> */}
       </Box>
     </Box>
   );

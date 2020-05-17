@@ -21,7 +21,7 @@ const SettingsContainer: React.FC = () => {
   return (
     <Button
       size="small"
-      variant="contained"
+      color="primary"
       onClick={toggleLanguage}
       startIcon={<Settings size={14} />}
     >

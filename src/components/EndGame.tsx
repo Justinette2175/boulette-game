@@ -65,8 +65,8 @@ const EndGame: React.FC = () => {
   return (
     <>
       <Button
-        variant="contained"
         size="small"
+        color="primary"
         onClick={() => setModalOpen(true)}
         startIcon={<LogOut size={14} />}
       >

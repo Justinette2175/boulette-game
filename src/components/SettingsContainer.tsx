@@ -7,6 +7,8 @@ import { Store } from "../types";
 import LanguageToggle from "./LanguageToggle";
 import EndGame from "./EndGame";
 
+import AboutMe from "../components/AboutMe";
+
 const SettingsContainer: React.FC = () => {
   const theme = useTheme();
   const gameId = useSelector((state: Store) => state.game.id);
@@ -26,7 +28,10 @@ const SettingsContainer: React.FC = () => {
       <Box mb={0.5}>
         <LanguageToggle />
       </Box>
-      <Box>{gameId && !isSmallScreen && <EndGame />}</Box>
+      <Box mb={0.5}>{gameId && !isSmallScreen && <EndGame />}</Box>
+      <Box>
+        <AboutMe />
+      </Box>
     </Box>
   );
 };

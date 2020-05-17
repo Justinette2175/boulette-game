@@ -87,16 +87,6 @@ const App: React.FC = () => {
     <div className="App">
       <JitsiProvider gameId={gameId}>
         <>
-          <Box
-            position="fixed"
-            zIndex={theme.zIndex.snackbar}
-            top={theme.spacing(2)}
-            left={theme.spacing(2)}
-          >
-            <Typography variant="h3" style={{ opacity: 0.5 }}>
-              boulette.ca
-            </Typography>
-          </Box>
           <CssBaseline />
           <Background />
           <Box

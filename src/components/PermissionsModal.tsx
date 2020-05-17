@@ -31,7 +31,6 @@ const PermissionsModal = () => {
     () => {
       const checkPermissions = async () => {
         const ok = await hasAllMediaPermissions();
-        console.log("ok is", ok);
         if (ok) {
           await jitsy.createLocalTracks();
           dispatch(updatePermissionsModal(false));
