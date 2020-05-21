@@ -5,13 +5,7 @@ import { Store, GameStages } from "./types";
 import Cookies from "js-cookie";
 import { addUserToComputer } from "./redux/computer";
 
-import {
-  CssBaseline,
-  Box,
-  useMediaQuery,
-  Typography,
-  useTheme,
-} from "@material-ui/core";
+import { CssBaseline, Box, useMediaQuery, useTheme } from "@material-ui/core";
 import { Theme } from "@material-ui/core/styles";
 import { JitsiProvider } from "./utils/JitsiContext";
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
+import GameService from "../services/game";
 import JitsyContext from "../utils/JitsiContext";
 import useInterval from "../utils/useInterval";
 import { Box } from "@material-ui/core";
@@ -25,13 +26,19 @@ interface IProps {
 
 const RemoteCall: React.FC<IProps> = ({ jitsiId, audioOnly }) => {
   const classes = useStyles();
-  const { jitsy } = useContext(JitsyContext);
+  const jitsi = GameService.getJitsi();
   const [attached, setAttached] = useState<boolean>(false);
+  const { existingTracksIds } = useContext(JitsyContext);
+
+  const trackExists = existingTracksIds[jitsiId];
+
+  console.log("Tracl exists", trackExists);
 
   const attachJitsyToComponent = () => {
-    if (jitsy && jitsiId) {
+    if (jitsi && jitsiId) {
       try {
-        jitsy.attachRemoteTrackToComponent(jitsiId, `${jitsiId}-jitsi`);
+        jitsi.attachRemoteTrackToComponent(jitsiId, `${jitsiId}-jitsi`);
+        console.log("The remote component was attached for ", jitsiId);
         setAttached(true);
       } catch (e) {
         console.warn(e.message);
@@ -42,6 +49,12 @@ const RemoteCall: React.FC<IProps> = ({ jitsiId, audioOnly }) => {
   useEffect(() => {
     attachJitsyToComponent();
   }, []);
+
+  useEffect(() => {
+    console.log("updating effect for track exists");
+    setAttached(false);
+    attachJitsyToComponent();
+  }, [trackExists]);
 
   useInterval(() => attachJitsyToComponent(), attached ? null : 1000);
 

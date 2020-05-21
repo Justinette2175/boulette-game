@@ -5,7 +5,7 @@ import GameService from "../../services/game";
 import { useSelector } from "react-redux";
 import { Store } from "../../types";
 
-import { Box, Button, Typography } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import TextInput from "../../components/TextInput";
 import Select from "../../components/Select";
 import ButtonsGroup from "../../components/ButtonsGroup";
@@ -26,7 +26,7 @@ const StartGame: React.FC = () => {
   };
 
   return (
-    <Box p={4}>
+    <>
       <Typography variant="h2">{COPY.START_GAME_TITLE[language]}</Typography>
       <Typography variant="body1">{COPY.START_GAME_PARA[language]}</Typography>
       <Formik
@@ -88,7 +88,7 @@ const StartGame: React.FC = () => {
           </Form>
         )}
       </Formik>
-    </Box>
+    </>
   );
 };
 

@@ -3,6 +3,7 @@ import "firebase/firestore";
 import { GameId, Username, Word, JitsyId } from "../../types";
 
 import GameObject, { createGameArgs } from "./Game";
+import JitsiObject from "../jitsy";
 
 class GameService {
   game: GameObject;
@@ -71,6 +72,14 @@ class GameService {
     if (this.game) {
       this.game.terminate();
     }
+  };
+
+  getJitsi = () => {
+    return this.game ? this.game.jitsi : null;
+  };
+
+  setJitsi = (j: JitsiObject) => {
+    this.game.jitsi = j;
   };
 }
 

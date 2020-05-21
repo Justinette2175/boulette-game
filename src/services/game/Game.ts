@@ -15,6 +15,7 @@ import {
 } from "../../types";
 import FirebaseGameInterface from "../firebase/FirebaseGameInterface";
 import { calculateCumulativeScore } from "../../utils";
+import Jitsi from "../jitsy";
 
 import { NUMBER_OF_ROUNDS } from "../../constants";
 
@@ -82,6 +83,7 @@ class Game {
   id: GameId;
   store: any;
   countdown: Countdown;
+  jitsi: Jitsi;
 
   constructor(gameId?: GameId) {
     this.id = gameId || this._generateGameId();
@@ -213,7 +215,6 @@ class Game {
   };
 
   storeJitsyId = async (jitsyId: JitsyId) => {
-    console.log("store jitsyId", jitsyId);
     const { users } = ReduxStore.getState().computer;
     ReduxStore.dispatch(updateId(jitsyId));
     users.forEach((u) => {
@@ -304,9 +305,7 @@ class Game {
   };
 
   _fetchAllDataAndStartListening = async () => {
-    console.log("fetching data");
     const game = await this.store.gameRef.get();
-    console.log("game", game);
     if (game.exists) {
       this._handleGameUpdate(game);
       const collections = ["users", "rounds", "teams", "words"];
@@ -347,7 +346,7 @@ class Game {
     const data = c.data();
     const {
       game: { currentUser, stage },
-      computer: { users, videoMuted, audioMuted },
+      computer: { users },
     } = ReduxStore.getState();
 
     if (data.stage === "PLAYING" && !data.endOfCurrentTurn) {
@@ -358,18 +357,15 @@ class Game {
       }
     }
     if (data.endOfCurrentTurn) {
-      console.log("Game update data.end of current");
       this._startLocalCountDown(data.endOfCurrentTurn);
     }
 
-    if (stage === "PLAYING" && data.currentUser !== currentUser) {
-      if (audioMuted) {
-        ReduxStore.dispatch(setAudioMuted(false));
-      }
-      if (users.indexOf(currentUser) > -1 && !!videoMuted) {
-        ReduxStore.dispatch(setVideoMuted(false));
-      } else if (users.indexOf(currentUser) < 0 && !videoMuted) {
-        ReduxStore.dispatch(setVideoMuted(true));
+    if (stage === "PLAYING") {
+      this.mute(["audio"], false);
+      if (users.indexOf(currentUser) > -1) {
+        this.mute(["video"], false);
+      } else if (users.indexOf(currentUser) < 0) {
+        this.mute(["video"], true);
       }
     }
 
@@ -454,6 +450,28 @@ class Game {
           remainingTimeForNextRound,
           nextRoundId: nextRound.id,
         });
+      }
+    }
+  };
+
+  mute = (system: Array<"audio" | "video">, state: boolean) => {
+    if (this.jitsi) {
+      if (state) {
+        this.jitsi.mute(system);
+        if (system.indexOf("audio") > -1) {
+          ReduxStore.dispatch(setAudioMuted(true));
+        }
+        if (system.indexOf("video") > -1) {
+          ReduxStore.dispatch(setVideoMuted(true));
+        }
+      } else {
+        this.jitsi.unmute(system);
+        if (system.indexOf("audio") > -1) {
+          ReduxStore.dispatch(setAudioMuted(false));
+        }
+        if (system.indexOf("video") > -1) {
+          ReduxStore.dispatch(setVideoMuted(false));
+        }
       }
     }
   };

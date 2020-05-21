@@ -1,12 +1,11 @@
 import React, { useEffect, useContext, useState } from "react";
+import GameService from "../../services/game";
 import JitsyContext from "../../utils/JitsiContext";
 
 import { Box } from "@material-ui/core";
 import useCurrentPlayerIsOnDevice from "../../utils/useCurrentPlayerIsOnDevice";
 import useCurrentUser from "../../utils/useCurrentUser";
 import useInterval from "../../utils/useInterval";
-
-import { VIDEO_HEIGHT } from "../../constants";
 
 const RETRY_INTERVAL = 1000;
 
@@ -15,19 +14,18 @@ const CurrentPlayerVideo = () => {
   const currentUser = useCurrentUser();
   const [videoIsAttached, setVideoIsAttached] = useState<boolean>(false);
 
-  const { jitsy, existingTracksIds } = useContext(JitsyContext);
+  const { existingTracksIds } = useContext(JitsyContext);
+  const jitsi = GameService.getJitsi();
 
   const attachTrack = () => {
-    console.log("user", currentUser ? currentUser.jitsyId : "No user");
-    console.log("track", existingTracksIds);
     if (
-      jitsy &&
+      jitsi &&
       currentUser &&
       currentUser.jitsyId &&
-      existingTracksIds.indexOf(currentUser.jitsyId) > -1
+      existingTracksIds[currentUser.jitsyId]
     ) {
       try {
-        jitsy.attachRemoteTrackToComponent(
+        jitsi.attachRemoteTrackToComponent(
           currentUser.jitsyId,
           "current-player-jitsi"
         );

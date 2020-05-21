@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import GameService from "../services/game";
 import { Dialog, Box, Typography } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
 import { Store } from "../types";
@@ -16,7 +17,7 @@ const PermissionsModal = () => {
   const open = useSelector((state: Store) => state.computer.permissionsModal);
   const language = useSelector((state: Store) => state.computer.language);
 
-  const { jitsy } = useContext(JitsyContext);
+  const jitsi = GameService.getJitsi();
 
   const hasAllMediaPermissions = async () => {
     try {
@@ -32,7 +33,7 @@ const PermissionsModal = () => {
       const checkPermissions = async () => {
         const ok = await hasAllMediaPermissions();
         if (ok) {
-          await jitsy.createLocalTracks();
+          await jitsi.createLocalTracks();
           dispatch(updatePermissionsModal(false));
           setHasPermission(true);
         }
@@ -57,8 +58,8 @@ const PermissionsModal = () => {
 };
 
 const PermissionsModalContainer = () => {
-  const { jitsy } = useContext(JitsyContext);
-  if (!!jitsy) {
+  const jitsi = GameService.getJitsi();
+  if (!!jitsi) {
     return <PermissionsModal />;
   } else {
     return null;

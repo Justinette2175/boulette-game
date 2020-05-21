@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import JitsyContext from "../utils/JitsiContext";
+import GameService from "../services/game";
 import useInterval from "../utils/useInterval";
 import { Box, IconButton } from "@material-ui/core";
 import { Mic, MicOff, Video, VideoOff } from "react-feather";
@@ -24,27 +25,34 @@ const useStyles = makeStyles((theme: Theme) => {
 
 const LocalCall: React.FC = () => {
   const classes = useStyles();
-  const { jitsy } = useContext(JitsyContext);
+  const jitsi = GameService.getJitsi();
   const [attached, setAttached] = useState<boolean>(false);
   const audioMuted = useSelector((state: Store) => state.computer.audioMuted);
   const videoMuted = useSelector((state: Store) => state.computer.videoMuted);
   const dispatch = useDispatch();
 
+  const { hasLocalVideo } = useContext(JitsyContext);
+
+  // console.log("jitsy in local is", jitsi);
+
   const attachJitsyToComponent = () => {
-    if (jitsy) {
+    if (jitsi) {
+      console.log("Attaching jisti");
       try {
-        jitsy.attachLocalTrackToComponent("local-jitsi");
+        jitsi.attachLocalTrackToComponent("local-jitsi");
+        console.log("done attaching");
         setAttached(true);
       } catch (e) {
-        console.warn(e);
+        // console.warn(e);
       }
     }
   };
 
   const toggleMute = async (type: "audio" | "video") => {
-    if (jitsy) {
+    if (jitsi) {
       try {
-        await jitsy.toggleMute([type]);
+        await jitsi.toggleMute([type]);
+        console.log("muting now");
         if (type === "audio") {
           dispatch(setAudioMuted(!audioMuted));
         } else if (type === "video") {

@@ -1,8 +1,6 @@
-import React, { useState } from "react";
-import { useTheme, Typography, Box, Button, Grid } from "@material-ui/core";
+import React from "react";
+import { Typography, Box, Button, Grid } from "@material-ui/core";
 import { DollarSign, Server, Heart, Home } from "react-feather";
-import { Formik, Form, Field, FieldProps } from "formik";
-import * as Yup from "yup";
 
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
@@ -44,7 +42,7 @@ const OPTIONS = [
   },
   {
     amount: 25,
-    text: "Help my cashdown <3",
+    text: "Grow my cashdown <3",
     icon: "home",
     link: "https://www.paypal.me/justinegagnepain/25CAD?locale.x=en_US",
   },
@@ -52,14 +50,6 @@ const OPTIONS = [
 
 const Donate = () => {
   const classes = useStyles();
-
-  const handleSubmit = (values: { amount: string }) => {
-    console.log("Amount is", values);
-  };
-
-  const validationSchema = Yup.object().shape({
-    amount: Yup.number().required("Required"),
-  });
 
   const getIcon = (icon: string) => {
     switch (icon) {

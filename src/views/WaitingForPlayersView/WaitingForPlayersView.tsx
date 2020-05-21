@@ -43,11 +43,13 @@ const PrepareGame: React.FC = () => {
               </CallWrapper>
               <Box ml={4}>
                 <Grid container spacing={2}>
-                  {computerUsers.map((u) => (
-                    <Grid item>
-                      <PlayerAndAvatar name={u.name} />
-                    </Grid>
-                  ))}
+                  {computerUsers.map((u) =>
+                    u.name ? (
+                      <Grid item>
+                        <PlayerAndAvatar name={u.name} />
+                      </Grid>
+                    ) : null
+                  )}
                 </Grid>
                 <Box mt={2}>
                   <Typography variant="body2" gutterBottom>

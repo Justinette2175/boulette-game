@@ -37,10 +37,12 @@ class Jitsy {
   videoComponents: any;
   audioComponents: any;
   addExistingTrackId: (id: string) => void;
+  removeExistingTrackId: (id: string) => void;
   setHasLocalTrack: (val: boolean) => void;
   constructor(
     gameId: string,
     addExistingTrackId: (id: string) => void,
+    removeExistingTrackId: (id: string) => void,
     setHasLocalTrack: (val: boolean) => void
   ) {
     this.connection = new JitsiMeetJS.JitsiConnection(null, null, options);
@@ -48,7 +50,9 @@ class Jitsy {
     this.videoComponents = {};
     this.audioComponents = {};
     this.addExistingTrackId = addExistingTrackId;
+    this.removeExistingTrackId = removeExistingTrackId;
     this.setHasLocalTrack = setHasLocalTrack;
+
     this.connection.addEventListener(
       JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED,
       this.onConnectionSuccess
@@ -209,7 +213,9 @@ class Jitsy {
     );
     this.room.on(JitsiMeetJS.events.conference.TRACK_ADDED, this.onRemoteTrack);
     this.room.on(JitsiMeetJS.events.conference.TRACK_REMOVED, (track: any) => {
-      console.log(`track removed!!!${track}`);
+      const id = track.getParticipantId();
+      this.removeExistingTrackId(id);
+      console.log(`track removed!!!${id}`);
     });
     this.room.on(
       JitsiMeetJS.events.conference.CONFERENCE_JOINED,
