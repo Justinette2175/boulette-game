@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { Store } from "../../types";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import GameService from "../../services/game";
 
 import TextInput from "../../components/TextInput";
 import { Box, Typography, Button } from "@material-ui/core";
@@ -12,26 +11,17 @@ import ButtonsGroup from "../../components/ButtonsGroup";
 
 import COPY from "../../copy";
 
-interface IProps {
-  gameId: string;
-}
+interface IProps {}
 
-const JoinGame: React.FC<IProps> = ({ gameId }) => {
+const JoinGame: React.FC<IProps> = () => {
   const [error, setError] = useState<Error>(null);
-  const language = useSelector((state: Store) => state.computer.language);
+  const language = "EN";
   const validationSchema = Yup.object().shape({
     playerName: Yup.string().required("Required"),
     gameId: Yup.string().required("Required"),
   });
 
-  const handleSubmit = async (values: any) => {
-    setError(null);
-    try {
-      await GameService.joinGame(values.playerName, values.gameId);
-    } catch (e) {
-      setError(e);
-    }
-  };
+  const handleSubmit = async (values: any) => {};
 
   return (
     <>
@@ -41,14 +31,12 @@ const JoinGame: React.FC<IProps> = ({ gameId }) => {
         </Box>
       )}
       <Typography variant="h2">{COPY.JOIN_GAME_TITLE[language]}</Typography>
-      {!gameId && (
-        <Typography variant="body1">{COPY.JOIN_GAME_PARA[language]}</Typography>
-      )}
+      <Typography variant="body1">{COPY.JOIN_GAME_PARA[language]}</Typography>
       <Formik
         validateOnMount={true}
         initialValues={{
           playerName: "",
-          gameId: gameId || "",
+          gameId: "",
         }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}

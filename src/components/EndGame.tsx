@@ -3,11 +3,6 @@ import React, { useState } from "react";
 import { Button, Dialog, Box, Typography } from "@material-ui/core";
 import { LogOut, X } from "react-feather";
 
-import GameService from "../services/game";
-
-import { useSelector } from "react-redux";
-import { Store } from "../types";
-
 import COPY from "../copy";
 
 interface EndGameModalProps {
@@ -15,11 +10,10 @@ interface EndGameModalProps {
   onClose: () => void;
 }
 const EndGameModal: React.FC<EndGameModalProps> = ({ open, onClose }) => {
-  const language = useSelector((state: Store) => state.computer.language);
+  const language = "EN";
 
   const handleEndGame = () => {
     onClose();
-    GameService.terminateGame();
   };
 
   return (
@@ -59,7 +53,7 @@ const EndGameModal: React.FC<EndGameModalProps> = ({ open, onClose }) => {
 };
 
 const EndGame: React.FC = () => {
-  const language = useSelector((state: Store) => state.computer.language);
+  const language = "EN";
   const [modalOpen, setModalOpen] = useState(false);
 
   return (

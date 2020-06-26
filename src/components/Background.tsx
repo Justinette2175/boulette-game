@@ -1,19 +1,16 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { Box, useTheme } from "@material-ui/core";
 import SliderWrapper from "./SliderWrapper";
-import { Store } from "../types";
 
 const Background = ({}) => {
   const theme = useTheme();
-  const currentTeam = useSelector((state: Store) => state.game.currentTeam);
-  const gameWinner = useSelector((state: Store) => state.game.winner);
-  const placement =
-    !!gameWinner || !currentTeam
-      ? "center"
-      : currentTeam === "1"
-      ? "left"
-      : "right";
+  // const placement =
+  //   !!gameWinner || !currentTeam
+  //     ? "center"
+  //     : currentTeam === "1"
+  //     ? "left"
+  //     : "right";
+  const placement = "left";
 
   return (
     <Box

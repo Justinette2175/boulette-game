@@ -1,21 +1,13 @@
 import React from "react";
 import { Button } from "@material-ui/core";
-import { useSelector, useDispatch } from "react-redux";
-import { Store } from "../types";
-import { updateLanguage } from "../redux/computer";
 
 import { Settings } from "react-feather";
 
 const SettingsContainer: React.FC = () => {
-  const dispatch = useDispatch();
-  const language = useSelector((state: Store) => state.computer.language);
+  const language = "EN";
 
   const toggleLanguage = () => {
-    if (language === "EN") {
-      dispatch(updateLanguage("FR"));
-    } else if (language === "FR") {
-      dispatch(updateLanguage("EN"));
-    }
+    //
   };
 
   return (

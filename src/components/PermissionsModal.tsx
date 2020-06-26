@@ -15,7 +15,7 @@ const PermissionsModal = () => {
   const dispatch = useDispatch();
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const open = useSelector((state: Store) => state.computer.permissionsModal);
-  const language = useSelector((state: Store) => state.computer.language);
+  const language = "EN";
 
   const jitsi = GameService.getJitsi();
 

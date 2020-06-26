@@ -1,16 +1,15 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useContext } from "react";
 import { Typography, Box, BoxProps } from "@material-ui/core";
 import { BASE_URL } from "../constants";
-import { Store } from "../types";
+import GameContext from "../contexts/GameContext";
 
 import COPY from "../copy";
 
 const GameLink: React.FC<BoxProps> = (props) => {
-  let gameId = useSelector((state: Store) => state.game.id);
-  const language = useSelector((state: Store) => state.computer.language);
+  let game = useContext(GameContext);
+  const language = "EN";
 
-  if (gameId) {
+  if (game && game.id) {
     return (
       <Box {...props}>
         <Typography variant="body2">
@@ -20,7 +19,7 @@ const GameLink: React.FC<BoxProps> = (props) => {
           <Typography
             color="primary"
             variant="caption"
-          >{`${BASE_URL}?gameId=${gameId}`}</Typography>
+          >{`${BASE_URL}?gameId=${game.id}`}</Typography>
         </Box>
       </Box>
     );

@@ -44,7 +44,7 @@ const OtherPlayersView: React.FC<IProps> = ({ teamId }) => {
           </Grid>
         </Box>
       </Box>
-      <CurrentPlayerVideo />
+      {/* <CurrentPlayerVideo /> */}
     </Box>
   );
 };

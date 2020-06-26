@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { Formik, Form } from "formik";
+import { Redirect } from "react-router-dom";
+import { FirebaseContext } from "../../firebase";
+import { NewGame } from "../../types/firebaseTypes";
 import * as Yup from "yup";
-import GameService from "../../services/game";
-import { useSelector } from "react-redux";
-import { Store } from "../../types";
+import { generateGameId } from "../../utils";
 
 import { Button, Typography } from "@material-ui/core";
 import TextInput from "../../components/TextInput";
@@ -11,9 +12,20 @@ import Select from "../../components/Select";
 import ButtonsGroup from "../../components/ButtonsGroup";
 
 import COPY from "../../copy";
+import DeviceIdContext from "../../contexts/DeviceIdContext";
+
+interface FormValues {
+  ownerName: string;
+  wordsPerPlayer: number;
+  secondsPerTurn: number;
+}
 
 const StartGame: React.FC = () => {
-  const language = useSelector((state: Store) => state.computer.language);
+  const language = "EN";
+  const firebase = useContext(FirebaseContext);
+  const deviceId = useContext(DeviceIdContext);
+  const [gameId, setGameId] = useState<string>(null);
+  const [error, setError] = useState<Error>(null);
 
   const validationSchema = Yup.object().shape({
     ownerName: Yup.string().required("Required"),
@@ -21,9 +33,63 @@ const StartGame: React.FC = () => {
     secondsPerTurn: Yup.number().required("Required"),
   });
 
-  const handleSubmit = (values: any) => {
-    GameService.createGame(values);
+  const createGame = async ({
+    wordsPerPlayer,
+    secondsPerTurn,
+    ownerName,
+  }: FormValues) => {
+    try {
+      const batch = firebase.firestore.batch();
+      const gameShortId = generateGameId();
+
+      const gameRef = firebase.firestore.collection("games").doc();
+      const ownerRef = gameRef.collection("players").doc();
+
+      const game: NewGame = {
+        wordsPerPlayer,
+        secondsPerTurn,
+        owner: {
+          id: ownerRef.id,
+          name: ownerName,
+          deviceId,
+        },
+        stage: "WAITING_FOR_PLAYERS",
+        shortId: gameShortId,
+      };
+
+      // Create Game
+      batch.set(gameRef, game);
+
+      // Create teams
+      batch.set(gameRef.collection("teams").doc("1"), {
+        players: {
+          [ownerRef.id]: {
+            name: ownerName,
+            id: ownerRef.id,
+            deviceId,
+          },
+        },
+      });
+      batch.set(gameRef.collection("teams").doc("2"), {});
+
+      // Create owner as a player
+      batch.set(ownerRef, { name: ownerName, deviceId });
+
+      await batch.commit();
+      setGameId(gameRef.id);
+    } catch (e) {
+      console.log("Error:StartGame:createGame", e);
+      setError(e);
+    }
   };
+
+  const handleSubmit = (values: FormValues) => {
+    createGame(values);
+  };
+
+  if (gameId) {
+    return <Redirect to={`/games/${gameId}`} />;
+  }
 
   return (
     <>

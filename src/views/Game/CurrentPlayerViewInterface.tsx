@@ -1,27 +1,26 @@
 import React from "react";
 import { Box, Typography } from "@material-ui/core";
-import { Word } from "../../types";
 import WordTransitionWrapper from "../../components/WordTransitionWrapper";
-import { useSelector } from "react-redux";
-import { Store } from "../../types";
 
 import Bowl from "../../components/Bowl";
 import LocalCall from "../../components/LocalCall";
 
 import COPY from "../../copy";
+import { FirebaseGameWord } from "../../types/firebaseTypes";
 
 interface IProps {
   onFound: () => void;
   onStart: () => void;
-  currentWord: Word;
+  currentWord: FirebaseGameWord;
 }
 
 const Game: React.FC<IProps> = ({ onFound, onStart, currentWord }) => {
-  const language = useSelector((state: Store) => state.computer.language);
-  const timer = useSelector((state: Store) => state.computer.timer);
+  const language = "EN";
+  // const timer = useSelector((state: Store) => state.computer.timer);
 
   const shouldDisplayInstructions = (): boolean => {
-    return timer && (timer.seconds > 0 || timer.minutes > 0);
+    return false;
+    // return timer && (timer.seconds > 0 || timer.minutes > 0);
   };
 
   const handleBowlClick = () => {
@@ -83,9 +82,9 @@ const Game: React.FC<IProps> = ({ onFound, onStart, currentWord }) => {
       >
         <Bowl />
       </Box>
-      <Box position="absolute" bottom={0} left={0}>
+      {/* <Box position="absolute" bottom={0} left={0}>
         <LocalCall />
-      </Box>
+      </Box> */}
     </Box>
   );
 };

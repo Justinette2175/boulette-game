@@ -3,7 +3,7 @@ import GameService from "../../services/game";
 import JitsyContext from "../../utils/JitsiContext";
 
 import { Box } from "@material-ui/core";
-import useCurrentPlayerIsOnDevice from "../../utils/useCurrentPlayerIsOnDevice";
+import useCurrentPlayerIsOnDevice from "../../hooks/useCurrentPlayerIsOnDevice";
 import useCurrentUser from "../../utils/useCurrentUser";
 import useInterval from "../../utils/useInterval";
 

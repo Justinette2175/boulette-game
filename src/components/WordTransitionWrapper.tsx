@@ -1,11 +1,11 @@
 import React from "react";
 import { TransitionMotion, Motion, spring } from "react-motion";
-import { Word } from "../types";
 import WordOnPaper from "../components/WordOnPaper";
 import { Box } from "@material-ui/core";
+import { FirebaseGameWord } from "../types/firebaseTypes";
 
 interface IProps {
-  currentWord: Word;
+  currentWord: FirebaseGameWord;
 }
 
 const WordTransitionWrapper: React.FC<IProps> = ({ currentWord }) => {
@@ -36,13 +36,13 @@ const WordTransitionWrapper: React.FC<IProps> = ({ currentWord }) => {
             styles={[
               {
                 style: { top: spring(0), opacity: spring(1) },
-                key: currentWord.text + currentWord.writtenBy,
+                key: currentWord.word + currentWord.writtenBy.id,
               },
             ]}
             defaultStyles={[
               {
                 style: { top: 0, opacity: 1 },
-                key: currentWord.text + currentWord.writtenBy,
+                key: currentWord.word + currentWord.writtenBy.id,
               },
             ]}
           >
@@ -59,7 +59,7 @@ const WordTransitionWrapper: React.FC<IProps> = ({ currentWord }) => {
                         opacity: s.style.opacity,
                       }}
                     >
-                      <WordOnPaper word={currentWord.text} />
+                      <WordOnPaper word={currentWord.word} />
                     </Box>
                   ))}
                 </>

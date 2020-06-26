@@ -1,10 +1,7 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useContext } from "react";
 
 import { Formik, Form, FieldArray } from "formik";
 import * as Yup from "yup";
-import { Store, User, Word } from "../../types";
-import Firebase from "../../services/firebase";
 
 import {
   Dialog,
@@ -17,41 +14,48 @@ import {
 import TextInput from "../../components/TextInput";
 
 import { getUserWords } from "../../utils";
-
-const db = Firebase.db;
+import useGameWords from "../../hooks/useGameWords";
+import GameContext from "../../contexts/GameContext";
+import { FirebasePlayer, NewWord } from "../../types/firebaseTypes";
+import useGameRef from "../../hooks/useGameRef";
+import FirebaseContext from "../../firebase/FirebaseContext";
 
 interface IProps {
-  user: User;
+  user: FirebasePlayer;
   open: boolean;
   onClose: () => void;
 }
 
 const WordsSelector: React.FC<IProps> = ({ user, open, onClose }) => {
-  const gameId = useSelector((state: Store) => state.game.id);
-  const gameWords = useSelector((state: Store) => state.game.words);
-  const wordsPerPlayer = useSelector(
-    (state: Store) => state.game.wordsPerPlayer
-  );
-  const wordsToFill: number =
-    wordsPerPlayer - getUserWords(gameWords, user).length;
+  const words = useGameWords();
+  const gameRef = useGameRef();
+  const firebase = useContext(FirebaseContext);
+  const { wordsPerPlayer } = useContext(GameContext);
+  const wordsToFill: number = wordsPerPlayer - getUserWords(words, user).length;
 
   const validationSchema = Yup.object().shape({
     words: Yup.array().of(Yup.string()).max(wordsPerPlayer),
   });
 
   const handleSubmit = async (values: { words: Array<string> }) => {
-    onClose();
-    console.log("waords are", values);
     try {
-      let batch = db.batch();
-      const wordsRef = db.collection("games").doc(gameId).collection("words");
+      let batch = firebase.firestore.batch();
+      const wordsRef = gameRef.collection("words");
       values.words.forEach((w: any) => {
+        const newWord: NewWord = {
+          word: w,
+          writtenBy: {
+            id: user.id,
+            name: user.name,
+          },
+        };
         if (w) {
           const wordRef = wordsRef.doc();
-          batch.set(wordRef, { text: w, writtenBy: user.id });
+          batch.set(wordRef, newWord);
         }
       });
       await batch.commit();
+      onClose();
     } catch (e) {
       console.log("Could not add words", e);
     }

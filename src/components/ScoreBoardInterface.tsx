@@ -5,15 +5,14 @@ import { Box, Typography, Button } from "@material-ui/core";
 import { SCORE_BOARD_WIDTH } from "../constants";
 import { Team, RoundScore, TeamId } from "../types";
 import { updateInstructionsVisibility } from "../redux/computer";
-import { useSelector } from "react-redux";
-import { Store } from "../types";
+import { FirebaseGameTeam } from "../types/firebaseTypes";
 
 import COPY from "../copy";
 
 interface IProps {
-  orderedTeams: Array<Team>;
+  orderedTeams: Array<FirebaseGameTeam>;
   currentTeamId: TeamId;
-  currentRoundIndex: number;
+  currentRoundIndex: string;
   roundScore: RoundScore;
   cumulativeScore: RoundScore;
 }
@@ -24,7 +23,7 @@ const ScoreBoardInterface: React.FC<IProps> = ({
   roundScore,
   cumulativeScore,
 }) => {
-  const language = useSelector((state: Store) => state.computer.language);
+  const language = "EN";
   const dispatch = useDispatch();
   const teamsMarkup = orderedTeams
     .sort((t) => (t.id === "1" ? -1 : 1))

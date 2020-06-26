@@ -1,11 +1,11 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { Store } from "../../types";
+import React, { useContext } from "react";
 import SliderInterface from "./SliderInterface";
+import GameContext from "../../contexts/GameContext";
 
 const Slider: React.FC = () => {
-  const currentTeam = useSelector((state: Store) => state.game.currentTeam);
-  return <SliderInterface currentTeamId={currentTeam} />;
+  const game = useContext(GameContext);
+  const currentTeamId = game?.currentTeam?.id;
+  return <SliderInterface currentTeamId={currentTeamId} />;
 };
 
 export default Slider;

@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, Typography } from "@material-ui/core";
 import PaperImage from "../assets/images/paper.png";
-import Image from "material-ui-image";
 
 interface IProps {
   word: string;

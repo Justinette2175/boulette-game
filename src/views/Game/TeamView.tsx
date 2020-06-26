@@ -1,5 +1,4 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useContext } from "react";
 import { Box, Typography } from "@material-ui/core";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
@@ -9,8 +8,9 @@ import CurrentPlayerView from "./CurrentPlayerView";
 import ScoreBoard from "../../components/ScoreBoard";
 import Timer from "./Timer";
 import { Store, User } from "../../types";
-import useCurrentPlayerIsOnDevice from "../../utils/useCurrentPlayerIsOnDevice";
+import useCurrentPlayerIsOnDevice from "../../hooks/useCurrentPlayerIsOnDevice";
 import OtherPlayersView from "./OtherPlayersView";
+import GameContext from "../../contexts/GameContext";
 
 import COPY from "../../copy";
 
@@ -19,23 +19,14 @@ interface IProps {
 }
 
 const TeamView: React.FC<IProps> = ({ team }) => {
-  const team1: boolean = team === "1";
-  const activeTeam = useSelector((state: Store) => state.game.currentTeam);
+  const game = useContext(GameContext);
+  const currentTeam = game?.currentTeam;
+  const currentPlayer = game?.currentPlayer;
   const currentPlayerIsOnDevice = useCurrentPlayerIsOnDevice();
-  const language = useSelector((state: Store) => state.computer.language);
+  const language = "EN";
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
-
-  const currentPlayer = useSelector((state: Store) => {
-    if (state.game.currentUser) {
-      const user: User = state.game.users.find(
-        (u) => u.id === state.game.currentUser
-      );
-      return user || {};
-    }
-    return null;
-  });
 
   return (
     <Box
@@ -47,7 +38,7 @@ const TeamView: React.FC<IProps> = ({ team }) => {
       flexDirection="column"
       // textAlign={team1 ? "left" : "right"}
     >
-      {activeTeam === team && (
+      {currentTeam.id === team && (
         <>
           <Box
             width="100%"
@@ -62,12 +53,12 @@ const TeamView: React.FC<IProps> = ({ team }) => {
                 {COPY.TURN_INDICATOR_2[language]}
               </Typography>
             )}
-            <Timer />
+            {/* <Timer /> */}
           </Box>
-          {activeTeam === team && currentPlayerIsOnDevice && (
+          {currentTeam.id === team && currentPlayerIsOnDevice && (
             <CurrentPlayerView />
           )}
-          {activeTeam === team && !currentPlayerIsOnDevice && (
+          {currentTeam.id === team && !currentPlayerIsOnDevice && (
             <OtherPlayersView teamId={team} />
           )}
         </>

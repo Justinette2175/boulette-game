@@ -1,32 +1,37 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { Store } from "../../types";
-import GameService from "../../services/game";
+import React, { useState, useContext } from "react";
+import { FirebaseContext } from "../../firebase";
 import { UserPlus, ArrowRight } from "react-feather";
 import RemoteCallsStrip from "../../components/RemoteCallsStrip";
-import AddPlayerOnComputer from "./AddPlayerOnComputer";
+import AddPlayerOnComputer from "./AddPlayerOnDevice";
+import { useGamePlayers } from "../../hooks";
 
 import { Button, Box, Typography, Grid } from "@material-ui/core";
 import CallWrapper from "../../components/CallWrapper";
 import LocalCall from "../../components/LocalCall";
-import useComputerUsers from "../../utils/useComputerUsers";
 import GameLink from "../../components/GameLink";
 import PlayerAndAvatar from "../../components/PlayerAndAvatar";
 
 import ContentWrapper from "../../components/ContentWrapper";
 
 import COPY from "../../copy";
+import DeviceIdContext from "../../contexts/DeviceIdContext";
+import { useOwnerIsOnDevice } from "../../hooks";
+import GameContext from "../../contexts/GameContext";
+import useGameRef from "../../hooks/useGameRef";
 
-const PrepareGame: React.FC = () => {
-  const gameOwner = useSelector((state: Store) => state.game.owner);
-  const computerUserIds = useSelector((state: Store) => state.computer.users);
-  const ownerIsOnComputer = computerUserIds.indexOf(gameOwner) > -1;
-  const computerUsers = useComputerUsers();
-  const language = useSelector((state: Store) => state.computer.language);
+const WaitingForPlayersView: React.FC = () => {
+  const gameRef = useGameRef();
+  const ownerIsOnDevice = useOwnerIsOnDevice();
+  const language = "EN";
   const [addPlayerIsVisible, setAddPlayerIsVisible] = useState<boolean>(false);
+  const players = useGamePlayers();
 
   const handleStartGame = () => {
-    GameService.choseWords();
+    try {
+      gameRef.update({ stage: "CHOSING_WORDS" });
+    } catch (e) {
+      //
+    }
   };
 
   return (
@@ -38,12 +43,12 @@ const PrepareGame: React.FC = () => {
               {COPY.DEVICE_PLAYERS_TITLE[language]}
             </Typography>
             <Box display="flex" mt={4}>
-              <CallWrapper usersOnThatJitsi={computerUsers} showNames={false}>
+              {/* <CallWrapper usersOnThatJitsi={computerUsers} showNames={false}>
                 <LocalCall />
-              </CallWrapper>
+              </CallWrapper> */}
               <Box ml={4}>
                 <Grid container spacing={2}>
-                  {computerUsers.map((u) =>
+                  {players.map((u) =>
                     u.name ? (
                       <Grid item>
                         <PlayerAndAvatar name={u.name} />
@@ -73,17 +78,17 @@ const PrepareGame: React.FC = () => {
               {COPY.REMOTE_PLAYERS_TITLE[language]}
             </Typography>
             <Box mt={4}>
-              <RemoteCallsStrip />
-              <GameLink mt={4} />
+              {/* <RemoteCallsStrip />
+              <GameLink mt={4} /> */}
               <Box my={6}>
                 <Box mb={2} maxWidth="300px">
                   <Typography variant="h4" component="p">
-                    {ownerIsOnComputer
+                    {ownerIsOnDevice
                       ? COPY.NEXT_JOIN_PLAYERS_INSTRUCTIONS[language]
                       : COPY.JOIN_PLAYERS_WAIT_INSTRUCTIONS[language]}
                   </Typography>
                 </Box>
-                {ownerIsOnComputer && (
+                {ownerIsOnDevice && (
                   <Button
                     onClick={handleStartGame}
                     color="primary"
@@ -106,4 +111,4 @@ const PrepareGame: React.FC = () => {
   );
 };
 
-export default PrepareGame;
+export default WaitingForPlayersView;

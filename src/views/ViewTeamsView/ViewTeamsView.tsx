@@ -1,38 +1,39 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useContext } from "react";
 import { Store } from "../../types";
 import { Box, Button, Typography, Grid, useTheme } from "@material-ui/core";
 import PlayerAndAvatar from "../../components/PlayerAndAvatar";
 import { ArrowRight } from "react-feather";
-import GameService from "../../services/game";
 import ContentWrapper from "../../components/ContentWrapper";
-import RemoteCallsStrip from "../../components/RemoteCallsStrip";
+// import RemoteCallsStrip from "../../components/RemoteCallsStrip";
+import { useGameTeams, useOwnerIsOnDevice, useGameRef } from "../../hooks";
 
 import COPY from "../../copy";
 
 const ViewTeamsView: React.FC = () => {
-  const teams = useSelector((state: Store) => state.game.teams);
-  const users = useSelector((state: Store) => state.game.users);
-  const gameOwner = useSelector((state: Store) => state.game.owner);
-  const computerUserIds = useSelector((state: Store) => state.computer.users);
-  const ownerIsOnComputer = computerUserIds.indexOf(gameOwner) > -1;
-  const language = useSelector((state: Store) => state.computer.language);
+  const teams = useGameTeams();
+  const ownerIsOnDevice = useOwnerIsOnDevice();
+  const gameRef = useGameRef();
+  const language = "EN";
 
   const handleStartGame = () => {
-    GameService.startGame();
+    try {
+      gameRef.update({ stage: "PLAYING" });
+    } catch (e) {
+      //
+    }
   };
 
   const teamsMarkup = teams.map((t) => {
-    const teamUsers = users.filter((user) => user.teamId === t.id);
+    const teamPlayers = t.players || {};
     return (
       <Box>
         <Typography variant="h2" gutterBottom>
           {t.name}
         </Typography>
         <Grid container spacing={4}>
-          {teamUsers.map((u) => (
-            <Grid item>
-              <PlayerAndAvatar name={u.name} />
+          {Object.values(teamPlayers).map((player) => (
+            <Grid item key={player.id}>
+              <PlayerAndAvatar name={player.name} />
             </Grid>
           ))}
         </Grid>
@@ -61,12 +62,12 @@ const ViewTeamsView: React.FC = () => {
             <Box display="flex" flexDirection="column" my={4}>
               <Box mb={2} maxWidth="300px">
                 <Typography variant="h4">
-                  {ownerIsOnComputer
+                  {ownerIsOnDevice
                     ? COPY.TEAMS_VIEW_WAIT[language]
                     : COPY.TEAMS_VIEW_NEXT_INSTRUCTIONS[language]}
                 </Typography>
               </Box>
-              {ownerIsOnComputer && (
+              {ownerIsOnDevice && (
                 <Box>
                   <Button
                     onClick={handleStartGame}
@@ -82,9 +83,9 @@ const ViewTeamsView: React.FC = () => {
           </>
         }
       />
-      <Box position="fixed" style={{ left: 0, bottom: 0, right: 0 }}>
+      {/* <Box position="fixed" style={{ left: 0, bottom: 0, right: 0 }}>
         <RemoteCallsStrip includeLocal includeNames={false} />
-      </Box>
+      </Box> */}
     </>
   );
 };

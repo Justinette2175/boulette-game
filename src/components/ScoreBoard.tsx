@@ -1,22 +1,21 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import useCurrentRoundIndex from "../utils/useCurrentRoundIndex";
-import useCurrentRoundSore from "../utils/useCurrentRoundScore";
-import useCumulativeScore from "../utils/useCumulativeScore";
-import { Store } from "../types";
+import React, { useContext } from "react";
 import ScoreBoardInterface from "./ScoreBoardInterface";
+import { useGameTeams } from "../hooks";
+import GameContext from "../contexts/GameContext";
+import CurrentRoundContext from "../contexts/CurrentRoundContext";
 
 const ScoreBoard: React.FC = () => {
-  let currentTeam = useSelector((state: Store) => state.game.currentTeam);
-  const currentRoundIndex = useCurrentRoundIndex();
-  const teams = useSelector((state: Store) => state.game.teams);
-  const roundScore = useCurrentRoundSore();
-  const cumulativeSore = useCumulativeScore();
+  const game = useContext(GameContext);
+  const round = useContext(CurrentRoundContext);
+  const currentTeam = game.currentTeam;
+  const teams = useGameTeams();
+  const roundScore = round ? round.score : null;
+  const cumulativeSore = game.score;
 
   return (
     <ScoreBoardInterface
-      currentTeamId={currentTeam}
-      currentRoundIndex={currentRoundIndex}
+      currentTeamId={currentTeam?.id}
+      currentRoundIndex={round.id}
       orderedTeams={teams.sort((t) => (t.id === "1" ? -1 : 1))}
       roundScore={roundScore}
       cumulativeScore={cumulativeSore}

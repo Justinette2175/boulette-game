@@ -13,7 +13,7 @@ const GameEnded: React.FC = () => {
   const winningTeamId = useSelector((state: Store) => state.game.winner);
   const winningTeam = teams.find((t) => t.id === winningTeamId);
   const winningTeamName = winningTeam ? winningTeam.name : null;
-  const language = useSelector((state: Store) => state.computer.language);
+  const language = "EN";
 
   const handlePlayAgain = () => {
     window.location.reload();

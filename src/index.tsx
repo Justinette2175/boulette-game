@@ -1,21 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Provider } from "react-redux";
 import "./index.css";
 import App from "./App";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import * as serviceWorker from "./serviceWorker";
 import theme from "./theme";
-import store from "./redux/store";
+import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.render(
-  <Provider store={store}>
-    <React.StrictMode>
-      <MuiThemeProvider theme={theme}>
+  <React.StrictMode>
+    <MuiThemeProvider theme={theme}>
+      <BrowserRouter>
         <App />
-      </MuiThemeProvider>
-    </React.StrictMode>
-  </Provider>,
+      </BrowserRouter>
+    </MuiThemeProvider>
+  </React.StrictMode>,
   document.getElementById("root")
 );
 
