@@ -12,8 +12,9 @@ class Firebase {
   constructor() {
     firebase.initializeApp(config);
     this.auth = firebase.auth();
-    this.firestore = firebase.firestore();
+    this.firestore = firebase.firestore;
     this.functions = firebase.functions();
+    this.functions.useFunctionsEmulator("http://localhost:5001");
   }
 }
 

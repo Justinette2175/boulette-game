@@ -9,7 +9,7 @@ import COPY from "../../copy";
 import { FirebaseGameWord } from "../../types/firebaseTypes";
 
 interface IProps {
-  onFound: () => void;
+  onFound: (wordId: string) => void;
   onStart: () => void;
   currentWord: FirebaseGameWord;
 }
@@ -25,7 +25,7 @@ const Game: React.FC<IProps> = ({ onFound, onStart, currentWord }) => {
 
   const handleBowlClick = () => {
     if (currentWord) {
-      onFound();
+      onFound(currentWord.id);
     } else {
       onStart();
     }

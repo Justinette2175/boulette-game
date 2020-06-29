@@ -1,11 +1,20 @@
 import React, { useContext } from "react";
 import SliderInterface from "./SliderInterface";
-import GameContext from "../../contexts/GameContext";
+import CurrentRoundContext from "../../contexts/CurrentRoundContext";
 
-const Slider: React.FC = () => {
-  const game = useContext(GameContext);
-  const currentTeamId = game?.currentTeam?.id;
-  return <SliderInterface currentTeamId={currentTeamId} />;
+interface IProps {
+  openInstructions: () => void;
+}
+
+const Slider: React.FC<IProps> = ({ openInstructions }) => {
+  const round = useContext(CurrentRoundContext);
+  const currentTeamId = round?.currentTeam?.id || null;
+  return (
+    <SliderInterface
+      currentTeamId={currentTeamId}
+      openInstructions={openInstructions}
+    />
+  );
 };
 
 export default Slider;

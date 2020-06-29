@@ -30,7 +30,8 @@ const GamePage: React.FC<GamePageProps> = ({
   const listenToGame = (gameId: string): (() => null) => {
     try {
       setLoading(true);
-      return firebase.firestore
+      return firebase
+        .firestore()
         .collection("games")
         .doc(gameId)
         .onSnapshot((doc: any) => {

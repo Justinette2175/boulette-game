@@ -10,18 +10,19 @@ import Timer from "./Timer";
 import { Store, User } from "../../types";
 import useCurrentPlayerIsOnDevice from "../../hooks/useCurrentPlayerIsOnDevice";
 import OtherPlayersView from "./OtherPlayersView";
-import GameContext from "../../contexts/GameContext";
+import CurrentRoundContext from "../../contexts/CurrentRoundContext";
 
 import COPY from "../../copy";
 
 interface IProps {
   team?: "1" | "2";
+  openInstructions: () => void;
 }
 
-const TeamView: React.FC<IProps> = ({ team }) => {
-  const game = useContext(GameContext);
-  const currentTeam = game?.currentTeam;
-  const currentPlayer = game?.currentPlayer;
+const TeamView: React.FC<IProps> = ({ team, openInstructions }) => {
+  const round = useContext(CurrentRoundContext);
+  const currentTeam = round?.currentTeam || null;
+  const currentPlayer = round?.currentPlayer;
   const currentPlayerIsOnDevice = useCurrentPlayerIsOnDevice();
   const language = "EN";
 
@@ -36,9 +37,8 @@ const TeamView: React.FC<IProps> = ({ team }) => {
       height="100%"
       display="flex"
       flexDirection="column"
-      // textAlign={team1 ? "left" : "right"}
     >
-      {currentTeam.id === team && (
+      {currentTeam && currentTeam.id === team && (
         <>
           <Box
             width="100%"
@@ -65,7 +65,7 @@ const TeamView: React.FC<IProps> = ({ team }) => {
       )}
       {team === "2" && matches && (
         <Box position="absolute" left={`${-SCORE_BOARD_WIDTH / 2}px`} top="0">
-          <ScoreBoard />
+          <ScoreBoard openInstructions={openInstructions} />
         </Box>
       )}
     </Box>

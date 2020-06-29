@@ -1,5 +1,4 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import { BookOpen } from "react-feather";
 import { Box, Typography, Button } from "@material-ui/core";
 import { SCORE_BOARD_WIDTH } from "../constants";
@@ -15,6 +14,7 @@ interface IProps {
   currentRoundIndex: string;
   roundScore: RoundScore;
   cumulativeScore: RoundScore;
+  openInstructions: () => void;
 }
 
 const ScoreBoardInterface: React.FC<IProps> = ({
@@ -22,9 +22,9 @@ const ScoreBoardInterface: React.FC<IProps> = ({
   currentRoundIndex,
   roundScore,
   cumulativeScore,
+  openInstructions,
 }) => {
   const language = "EN";
-  const dispatch = useDispatch();
   const teamsMarkup = orderedTeams
     .sort((t) => (t.id === "1" ? -1 : 1))
     .map((t) => {
@@ -90,7 +90,7 @@ const ScoreBoardInterface: React.FC<IProps> = ({
         {teamsMarkup[1]}
       </Box>
       <Button
-        onClick={() => dispatch(updateInstructionsVisibility(true))}
+        onClick={openInstructions}
         size="small"
         variant="outlined"
         startIcon={<BookOpen size={14} />}

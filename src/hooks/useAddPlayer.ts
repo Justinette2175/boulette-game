@@ -3,6 +3,7 @@ import { FirebasePlayer, NewPlayer } from "../types/firebaseTypes";
 import { FirebaseContext } from "../firebase";
 import useGameRef from "./useGameRef";
 import DeviceIdContext from "../contexts/DeviceIdContext";
+import moment from "moment";
 
 const useAddPlayer = (): ((name: string) => void) => {
   const gameRef = useGameRef();
@@ -11,7 +12,7 @@ const useAddPlayer = (): ((name: string) => void) => {
 
   const addPlayer = (name: string) => {
     try {
-      firebase.firestore.runTransaction(async (transaction: any) => {
+      firebase.firestore().runTransaction(async (transaction: any) => {
         const team1 = await transaction.get(
           gameRef.collection("teams").doc("1")
         );
@@ -32,6 +33,7 @@ const useAddPlayer = (): ((name: string) => void) => {
           id: newPlayerRef.id,
           deviceId,
           name,
+          createdAt: moment().unix(),
         };
         await transaction.update(gameRef.collection("teams").doc(nextTeam), {
           [`players.${newPlayerRef.id}`]: newPlayer,

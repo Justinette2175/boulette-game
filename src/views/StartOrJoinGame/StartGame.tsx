@@ -39,10 +39,10 @@ const StartGame: React.FC = () => {
     ownerName,
   }: FormValues) => {
     try {
-      const batch = firebase.firestore.batch();
+      const batch = firebase.firestore().batch();
       const gameShortId = generateGameId();
 
-      const gameRef = firebase.firestore.collection("games").doc();
+      const gameRef = firebase.firestore().collection("games").doc();
       const ownerRef = gameRef.collection("players").doc();
 
       const game: NewGame = {
@@ -59,18 +59,6 @@ const StartGame: React.FC = () => {
 
       // Create Game
       batch.set(gameRef, game);
-
-      // Create teams
-      batch.set(gameRef.collection("teams").doc("1"), {
-        players: {
-          [ownerRef.id]: {
-            name: ownerName,
-            id: ownerRef.id,
-            deviceId,
-          },
-        },
-      });
-      batch.set(gameRef.collection("teams").doc("2"), {});
 
       // Create owner as a player
       batch.set(ownerRef, { name: ownerName, deviceId });

@@ -19,10 +19,6 @@ export interface NewGame {
 
 export interface FirebaseGame {
   id: string;
-  currentRound: {
-    id: string;
-    description: string;
-  };
   owner: {
     id: string;
     name: string;
@@ -32,16 +28,7 @@ export interface FirebaseGame {
   secondsPerTurn: number;
   stage: GameStage;
   shortId: string;
-  currentPlayer: {
-    id: string;
-    name: string;
-    deviceId: string;
-  };
-  currentTeam: {
-    id: string;
-    name: string;
-  };
-  currentWord: FirebaseGameWord;
+  currentRound: string;
   score: {
     [teamId: string]: number;
   };
@@ -51,27 +38,35 @@ export interface NewPlayer {
   id?: string;
   name: string;
   deviceId: string;
+  createdAt?: number;
 }
 
 export interface FirebasePlayer {
   id: string;
   name: string;
   deviceId: string;
+  createdAt: number;
+}
+
+export interface RoundWord extends FirebaseGameWord {
+  foundBy?: string;
 }
 
 export interface FirebaseGameRound {
+  remainingTimeFromPreviousRound: number;
   id: string;
   index: number;
+  secondsPerTurn: number;
+  endOfCurrentTurn: number;
   score: {
     [teamId: string]: number;
   };
-  wordsLeft: Array<{
-    word: string;
-    writtenBy: {
-      id: string;
-      username: string;
-    };
-  }>;
+  wordsLeft: {
+    [key: string]: RoundWord;
+  };
+  currentPlayer: FirebasePlayer;
+  currentTeam: FirebaseGameTeam;
+  currentWord: FirebaseGameWord;
 }
 
 export interface NewWord {
@@ -94,12 +89,7 @@ export interface FirebaseGameWord {
 export interface FirebaseGameTeam {
   id: string;
   name: string;
-  totalScore: number;
   players: {
-    [key: string]: {
-      id: string;
-      name: string;
-      deviceId: string;
-    };
+    [key: string]: FirebasePlayer;
   };
 }

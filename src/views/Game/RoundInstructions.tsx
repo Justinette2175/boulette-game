@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   DialogTitle,
@@ -9,6 +9,7 @@ import {
   Button,
 } from "@material-ui/core";
 import { Store } from "../../types";
+import CurrentRoundContext from "../../contexts/CurrentRoundContext";
 import useCurrentRoundIndex from "../../utils/useCurrentRoundIndex";
 import roundInstructionsCopy from "../../copy/roundInstructions";
 import { updateInstructionsVisibility } from "../../redux/computer";
@@ -18,18 +19,18 @@ const instructions = roundInstructionsCopy as any;
 interface RoundInstructionsModalProps {
   open: boolean;
   onClose: () => void;
-  round: number;
+  roundId: string;
 }
 const RoundInstructionsModal: React.FC<RoundInstructionsModalProps> = ({
   open,
   onClose,
-  round,
+  roundId,
 }) => {
-  const roundInstructions = instructions[round.toString()].EN;
+  const roundInstructions = instructions[roundId].EN;
   return (
     <Dialog disableBackdropClick open={open} onClose={onClose}>
       <Box p={6}>
-        <Typography variant="body1">Round {round} </Typography>
+        <Typography variant="body1">Round {roundId} </Typography>
         <Typography variant="h2">{roundInstructions.title}</Typography>
         {roundInstructions.paragraphs.map((p: string) => (
           <Typography gutterBottom variant="body1">
@@ -51,27 +52,21 @@ const RoundInstructionsModal: React.FC<RoundInstructionsModalProps> = ({
   );
 };
 
-const RoundInstructions: React.FC = () => {
-  const instructionsVisible = useSelector(
-    (state: Store) => state.computer.instructionsVisible
-  );
+interface IProps {
+  open: boolean;
+  onClose: () => void;
+}
 
-  const currentRoundIndex = useCurrentRoundIndex();
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(updateInstructionsVisibility(true));
-  }, [currentRoundIndex]);
-
-  if (!currentRoundIndex) {
+const RoundInstructions: React.FC<IProps> = ({ open, onClose }) => {
+  const currentRound = useContext(CurrentRoundContext);
+  if (!currentRound) {
     return null;
   }
   return (
     <RoundInstructionsModal
-      open={instructionsVisible}
-      round={currentRoundIndex}
-      onClose={() => dispatch(updateInstructionsVisibility(false))}
+      open={open}
+      roundId={currentRound.id}
+      onClose={onClose}
     />
   );
 };

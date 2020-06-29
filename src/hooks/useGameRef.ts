@@ -6,7 +6,7 @@ const useGameRef = (): any => {
   const game = useContext(GameContext);
   const firebase = useContext(FirebaseContext);
   if (game && game.id) {
-    return firebase.firestore.collection("games").doc(game.id);
+    return firebase.firestore().collection("games").doc(game.id);
   } else return null;
 };
 

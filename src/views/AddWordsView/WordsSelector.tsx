@@ -39,7 +39,7 @@ const WordsSelector: React.FC<IProps> = ({ user, open, onClose }) => {
 
   const handleSubmit = async (values: { words: Array<string> }) => {
     try {
-      let batch = firebase.firestore.batch();
+      let batch = firebase.firestore().batch();
       const wordsRef = gameRef.collection("words");
       values.words.forEach((w: any) => {
         const newWord: NewWord = {

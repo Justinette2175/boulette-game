@@ -4,18 +4,22 @@ import { useGameTeams } from "../hooks";
 import GameContext from "../contexts/GameContext";
 import CurrentRoundContext from "../contexts/CurrentRoundContext";
 
-const ScoreBoard: React.FC = () => {
+interface IProps {
+  openInstructions: () => void;
+}
+const ScoreBoard: React.FC<IProps> = ({ openInstructions }) => {
   const game = useContext(GameContext);
   const round = useContext(CurrentRoundContext);
-  const currentTeam = game.currentTeam;
-  const teams = useGameTeams();
+  const currentTeam = round?.currentTeam;
+  const teams = useGameTeams() || [];
   const roundScore = round ? round.score : null;
   const cumulativeSore = game.score;
 
   return (
     <ScoreBoardInterface
-      currentTeamId={currentTeam?.id}
-      currentRoundIndex={round.id}
+      openInstructions={openInstructions}
+      currentTeamId={currentTeam ? currentTeam.id : null}
+      currentRoundIndex={round?.id || null}
       orderedTeams={teams.sort((t) => (t.id === "1" ? -1 : 1))}
       roundScore={roundScore}
       cumulativeScore={cumulativeSore}

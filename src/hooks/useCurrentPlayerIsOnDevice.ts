@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
-import GameContext from "../contexts/GameContext";
+import CurrentRoundContext from "../contexts/CurrentRoundContext";
 import DeviceIdContext from "../contexts/DeviceIdContext";
 
 const useCurrentPlayerIsOnDevice = (): boolean => {
-  const game = useContext(GameContext);
+  const round = useContext(CurrentRoundContext);
   const deviceId = useContext(DeviceIdContext);
-  return game?.currentPlayer?.deviceId === deviceId || false;
+  return round?.currentPlayer?.deviceId === deviceId || false;
 };
 
 export default useCurrentPlayerIsOnDevice;

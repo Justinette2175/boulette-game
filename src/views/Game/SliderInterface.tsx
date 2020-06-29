@@ -9,9 +9,13 @@ import ScoreBoard from "../../components/ScoreBoard";
 
 interface IProps {
   currentTeamId: TeamId;
+  openInstructions: () => void;
 }
 
-const SliderInterface: React.FC<IProps> = ({ currentTeamId }) => {
+const SliderInterface: React.FC<IProps> = ({
+  currentTeamId,
+  openInstructions,
+}) => {
   const team1: boolean = currentTeamId === "1";
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
@@ -28,13 +32,13 @@ const SliderInterface: React.FC<IProps> = ({ currentTeamId }) => {
     >
       {matches && (
         <Box display="flex" width="100%" justifyContent="center">
-          <ScoreBoard />
+          <ScoreBoard openInstructions={openInstructions} />
         </Box>
       )}
       <Box flex="1">
         <SliderWrapper
-          leftChild={<TeamView team="1" />}
-          rightChild={<TeamView team="2" />}
+          leftChild={<TeamView team="1" openInstructions={openInstructions} />}
+          rightChild={<TeamView team="2" openInstructions={openInstructions} />}
           placement={!currentTeamId ? "center" : team1 ? "left" : "right"}
           displace={!matches}
         />
