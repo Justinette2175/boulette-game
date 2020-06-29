@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
-import { FirebasePlayer, NewPlayer } from "../types/firebaseTypes";
+import React, { useContext } from "react";
+import { NewPlayer } from "../types/firebaseTypes";
 import { FirebaseContext } from "../firebase";
 import useGameRef from "./useGameRef";
 import DeviceIdContext from "../contexts/DeviceIdContext";
@@ -10,9 +10,9 @@ const useAddPlayer = (): ((name: string) => void) => {
   const deviceId = useContext(DeviceIdContext);
   const firebase = useContext(FirebaseContext);
 
-  const addPlayer = (name: string) => {
+  const addPlayer = async (name: string) => {
     try {
-      firebase.firestore().runTransaction(async (transaction: any) => {
+      await firebase.firestore().runTransaction(async (transaction: any) => {
         const team1 = await transaction.get(
           gameRef.collection("teams").doc("1")
         );

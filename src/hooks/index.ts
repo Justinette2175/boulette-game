@@ -6,3 +6,4 @@ export { default as useOwnerIsOnDevice } from "./useOwnerIsOnDevice";
 export { default as useAddPlayer } from "./useAddPlayer";
 export { default as useInterval } from "./useInterval";
 export { default as useHandleEndTurn } from "./useHandleEndTurn";
+export { default as useCurrentPlayerIsOnDevice } from "./useCurrentPlayerIsOnDevice";

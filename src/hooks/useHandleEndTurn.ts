@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
-import CurrentRoundContext from "../contexts/CurrentRoundContext";
 import useGameRef from "./useGameRef";
 import FirebaseContext from "../firebase/FirebaseContext";
-import { FirebasePlayer, FirebaseGameRound } from "../types/firebaseTypes";
+import CurrentRoundContext from "../contexts/CurrentRoundContext";
+import { FirebasePlayer } from "../types/firebaseTypes";
 
 const getNewPlayer = (
   players: { [key: string]: FirebasePlayer },
@@ -23,9 +23,10 @@ const getNewPlayer = (
   return playerValues[newPlayerIndex];
 };
 
-const useHandleEndTurn = (round: FirebaseGameRound): (() => void) => {
+const useHandleEndTurn = (): (() => void) => {
   const gameRef = useGameRef();
   const firebase = useContext(FirebaseContext);
+  const round = useContext(CurrentRoundContext);
 
   const handleEndTurn = async () => {
     return firebase.firestore().runTransaction(async (transaction: any) => {
@@ -42,6 +43,7 @@ const useHandleEndTurn = (round: FirebaseGameRound): (() => void) => {
         currentPlayer: newPlayer,
         currentTeam: newTeam,
         currentWord: null,
+        remainingTimeFromPreviousRound: 0,
       });
     });
   };

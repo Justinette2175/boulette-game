@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useSelector } from "react-redux";
 import { Store } from "../../types";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
+
+import DeviceIdContext from "../../contexts/DeviceIdContext";
+import GameContext from "../../contexts/GameContext";
+import { FirebaseContext } from "../../firebase";
 
 import TextInput from "../../components/TextInput";
 import { Box, Typography, Button } from "@material-ui/core";
@@ -10,18 +14,25 @@ import { Alert } from "@material-ui/lab";
 import ButtonsGroup from "../../components/ButtonsGroup";
 
 import COPY from "../../copy";
+import { useAddPlayer } from "../../hooks";
+
+interface FormValues {
+  name: string;
+}
 
 interface IProps {}
 
 const JoinGame: React.FC<IProps> = () => {
   const [error, setError] = useState<Error>(null);
+  const addPlayer = useAddPlayer();
   const language = "EN";
   const validationSchema = Yup.object().shape({
-    playerName: Yup.string().required("Required"),
-    gameId: Yup.string().required("Required"),
+    name: Yup.string().required("Required"),
   });
 
-  const handleSubmit = async (values: any) => {};
+  const handleSubmit = async (values: FormValues) => {
+    await addPlayer(values.name);
+  };
 
   return (
     <>
@@ -35,8 +46,7 @@ const JoinGame: React.FC<IProps> = () => {
       <Formik
         validateOnMount={true}
         initialValues={{
-          playerName: "",
-          gameId: "",
+          name: "",
         }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
@@ -45,14 +55,8 @@ const JoinGame: React.FC<IProps> = () => {
           <Form>
             <TextInput
               fullWidth
-              id="game-id"
-              name="gameId"
-              label={COPY.GAME_ID_LABEL[language]}
-            />
-            <TextInput
-              fullWidth
               id="player-name"
-              name="playerName"
+              name="name"
               label={COPY.PLAYER_NAME_LABEL[language]}
             />
             <ButtonsGroup>

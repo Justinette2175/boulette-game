@@ -5,6 +5,7 @@ import { FirebaseContext } from "../../firebase";
 import { NewGame } from "../../types/firebaseTypes";
 import * as Yup from "yup";
 import { generateGameId } from "../../utils";
+import moment from "moment";
 
 import { Button, Typography } from "@material-ui/core";
 import TextInput from "../../components/TextInput";
@@ -61,7 +62,11 @@ const StartGame: React.FC = () => {
       batch.set(gameRef, game);
 
       // Create owner as a player
-      batch.set(ownerRef, { name: ownerName, deviceId });
+      batch.set(ownerRef, {
+        name: ownerName,
+        deviceId,
+        createdAt: moment().unix(),
+      });
 
       await batch.commit();
       setGameId(gameRef.id);

@@ -22,7 +22,7 @@ const Game: React.FC = () => {
   };
 
   const handleFound = (wordId: string) => {
-    handleWordFound(0, wordId);
+    handleWordFound(wordId);
   };
 
   return (

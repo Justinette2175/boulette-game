@@ -1,13 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
-import Slider from "./Slider";
 import RoundInstructions from "./RoundInstructions";
 import { FirebaseGameRound } from "../../types/firebaseTypes";
 import GameContext from "../../contexts/GameContext";
 import CurrentRoundContext from "../../contexts/CurrentRoundContext";
-import { useGameRef, useInterval, useHandleEndTurn } from "../../hooks";
-import moment from "moment";
-
-const INTERVAL_TIME = 1000;
+import { useGameRef } from "../../hooks";
+import Round from "./Round";
 
 const Game: React.FC = () => {
   const game = useContext(GameContext);
@@ -16,9 +13,6 @@ const Game: React.FC = () => {
   const [instructionsVisible, setInstructionsVisible] = useState<boolean>(
     false
   );
-  const [intervalRunning, setIntervalRunning] = useState<boolean>(false);
-  const [timeRemaining, setTimeRemaining] = useState<number>(null);
-  const handleEndTurn = useHandleEndTurn(currentRound);
 
   const listenToCurrentRound = (roundId: string) => {
     try {
@@ -43,42 +37,10 @@ const Game: React.FC = () => {
     }
   }, [game.currentRound]);
 
-  const updateRemainingTime = (endOfCurrentTurn: number) => {
-    const now = moment().unix();
-    let duration = endOfCurrentTurn - now;
-    console.log("duration", duration);
-    if (duration < 1 || isNaN(duration)) {
-      setIntervalRunning(false);
-      duration = null;
-      console.log("end turn");
-      handleEndTurn();
-    }
-
-    setTimeRemaining(duration);
-  };
-
-  useInterval(
-    () => {
-      if (currentRound) {
-        updateRemainingTime(currentRound.endOfCurrentTurn);
-      }
-    },
-    intervalRunning ? INTERVAL_TIME : null
-  );
-
-  useEffect(() => {
-    if (currentRound && currentRound.endOfCurrentTurn) {
-      console.log("New end of current turn", currentRound.endOfCurrentTurn);
-      setIntervalRunning(true);
-    } else {
-      setIntervalRunning(false);
-    }
-  }, [currentRound && currentRound.endOfCurrentTurn]);
-
   return (
     <>
       <CurrentRoundContext.Provider value={currentRound}>
-        <Slider openInstructions={() => setInstructionsVisible(true)} />
+        <Round openInstructions={() => setInstructionsVisible(true)} />
         <RoundInstructions
           open={instructionsVisible}
           onClose={() => setInstructionsVisible(false)}

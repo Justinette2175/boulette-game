@@ -4,19 +4,15 @@ import useGameRef from "./useGameRef";
 import FirebaseContext from "../firebase/FirebaseContext";
 
 import { getNewWord } from "../utils";
+import TimerContext from "../contexts/TimerContext";
 
-const useHandleWordFound = (): ((
-  remainingTime: number,
-  wordFoundId: string
-) => void) => {
+const useHandleWordFound = (): ((wordFoundId: string) => void) => {
   const gameRef = useGameRef();
   const firebase = useContext(FirebaseContext);
   const round = useContext(CurrentRoundContext);
+  const [timeRemaining, stopTimer] = useContext(TimerContext);
 
-  const handleWordFound = async (
-    remainingTime: number,
-    wordFoundId: string
-  ) => {
+  const handleWordFound = async (wordFoundId: string) => {
     let newWord;
     const { wordsLeft, currentPlayer, currentTeam } = round;
     wordsLeft[wordFoundId].foundBy = currentPlayer.id;
@@ -35,6 +31,8 @@ const useHandleWordFound = (): ((
 
     if (!newWord) {
       // Get next round
+      const remainingTime = timeRemaining;
+      stopTimer();
       await firebase.firestore().runTransaction(async (transaction: any) => {
         const nextRoundId = (parseInt(round.id) + 1).toString();
         const nextRoundSnap = await transaction.get(

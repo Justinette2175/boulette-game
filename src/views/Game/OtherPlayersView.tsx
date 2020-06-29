@@ -11,15 +11,6 @@ interface IProps {
 
 const OtherPlayersView: React.FC<IProps> = ({ teamId }) => {
   const theme = useTheme();
-  const guessingPlayers = useSelector((state: Store) => {
-    if (state.game.currentUser) {
-      const users = state.game.users;
-      return users.filter((u) => {
-        return u.teamId === teamId && u.id !== state.game.currentUser;
-      });
-    }
-    return [];
-  });
 
   return (
     <Box
@@ -35,13 +26,7 @@ const OtherPlayersView: React.FC<IProps> = ({ teamId }) => {
           The following players can guess the word
         </Typography>
         <Box my={2}>
-          <Grid container spacing={2}>
-            {guessingPlayers.map((p) => (
-              <Grid item>
-                <PlayerAndAvatar name={p.name} />
-              </Grid>
-            ))}
-          </Grid>
+          <Grid container spacing={2}></Grid>
         </Box>
       </Box>
       {/* <CurrentPlayerVideo /> */}
