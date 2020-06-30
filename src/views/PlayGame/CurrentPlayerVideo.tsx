@@ -1,11 +1,10 @@
 import React, { useEffect, useContext, useState } from "react";
-import GameService from "../../services/game";
-import JitsyContext from "../../utils/JitsiContext";
 
 import { Box } from "@material-ui/core";
 import useCurrentPlayerIsOnDevice from "../../hooks/useCurrentPlayerIsOnDevice";
 import useCurrentUser from "../../utils/useCurrentUser";
 import useInterval from "../../utils/useInterval";
+import JitsiContext from "../../contexts/JitsiContext";
 
 const RETRY_INTERVAL = 1000;
 
@@ -14,8 +13,7 @@ const CurrentPlayerVideo = () => {
   const currentUser = useCurrentUser();
   const [videoIsAttached, setVideoIsAttached] = useState<boolean>(false);
 
-  const { existingTracksIds } = useContext(JitsyContext);
-  const jitsi = GameService.getJitsi();
+  const [jitsi, existingTracksIds] = useContext(JitsiContext);
 
   const attachTrack = () => {
     if (

@@ -1,23 +1,22 @@
 import React, { useContext, useState } from "react";
-import GameService from "../services/game";
 import { Dialog, Box, Typography } from "@material-ui/core";
-import { useSelector, useDispatch } from "react-redux";
-import { Store } from "../types";
 import COPY from "../copy";
-import { updatePermissionsModal } from "../redux/computer";
 
-import JitsyContext from "../utils/JitsiContext";
+import JitsyContext from "../contexts/JitsiContext";
 import useInterval from "../utils/useInterval";
 
 const CHECK_PERMISSIONS_INTERVAL = 1000;
 
-const PermissionsModal = () => {
-  const dispatch = useDispatch();
+interface IProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+const PermissionsModal: React.FC<IProps> = ({ open, onClose }) => {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
-  const open = useSelector((state: Store) => state.computer.permissionsModal);
   const language = "EN";
 
-  const jitsi = GameService.getJitsi();
+  const [jitsi] = useContext(JitsyContext);
 
   const hasAllMediaPermissions = async () => {
     try {
@@ -32,9 +31,9 @@ const PermissionsModal = () => {
     () => {
       const checkPermissions = async () => {
         const ok = await hasAllMediaPermissions();
-        if (ok) {
+        if (ok && jitsi) {
           await jitsi.createLocalTracks();
-          dispatch(updatePermissionsModal(false));
+          onClose();
           setHasPermission(true);
         }
       };
@@ -43,6 +42,9 @@ const PermissionsModal = () => {
     hasPermission ? null : CHECK_PERMISSIONS_INTERVAL
   );
 
+  if (!jitsi) {
+    return null;
+  }
   return (
     <Dialog open={open} maxWidth="md" PaperProps={{ elevation: 0 }}>
       <Box p={6}>
@@ -57,13 +59,4 @@ const PermissionsModal = () => {
   );
 };
 
-const PermissionsModalContainer = () => {
-  const jitsi = GameService.getJitsi();
-  if (!!jitsi) {
-    return <PermissionsModal />;
-  } else {
-    return null;
-  }
-};
-
-export default PermissionsModalContainer;
+export default PermissionsModal;

@@ -1,7 +1,3 @@
-import GameService from "../game";
-import ReduxStore from "../../redux/store";
-import { updatePermissionsModal } from "../../redux/computer";
-
 const options = {
   hosts: {
     domain: "meet.jitsi",
@@ -38,12 +34,15 @@ class Jitsy {
   audioComponents: any;
   addExistingTrackId: (id: string) => void;
   removeExistingTrackId: (id: string) => void;
-  setHasLocalTrack: (val: boolean) => void;
+  closePermissionsModal: () => void;
+  storeJitsiId: (id: string) => void;
+
   constructor(
     gameId: string,
     addExistingTrackId: (id: string) => void,
     removeExistingTrackId: (id: string) => void,
-    setHasLocalTrack: (val: boolean) => void
+    closePermissionsModal: () => void,
+    storeJitsiId: (id: string) => void
   ) {
     this.connection = new JitsiMeetJS.JitsiConnection(null, null, options);
     this.gameId = gameId;
@@ -51,8 +50,8 @@ class Jitsy {
     this.audioComponents = {};
     this.addExistingTrackId = addExistingTrackId;
     this.removeExistingTrackId = removeExistingTrackId;
-    this.setHasLocalTrack = setHasLocalTrack;
-
+    this.closePermissionsModal = closePermissionsModal;
+    this.storeJitsiId = storeJitsiId;
     this.connection.addEventListener(
       JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED,
       this.onConnectionSuccess
@@ -88,13 +87,13 @@ class Jitsy {
       });
       this.onLocalTracks(tracks);
     } catch (e) {
-      ReduxStore.dispatch(updatePermissionsModal(true));
+      this.closePermissionsModal();
     }
   };
 
   onLocalTracks = (tracks: any) => {
     this.localTracks = tracks;
-    this.setHasLocalTrack(true);
+    this.addExistingTrackId("local");
 
     for (let i = 0; i < this.localTracks.length; i++) {
       this.localTracks[i].addEventListener(
@@ -124,7 +123,7 @@ class Jitsy {
   logMyUserId = () => {
     if (this.room) {
       const myUserId = this.room.myUserId();
-      GameService.storeJitsyId(myUserId);
+      this.storeJitsiId(myUserId);
     }
   };
 

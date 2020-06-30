@@ -5,13 +5,9 @@ import { Firebase, FirebaseContext } from "./firebase";
 import DeviceIdContext from "./contexts/DeviceIdContext";
 
 import { CssBaseline, Container, Box, useTheme } from "@material-ui/core";
-import { JitsiProvider } from "./utils/JitsiContext";
 
 import CreateGame from "./views/CreateGame";
 
-import PermissionsModal from "./components/PermissionsModal";
-
-import SettingsContainer from "./components/SettingsContainer";
 import GamePage from "./views/GamePage";
 
 const firebase = new Firebase();
@@ -22,8 +18,6 @@ const App: React.FC = () => {
   const authenticateDevice = () => {
     firebase.auth.signInAnonymously().catch(function (error: any) {
       // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
     });
   };
 
@@ -44,7 +38,6 @@ const App: React.FC = () => {
   const theme = useTheme();
   return (
     <Box bgcolor="background.default">
-      {/* <JitsiProvider gameId={gameId}> */}
       <FirebaseContext.Provider value={firebase}>
         <DeviceIdContext.Provider value={deviceId}>
           <>
@@ -66,9 +59,8 @@ const App: React.FC = () => {
               </Switch>
             </Container>
             {/* <SettingsContainer />
-          <PermissionsModal /> */}
+             */}
           </>
-          {/* </JitsiProvider> */}
         </DeviceIdContext.Provider>
       </FirebaseContext.Provider>
     </Box>

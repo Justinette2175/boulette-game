@@ -1,10 +1,9 @@
 import React, { useEffect, useContext, useState } from "react";
-import GameService from "../services/game";
-import JitsyContext from "../utils/JitsiContext";
 import useInterval from "../utils/useInterval";
 import { Box } from "@material-ui/core";
 
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import JitsiContext from "../contexts/JitsiContext";
 
 const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
@@ -24,15 +23,12 @@ interface IProps {
   audioOnly?: boolean;
 }
 
-const RemoteCall: React.FC<IProps> = ({ jitsiId, audioOnly }) => {
+const RemoteCall: React.FC<IProps> = ({ audioOnly, jitsiId }) => {
   const classes = useStyles();
-  const jitsi = GameService.getJitsi();
+  const [jitsi, existingTracksIds] = useContext(JitsiContext);
   const [attached, setAttached] = useState<boolean>(false);
-  const { existingTracksIds } = useContext(JitsyContext);
 
   const trackExists = existingTracksIds[jitsiId];
-
-  console.log("Tracl exists", trackExists);
 
   const attachJitsyToComponent = () => {
     if (jitsi && jitsiId) {

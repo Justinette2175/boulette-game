@@ -1,7 +1,6 @@
 import React, { useEffect, useContext, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import JitsyContext from "../utils/JitsiContext";
-import GameService from "../services/game";
+import JitsyContext from "../contexts/JitsiContext";
 import useInterval from "../utils/useInterval";
 import { Box, IconButton } from "@material-ui/core";
 import { Mic, MicOff, Video, VideoOff } from "react-feather";
@@ -9,6 +8,7 @@ import { Store } from "../types";
 import { setAudioMuted, setVideoMuted } from "../redux/computer";
 
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import JitsiContext from "../contexts/JitsiContext";
 
 const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
@@ -25,15 +25,11 @@ const useStyles = makeStyles((theme: Theme) => {
 
 const LocalCall: React.FC = () => {
   const classes = useStyles();
-  const jitsi = GameService.getJitsi();
+  const [jitsi] = useContext(JitsiContext);
   const [attached, setAttached] = useState<boolean>(false);
   const audioMuted = useSelector((state: Store) => state.computer.audioMuted);
   const videoMuted = useSelector((state: Store) => state.computer.videoMuted);
   const dispatch = useDispatch();
-
-  const { hasLocalVideo } = useContext(JitsyContext);
-
-  // console.log("jitsy in local is", jitsi);
 
   const attachJitsyToComponent = () => {
     if (jitsi) {

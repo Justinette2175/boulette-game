@@ -1,13 +1,11 @@
 import React, { useContext } from "react";
-import JitsyContext from "../utils/JitsiContext";
 import { Box, Typography } from "@material-ui/core";
-import { Phone } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/styles";
 import { Store, User, TeamId } from "../types";
 import { useSelector } from "react-redux";
 import { NEON_GREEN, NEON_PINK, PALETTE_PURPLE } from "../theme";
 import ParticipantCall from "./ParticipantCall";
-import GameService from "../services/game";
+import JitsiContext from "../contexts/JitsiContext";
 
 const useStyles = makeStyles({
   container: {
@@ -56,9 +54,7 @@ const CallInterface: React.FC<IProps> = ({ teamId }) => {
   const computerUsers = useSelector((state: Store) => state.computer.users);
   const classes = useStyles({ teamId });
 
-  const jitsi = GameService.getJitsi();
-
-  const { existingTracksIds } = useContext(JitsyContext);
+  const [jitsi, existingTracksIds] = useContext(JitsiContext);
 
   const usersByJitsyIds = gameUsers
     .filter((us) => computerUsers.indexOf(us.id) < 0)

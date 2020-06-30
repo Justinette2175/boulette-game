@@ -13,6 +13,7 @@ import ViewTeamsView from "../../views/ViewTeamsView";
 import GameContext from "../../contexts/GameContext";
 import { Redirect } from "react-router-dom";
 import JoinGame from "../JoinGame/JoinGame";
+import { JitsiProvider } from "../../contexts/JitsiContext";
 
 interface GamePageProps {
   match: { params: { gameId: string } };
@@ -106,7 +107,11 @@ const GamePage: React.FC<GamePageProps> = ({
     return <Redirect to="/" />;
   }
 
-  return <GameContext.Provider value={game}>{view}</GameContext.Provider>;
+  return (
+    <GameContext.Provider value={game}>
+      <JitsiProvider gameId={game?.id}>{view}</JitsiProvider>
+    </GameContext.Provider>
+  );
 };
 
 export default GamePage;
