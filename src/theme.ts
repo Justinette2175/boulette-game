@@ -1,4 +1,5 @@
 import { createMuiTheme } from "@material-ui/core/styles";
+import { yellow, indigo, amber } from "@material-ui/core/colors";
 
 export const PALETTE_PURPLE = "#8500FF";
 export const PALETTE_AQUA = "#00EDB5";
@@ -14,20 +15,19 @@ export default createMuiTheme({
   palette: {
     type: "light",
     text: {
-      primary: "rgba(0, 0, 0, 0.75)",
+      primary: indigo[900],
       secondary: "rgba(0, 0, 0, 0.45)",
     },
     primary: {
-      main: "#FF3E6C",
-      light: "#FFE6E7",
+      main: amber[400],
     },
     secondary: {
-      main: "#35925A",
-      light: "#E3FED6",
+      main: indigo[300],
+      contrastText: amber[400],
     },
     background: {
-      default: "#F7F7F5",
-      paper: "rgba(255, 255, 255, 0.9)",
+      default: yellow[100],
+      paper: yellow[50],
     },
     grey: {
       50: "#F7F7F5",
@@ -41,7 +41,7 @@ export default createMuiTheme({
       800: "#000000",
       900: "#000000",
     },
-    divider: "#000000",
+    divider: yellow[500],
   },
   props: {
     MuiButton: {

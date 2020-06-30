@@ -3,6 +3,9 @@
  * 2. Remove the margin in Firefox and Safari.
  */
 
+body {
+  min-width: 100vw;
+}
 button,
 input,
 optgroup,

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box } from "@material-ui/core";
-import CurrentPlayerViewInterface from "../views/Game/CurrentPlayerViewInterface";
+import CurrentPlayerViewInterface from "./PlayGame/CurrentPlayerViewInterface";
 
 const WORDS = ["mommy", "pool", "love", "blitz"];
 

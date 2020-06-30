@@ -3,23 +3,17 @@ import { Typography, Box, BoxProps } from "@material-ui/core";
 import { BASE_URL } from "../constants";
 import GameContext from "../contexts/GameContext";
 
-import COPY from "../copy";
-
 const GameLink: React.FC<BoxProps> = (props) => {
   let game = useContext(GameContext);
-  const language = "EN";
 
   if (game && game.id) {
     return (
       <Box {...props}>
-        <Typography variant="body2">
-          {COPY.SHARE_LINK_INSTRUCTIONS[language]}
-        </Typography>
         <Box display="flex" alignItems="center">
           <Typography
-            color="primary"
+            color="secondary"
             variant="caption"
-          >{`${BASE_URL}?gameId=${game.id}`}</Typography>
+          >{`${BASE_URL}/games/${game.id}`}</Typography>
         </Box>
       </Box>
     );

@@ -5,6 +5,7 @@ import GameContext from "../../contexts/GameContext";
 import CurrentRoundContext from "../../contexts/CurrentRoundContext";
 import { useGameRef } from "../../hooks";
 import Round from "./Round";
+import { Box } from "@material-ui/core";
 
 const Game: React.FC = () => {
   const game = useContext(GameContext);
@@ -38,18 +39,15 @@ const Game: React.FC = () => {
   }, [game.currentRound]);
 
   return (
-    <>
+    <Box height="100vh" overflow="hidden">
       <CurrentRoundContext.Provider value={currentRound}>
         <Round openInstructions={() => setInstructionsVisible(true)} />
         <RoundInstructions
           open={instructionsVisible}
           onClose={() => setInstructionsVisible(false)}
         />
-        {/* <Box position="fixed" style={{ left: 0, bottom: 0, right: 0 }}>
-        <RemoteCallsStrip audioOnly includeNames={false} />
-      </Box> */}
       </CurrentRoundContext.Provider>
-    </>
+    </Box>
   );
 };
 

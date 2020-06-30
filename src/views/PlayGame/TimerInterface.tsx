@@ -29,9 +29,7 @@ const Timer: React.FC<IProps> = ({ timeLeft }) => {
           {timeLeft.minutes}:{timeLeft.seconds < 10 && 0}
           {timeLeft.seconds}
         </p>
-      ) : (
-        <Typography variant="h1">00:00</Typography>
-      )}
+      ) : null}
     </>
   );
 };

@@ -4,16 +4,15 @@ import { FirebaseContext } from "../../firebase";
 import { FirebaseGame } from "../../types/firebaseTypes";
 import DeviceIdContext from "../../contexts/DeviceIdContext";
 
-import AddWordsView from "../../views/AddWordsView";
-import Game from "../../views/Game";
-import Background from "../../components/Background";
+import AddWords from "../AddWords";
+import PlayGame from "../PlayGame";
 import GameEnded from "../../views/GameEnded";
-import WaitingForPlayersView from "../../views/WaitingForPlayersView";
+import WaitingForPlayers from "../WaitingForPlayers";
 import ViewTeamsView from "../../views/ViewTeamsView";
 
 import GameContext from "../../contexts/GameContext";
 import { Redirect } from "react-router-dom";
-import JoinGame from "../StartOrJoinGame/JoinGame";
+import JoinGame from "../JoinGame/JoinGame";
 
 interface GamePageProps {
   match: { params: { gameId: string } };
@@ -86,23 +85,21 @@ const GamePage: React.FC<GamePageProps> = ({
   }, [gameId]);
 
   let view;
-  // if (isSmallScreen) {
-  //   view = <SmallScreenView />;
   if (loading) {
     view = <div>Loading</div>;
   } else if (!playerIsInGame) {
     view = <JoinGame />;
   } else if (game && game.stage === "WAITING_FOR_PLAYERS") {
-    view = <WaitingForPlayersView />;
+    view = <WaitingForPlayers />;
   } else if (game && game.stage === "CHOSING_WORDS") {
-    view = <AddWordsView />;
+    view = <AddWords />;
   } else if (game && game.stage === "REVIEWING_TEAMS") {
     view = <ViewTeamsView />;
   }
   // else if (gameStage === "ENDED") {
-  //   view = <GameEnded />;
+  //   view = <GameEnded />;}
   else if (game && game.stage === "PLAYING") {
-    view = <Game />;
+    view = <PlayGame />;
   }
 
   if (gameNotFound) {

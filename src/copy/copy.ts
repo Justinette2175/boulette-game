@@ -41,8 +41,8 @@ export default {
     EN: "Create Game",
   },
   DEVICE_PLAYERS_TITLE: {
-    FR: "",
-    EN: "Players on this device",
+    FR: "Salle d'attente",
+    EN: "Waiting Room",
   },
   ADD_DEVICE_PLAYER_INSTRUCTIONS: {
     FR: "",
@@ -56,10 +56,6 @@ export default {
   REMOTE_PLAYERS_TITLE: {
     FR: "",
     EN: "Remote players",
-  },
-  NEXT_JOIN_PLAYERS_INSTRUCTIONS: {
-    FR: "",
-    EN: "When all the players have joined, start the game.",
   },
   JOIN_PLAYERS_WAIT_INSTRUCTIONS: {
     FR: "",
@@ -141,7 +137,7 @@ export default {
   },
   READ_INSTRUCTIONS_BUTTON: {
     FR: "",
-    EN: "Round instructions",
+    EN: "Instructions",
   },
   ROUND: {
     FR: "",

@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from "react";
-import Slider from "./Slider";
 import CurrentRoundContext from "../../contexts/CurrentRoundContext";
 import TimerContext from "../../contexts/TimerContext";
 import {
@@ -8,6 +7,9 @@ import {
   useCurrentPlayerIsOnDevice,
 } from "../../hooks";
 import moment from "moment";
+import { Box } from "@material-ui/core";
+import ScoreBoard from "../../components/ScoreBoard";
+import TeamView from "./TeamView";
 
 const INTERVAL_TIME = 1000;
 
@@ -70,14 +72,15 @@ const Round: React.FC<IProps> = ({ openInstructions }) => {
   }, []);
 
   return (
-    <>
+    <Box>
       <TimerContext.Provider value={[timeRemaining, stopTimer]}>
-        <Slider openInstructions={openInstructions} />
+        <ScoreBoard openInstructions={openInstructions} />
+        <TeamView />
         {/* <Box position="fixed" style={{ left: 0, bottom: 0, right: 0 }}>
         <RemoteCallsStrip audioOnly includeNames={false} />
       </Box> */}
       </TimerContext.Provider>
-    </>
+    </Box>
   );
 };
 

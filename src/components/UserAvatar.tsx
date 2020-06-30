@@ -2,13 +2,12 @@ import React from "react";
 import { Box, BoxProps, useTheme } from "@material-ui/core";
 
 const UserAvatar: React.FC<BoxProps> = (props) => {
-  const theme = useTheme();
   return (
     <Box
-      height="60px"
-      width="60px"
-      border="1px solid black"
-      borderRadius={theme.shape.borderRadius}
+      height="30px"
+      width="30px"
+      border={1}
+      borderRadius="100%"
       {...props}
     ></Box>
   );

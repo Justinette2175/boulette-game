@@ -1,10 +1,7 @@
 import React, { useContext } from "react";
-import { Store } from "../../types";
-import { Box, Button, Typography, Grid, useTheme } from "@material-ui/core";
+import { Box, Button, Typography, Grid } from "@material-ui/core";
 import PlayerAndAvatar from "../../components/PlayerAndAvatar";
 import { ArrowRight } from "react-feather";
-import ContentWrapper from "../../components/ContentWrapper";
-// import RemoteCallsStrip from "../../components/RemoteCallsStrip";
 import { useGameTeams, useOwnerIsOnDevice, useGameRef } from "../../hooks";
 
 import COPY from "../../copy";
@@ -26,7 +23,7 @@ const ViewTeamsView: React.FC = () => {
   const teamsMarkup = teams.map((t) => {
     const teamPlayers = t.players || {};
     return (
-      <Box>
+      <Grid item xs={6}>
         <Typography variant="h2" gutterBottom>
           {t.name}
         </Typography>
@@ -37,56 +34,32 @@ const ViewTeamsView: React.FC = () => {
             </Grid>
           ))}
         </Grid>
-      </Box>
+      </Grid>
     );
   });
 
   return (
-    <>
-      <ContentWrapper
-        maxWidth={600}
-        leftChild={
-          <>
-            <Box height="100px">
-              <Typography variant="h1">
-                {COPY.TEAMS_VIEW_TITLE[language]}
-              </Typography>
-            </Box>
-            {teamsMarkup[0]}
-          </>
-        }
-        rightChild={
-          <>
-            <Box height="100px" />
-            {teamsMarkup[1]}
-            <Box display="flex" flexDirection="column" my={4}>
-              <Box mb={2} maxWidth="300px">
-                <Typography variant="h4">
-                  {ownerIsOnDevice
-                    ? COPY.TEAMS_VIEW_WAIT[language]
-                    : COPY.TEAMS_VIEW_NEXT_INSTRUCTIONS[language]}
-                </Typography>
-              </Box>
-              {ownerIsOnDevice && (
-                <Box>
-                  <Button
-                    onClick={handleStartGame}
-                    color="primary"
-                    variant="contained"
-                    endIcon={<ArrowRight />}
-                  >
-                    {COPY.TEAMS_VIEW_NEXT_BUTTON[language]}
-                  </Button>
-                </Box>
-              )}
-            </Box>
-          </>
-        }
-      />
-      {/* <Box position="fixed" style={{ left: 0, bottom: 0, right: 0 }}>
-        <RemoteCallsStrip includeLocal includeNames={false} />
-      </Box> */}
-    </>
+    <Box pt={4}>
+      <Typography variant="h1">{COPY.TEAMS_VIEW_TITLE[language]}</Typography>
+      <Grid container spacing={2}>
+        {teamsMarkup[0]}
+        {teamsMarkup[1]}
+      </Grid>
+      <Box my={4}>
+        {ownerIsOnDevice && (
+          <Box>
+            <Button
+              onClick={handleStartGame}
+              color="primary"
+              variant="contained"
+              endIcon={<ArrowRight />}
+            >
+              {COPY.TEAMS_VIEW_NEXT_BUTTON[language]}
+            </Button>
+          </Box>
+        )}
+      </Box>
+    </Box>
   );
 };
 
