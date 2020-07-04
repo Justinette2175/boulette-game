@@ -38,6 +38,14 @@ const useAddPlayer = (): ((name: string) => void) => {
         await transaction.update(gameRef.collection("teams").doc(nextTeam), {
           [`players.${newPlayerRef.id}`]: newPlayer,
         });
+        const isCaptain =
+          !team2Players || Object.keys(team2Players).length === 0;
+
+        if (isCaptain) {
+          await transaction.update(gameRef.collection("teams").doc(nextTeam), {
+            captain: newPlayer,
+          });
+        }
         await transaction.set(newPlayerRef, newPlayer);
       });
     } catch (e) {

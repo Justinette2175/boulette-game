@@ -7,3 +7,5 @@ export { default as useAddPlayer } from "./useAddPlayer";
 export { default as useInterval } from "./useInterval";
 export { default as useHandleEndTurn } from "./useHandleEndTurn";
 export { default as useCurrentPlayerIsOnDevice } from "./useCurrentPlayerIsOnDevice";
+export { default as useGameDevices } from "./useGameDevices";
+export { default as useDebouncedAsync } from "./useDebouncedAsync";

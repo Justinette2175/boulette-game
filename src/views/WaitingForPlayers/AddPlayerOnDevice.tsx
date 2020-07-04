@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 
@@ -7,8 +7,6 @@ import COPY from "../../copy";
 import { Button, Typography, Box, Dialog } from "@material-ui/core";
 import TextInput from "../../components/TextInput";
 import ButtonsGroup from "../../components/ButtonsGroup";
-import useGameRef from "../../hooks/useGameRef";
-import DeviceIdContext from "../../contexts/DeviceIdContext";
 import useAddPlayer from "../../hooks/useAddPlayer";
 
 interface IProps {
@@ -28,8 +26,9 @@ const AddPlayerOnDevice: React.FC<IProps> = ({ open, onClose }) => {
     name: Yup.string().required("Required"),
   });
 
-  const handleSubmit = (values: FormValues) => {
-    addPlayer(values.name);
+  const handleSubmit = async (values: FormValues) => {
+    await addPlayer(values.name);
+    onClose();
   };
 
   return (

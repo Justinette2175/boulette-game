@@ -23,6 +23,7 @@ const onCreateGame = functions.firestore
       players: {
         [owner.id]: owner,
       },
+      captain: owner,
     });
     batch.set(snap.ref.collection("teams").doc("2"), {
       players: {},

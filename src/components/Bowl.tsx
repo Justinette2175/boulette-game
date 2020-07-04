@@ -33,7 +33,6 @@ const Bowl: React.FC = () => {
     <Box width="90vw" maxWidth="800px" position="relative" minWidth="450px">
       <img className={classes.bowlBackground} src={BolBlanc} width="100%"></img>
       <img className={classes.bowl} src={Bol} width="100%"></img>
-      <img className={classes.coloredBowl} src={BolVert} width="100%"></img>
     </Box>
   );
 };

@@ -39,7 +39,7 @@ const WordsSelector: React.FC<IProps> = ({ user, open, onClose }) => {
 
   const handleSubmit = async (values: { words: Array<string> }) => {
     try {
-      let batch = firebase.firestore().batch();
+      const batch = firebase.firestore().batch();
       const wordsRef = gameRef.collection("words");
       values.words.forEach((w: any) => {
         const newWord: NewWord = {
@@ -57,7 +57,7 @@ const WordsSelector: React.FC<IProps> = ({ user, open, onClose }) => {
       await batch.commit();
       onClose();
     } catch (e) {
-      console.log("Could not add words", e);
+      console.log("Error:WordsSelector:handleSubmit", e);
     }
   };
 

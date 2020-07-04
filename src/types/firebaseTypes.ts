@@ -5,6 +5,11 @@ export type GameStage =
   | "PLAYING"
   | "ENDED";
 
+export interface MutedState {
+  video: boolean;
+  audio: boolean;
+}
+
 export interface NewGame {
   owner: {
     id: string;
@@ -32,6 +37,11 @@ export interface FirebaseGame {
   score: {
     [teamId: string]: number;
   };
+}
+
+export interface FirebaseGameDevice {
+  id?: string;
+  jitsiId: string;
 }
 
 export interface NewPlayer {
@@ -91,5 +101,17 @@ export interface FirebaseGameTeam {
   name: string;
   players: {
     [key: string]: FirebasePlayer;
+  };
+  captain: FirebasePlayer;
+  lastPlayerToHavePlayed: FirebasePlayer;
+}
+
+export interface JitsiTracks {
+  [key: string]: {
+    exists: boolean;
+    muted?: {
+      audio?: boolean;
+      video?: boolean;
+    };
   };
 }

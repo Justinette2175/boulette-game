@@ -1,5 +1,5 @@
 import { createMuiTheme } from "@material-ui/core/styles";
-import { yellow, indigo, amber } from "@material-ui/core/colors";
+import { yellow, indigo, cyan, amber } from "@material-ui/core/colors";
 
 export const PALETTE_PURPLE = "#8500FF";
 export const PALETTE_AQUA = "#00EDB5";
@@ -20,14 +20,16 @@ export default createMuiTheme({
     },
     primary: {
       main: amber[400],
+      contrastText: indigo[900],
     },
     secondary: {
-      main: indigo[300],
-      contrastText: amber[400],
+      main: cyan[400],
+      dark: cyan[600],
+      contrastText: indigo[900],
     },
     background: {
-      default: yellow[100],
-      paper: yellow[50],
+      default: cyan[100],
+      paper: cyan[50],
     },
     grey: {
       50: "#F7F7F5",

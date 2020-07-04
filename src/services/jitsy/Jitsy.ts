@@ -6,8 +6,6 @@ const options = {
   serviceUrl: "https://jitsi.boulette.ca/http-bind",
 };
 
-// const token = "2de64e29e2251ace115286bf7c86ca17";
-
 const confOptions = {
   openBridgeChannel: true,
 };
@@ -32,26 +30,35 @@ class Jitsy {
   gameId: string;
   videoComponents: any;
   audioComponents: any;
-  addExistingTrackId: (id: string) => void;
-  removeExistingTrackId: (id: string) => void;
+  jitsiId: string;
   closePermissionsModal: () => void;
   storeJitsiId: (id: string) => void;
+  updateTrackExistence: (id: string, exists: boolean) => void;
+  onMuteStateChanged: (
+    jitsiId: string,
+    trackType: "audio" | "video",
+    isOn: boolean
+  ) => void;
 
   constructor(
     gameId: string,
-    addExistingTrackId: (id: string) => void,
-    removeExistingTrackId: (id: string) => void,
+    updateTrackExistence: (id: string, exists: boolean) => void,
     closePermissionsModal: () => void,
-    storeJitsiId: (id: string) => void
+    storeJitsiId: (id: string) => void,
+    onMuteStateChanged: (
+      jitsiId: string,
+      trackType: "audio" | "video",
+      isOn: boolean
+    ) => void
   ) {
     this.connection = new JitsiMeetJS.JitsiConnection(null, null, options);
     this.gameId = gameId;
     this.videoComponents = {};
     this.audioComponents = {};
-    this.addExistingTrackId = addExistingTrackId;
-    this.removeExistingTrackId = removeExistingTrackId;
+    this.updateTrackExistence = updateTrackExistence;
     this.closePermissionsModal = closePermissionsModal;
     this.storeJitsiId = storeJitsiId;
+    this.onMuteStateChanged = onMuteStateChanged;
     this.connection.addEventListener(
       JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED,
       this.onConnectionSuccess
@@ -92,30 +99,31 @@ class Jitsy {
   };
 
   onLocalTracks = (tracks: any) => {
-    this.localTracks = tracks;
-    this.addExistingTrackId("local");
+    if (this.localTracks.length < 2) {
+      this.localTracks = tracks;
+      this.updateTrackExistence("local", true);
+      for (let i = 0; i < this.localTracks.length; i++) {
+        this.localTracks[i].addEventListener(
+          JitsiMeetJS.events.track.TRACK_AUDIO_LEVEL_CHANGED,
+          (audioLevel: any) => console.log(`Audio Level local: ${audioLevel}`)
+        );
+        this.localTracks[i].addEventListener(
+          JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
+          () => console.log("local track muted")
+        );
+        this.localTracks[i].addEventListener(
+          JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED,
+          () => console.log("local track stoped")
+        );
+        this.localTracks[i].addEventListener(
+          JitsiMeetJS.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
+          (deviceId: string) =>
+            console.log(`track audio output device was changed to ${deviceId}`)
+        );
 
-    for (let i = 0; i < this.localTracks.length; i++) {
-      this.localTracks[i].addEventListener(
-        JitsiMeetJS.events.track.TRACK_AUDIO_LEVEL_CHANGED,
-        (audioLevel: any) => console.log(`Audio Level local: ${audioLevel}`)
-      );
-      this.localTracks[i].addEventListener(
-        JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
-        () => console.log("local track muted")
-      );
-      this.localTracks[i].addEventListener(
-        JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED,
-        () => console.log("local track stoped")
-      );
-      this.localTracks[i].addEventListener(
-        JitsiMeetJS.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
-        (deviceId: string) =>
-          console.log(`track audio output device was changed to ${deviceId}`)
-      );
-
-      if (this.isJoined) {
-        this.room.addTrack(this.localTracks[i]);
+        if (this.isJoined) {
+          this.room.addTrack(this.localTracks[i]);
+        }
       }
     }
   };
@@ -123,6 +131,7 @@ class Jitsy {
   logMyUserId = () => {
     if (this.room) {
       const myUserId = this.room.myUserId();
+      this.jitsiId = myUserId;
       this.storeJitsiId(myUserId);
     }
   };
@@ -138,7 +147,7 @@ class Jitsy {
     }
 
     this.remoteTracks[participantId].push(track);
-    this.addExistingTrackId(participantId);
+    this.updateTrackExistence(participantId, true);
 
     track.addEventListener(
       JitsiMeetJS.events.track.TRACK_AUDIO_LEVEL_CHANGED,
@@ -213,8 +222,8 @@ class Jitsy {
     this.room.on(JitsiMeetJS.events.conference.TRACK_ADDED, this.onRemoteTrack);
     this.room.on(JitsiMeetJS.events.conference.TRACK_REMOVED, (track: any) => {
       const id = track.getParticipantId();
-      this.removeExistingTrackId(id);
-      console.log(`track removed!!!${id}`);
+      this.updateTrackExistence(id, false);
+      console.log("Jitsi:onTRACK_REMOVED:id", id);
     });
     this.room.on(
       JitsiMeetJS.events.conference.CONFERENCE_JOINED,
@@ -227,7 +236,12 @@ class Jitsy {
     this.room.on(
       JitsiMeetJS.events.conference.TRACK_MUTE_CHANGED,
       (track: any) => {
-        console.log(`${track.getType()} - ${track.isMuted()}`);
+        const participantId = track.getParticipantId();
+        this.onMuteStateChanged(
+          participantId === this.jitsiId ? "local" : participantId,
+          track.getType(),
+          track.isMuted()
+        );
       }
     );
     this.room.on(
@@ -247,6 +261,7 @@ class Jitsy {
   };
 
   onUserLeft = (id: string) => {
+    console.log("Jitsi:onUserLeft:id", id);
     if (!this.remoteTracks[id]) {
       return;
     }
@@ -273,14 +288,14 @@ class Jitsy {
   };
 
   onConnectionFailed = () => {
-    console.error("Connection Failed!");
+    console.log("Jitsi:onConnectionFailed");
   };
 
   /**
    * This function is called when the connection fail.
    */
   onDeviceListChanged(devices: any) {
-    console.info("current devices", devices);
+    console.log("Jitsi:onDeviceListChanged:devices", devices);
   }
 
   async _muteTrack(t: any) {
@@ -328,6 +343,12 @@ class Jitsy {
         }
       });
       await Promise.all(ps);
+    }
+  }
+
+  async leave() {
+    if (this.room) {
+      return this.room.leave();
     }
   }
 }

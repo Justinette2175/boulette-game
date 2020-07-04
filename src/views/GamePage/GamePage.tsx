@@ -4,16 +4,11 @@ import { FirebaseContext } from "../../firebase";
 import { FirebaseGame } from "../../types/firebaseTypes";
 import DeviceIdContext from "../../contexts/DeviceIdContext";
 
-import AddWords from "../AddWords";
-import PlayGame from "../PlayGame";
-import GameEnded from "../../views/GameEnded";
-import WaitingForPlayers from "../WaitingForPlayers";
-import ViewTeamsView from "../../views/ViewTeamsView";
+import JitsiViews from "./JitsiViews";
 
 import GameContext from "../../contexts/GameContext";
 import { Redirect } from "react-router-dom";
 import JoinGame from "../JoinGame/JoinGame";
-import { JitsiProvider } from "../../contexts/JitsiContext";
 
 interface GamePageProps {
   match: { params: { gameId: string } };
@@ -30,6 +25,7 @@ const GamePage: React.FC<GamePageProps> = ({
   const [gameNotFound, setGameNotFound] = useState<boolean>(false);
   const [playerIsInGame, setPlayerIsInGame] = useState<boolean>(false);
   const firebase = useContext(FirebaseContext);
+
   const listenToGame = (gameId: string): (() => null) => {
     try {
       setLoading(true);
@@ -90,28 +86,15 @@ const GamePage: React.FC<GamePageProps> = ({
     view = <div>Loading</div>;
   } else if (!playerIsInGame) {
     view = <JoinGame />;
-  } else if (game && game.stage === "WAITING_FOR_PLAYERS") {
-    view = <WaitingForPlayers />;
-  } else if (game && game.stage === "CHOSING_WORDS") {
-    view = <AddWords />;
-  } else if (game && game.stage === "REVIEWING_TEAMS") {
-    view = <ViewTeamsView />;
-  }
-  // else if (gameStage === "ENDED") {
-  //   view = <GameEnded />;}
-  else if (game && game.stage === "PLAYING") {
-    view = <PlayGame />;
+  } else if (game) {
+    view = <JitsiViews />;
   }
 
   if (gameNotFound) {
     return <Redirect to="/" />;
   }
 
-  return (
-    <GameContext.Provider value={game}>
-      <JitsiProvider gameId={game?.id}>{view}</JitsiProvider>
-    </GameContext.Provider>
-  );
+  return <GameContext.Provider value={game}>{view}</GameContext.Provider>;
 };
 
 export default GamePage;

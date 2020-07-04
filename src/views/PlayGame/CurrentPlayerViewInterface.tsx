@@ -3,9 +3,18 @@ import { Box, Button, Typography } from "@material-ui/core";
 import WordTransitionWrapper from "../../components/WordTransitionWrapper";
 
 import Bowl from "../../components/Bowl";
-import LocalCall from "../../components/LocalCall";
 
 import { FirebaseGameWord } from "../../types/firebaseTypes";
+
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+const useStyles = makeStyles((theme: Theme) => {
+  return createStyles({
+    goButton: {
+      fontSize: "3rem",
+      padding: `${theme.spacing(2)}px ${theme.spacing(4)}px`,
+    },
+  });
+});
 
 interface IProps {
   onFound: (wordId: string) => void;
@@ -25,6 +34,9 @@ const CurrentPlayerViewInterface: React.FC<IProps> = ({
       onStart();
     }
   };
+
+  const classes = useStyles();
+
   return (
     <Box position="relative" flexGrow={1}>
       <Box
@@ -39,7 +51,7 @@ const CurrentPlayerViewInterface: React.FC<IProps> = ({
       >
         {!!currentWord && <WordTransitionWrapper currentWord={currentWord} />}
       </Box>
-      <Box position="absolute" width="100%">
+      <Box position="relative" width="100%">
         <Box
           position="absolute"
           width="200px"
@@ -50,19 +62,16 @@ const CurrentPlayerViewInterface: React.FC<IProps> = ({
           zIndex={400}
           top="50px"
         >
-          <Box
-            bgcolor="primary.main"
-            borderRadius="borderRadius"
-            px={3}
-            py={2}
-            boxShadow={1}
+          <Button
+            classes={{ root: classes.goButton }}
+            color="secondary"
+            variant="contained"
+            onClick={handleBowlClick}
           >
-            <Typography variant="h2" style={{ fontWeight: 500, margin: 0 }}>
-              {currentWord ? "Start" : "Found"}
-            </Typography>
-          </Box>
+            {currentWord ? "Found" : "Start"}
+          </Button>
         </Box>
-        <Box display="flex" justifyContent="center" onClick={handleBowlClick}>
+        <Box display="flex" justifyContent="center">
           <Bowl />
         </Box>
       </Box>

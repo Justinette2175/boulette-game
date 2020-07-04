@@ -1,12 +1,6 @@
 import React, { useState, useContext } from "react";
-import { useSelector } from "react-redux";
-import { Store } from "../../types";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-
-import DeviceIdContext from "../../contexts/DeviceIdContext";
-import GameContext from "../../contexts/GameContext";
-import { FirebaseContext } from "../../firebase";
 
 import TextInput from "../../components/TextInput";
 import { Box, Typography, Button } from "@material-ui/core";
@@ -35,14 +29,13 @@ const JoinGame: React.FC<IProps> = () => {
   };
 
   return (
-    <Box mt={4} display="flex" justifyContent="center">
+    <Box pt={8} px={4}>
       {error && (
         <Box mb={2}>
           <Alert severity="error">{error.message}</Alert>
         </Box>
       )}
       <Typography variant="h2">{COPY.JOIN_GAME_TITLE[language]}</Typography>
-      <Typography variant="body1">{COPY.JOIN_GAME_PARA[language]}</Typography>
       <Formik
         validateOnMount={true}
         initialValues={{

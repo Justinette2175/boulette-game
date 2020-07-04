@@ -13,7 +13,6 @@ class FirebaseGameInterface {
   db: any;
 
   constructor(gameId: GameId) {
-    console.log("Game id in service is", gameId);
     this.gameId = gameId;
     this.gameRef = db.collection("games").doc(gameId);
     this.teamsRef = this.gameRef.collection("teams");

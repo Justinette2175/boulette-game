@@ -1,27 +1,36 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { FirebasePlayer } from "../types/firebaseTypes";
-import useGameRef from "./useGameRef";
+import GameContext from "../contexts/GameContext";
+import { FirebaseContext } from "../firebase";
 
 const useGamePlayers = (): Array<FirebasePlayer> => {
-  const gameRef = useGameRef();
+  const firebase = useContext(FirebaseContext);
+  const game = useContext(GameContext);
   const [players, setPlayers] = useState<Array<FirebasePlayer>>([]);
 
   const listenToGamePlayers = () => {
-    if (gameRef) {
-      return gameRef.collection("players").onSnapshot((snap: any) => {
-        const gamePlayers: Array<FirebasePlayer> = [];
-        snap.forEach((player: any) => {
-          gamePlayers.push({ ...player.data(), id: player.id });
+    if (game) {
+      return firebase
+        .firestore()
+        .collection("games")
+        .doc(game.id)
+        .collection("players")
+        .onSnapshot((snap: any) => {
+          const gamePlayers: Array<FirebasePlayer> = [];
+          snap.forEach((player: any) => {
+            gamePlayers.push({ ...player.data(), id: player.id });
+          });
+          setPlayers(gamePlayers);
         });
-        setPlayers(gamePlayers);
-      });
     }
   };
 
   useEffect(() => {
-    const unsubscribe = listenToGamePlayers();
-    return unsubscribe;
-  }, []);
+    if (game?.id) {
+      const unsubscribe = listenToGamePlayers();
+      return unsubscribe;
+    }
+  }, [game?.id]);
 
   return players;
 };

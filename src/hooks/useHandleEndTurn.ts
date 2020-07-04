@@ -6,13 +6,13 @@ import { FirebasePlayer } from "../types/firebaseTypes";
 
 const getNewPlayer = (
   players: { [key: string]: FirebasePlayer },
-  currentPlayer: FirebasePlayer
+  lastPlayerToHavePlayed: FirebasePlayer
 ): FirebasePlayer => {
   const playerValues = Object.values(players).sort(
     (a, b) => a.createdAt - b.createdAt
   );
-  const indexOfCurrentPlayer = currentPlayer
-    ? playerValues.findIndex((p) => p.id === currentPlayer.id)
+  const indexOfCurrentPlayer = lastPlayerToHavePlayed
+    ? playerValues.findIndex((p) => p.id === lastPlayerToHavePlayed.id)
     : playerValues.length - 1;
 
   const newPlayerIndex =
@@ -36,7 +36,10 @@ const useHandleEndTurn = (): (() => void) => {
         gameRef.collection("teams").doc(newTeamId)
       );
       const newTeam = { ...newTeamSnap.data(), id: newTeamId };
-      const newPlayer = getNewPlayer(newTeam.players, currentPlayer);
+      const newPlayer = getNewPlayer(
+        newTeam.players,
+        newTeam.lastPlayerToHavePlayed
+      );
 
       await transaction.update(gameRef.collection("rounds").doc(round.id), {
         endOfCurrentTurn: null,
@@ -45,6 +48,12 @@ const useHandleEndTurn = (): (() => void) => {
         currentWord: null,
         remainingTimeFromPreviousRound: 0,
       });
+      await transaction.update(
+        gameRef.collection("teams").doc(currentTeam.id),
+        {
+          lastPlayerToHavePlayed: currentPlayer,
+        }
+      );
     });
   };
 

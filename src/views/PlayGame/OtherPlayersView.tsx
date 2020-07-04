@@ -17,7 +17,7 @@ const OtherPlayersView: React.FC<IProps> = () => {
           <Grid container spacing={2}></Grid>
         </Box>
       </Box>
-      {/* <CurrentPlayerVideo /> */}
+      <CurrentPlayerVideo />
     </Box>
   );
 };

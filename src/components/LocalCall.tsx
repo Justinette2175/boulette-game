@@ -1,14 +1,11 @@
 import React, { useEffect, useContext, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import JitsyContext from "../contexts/JitsiContext";
 import useInterval from "../utils/useInterval";
 import { Box, IconButton } from "@material-ui/core";
 import { Mic, MicOff, Video, VideoOff } from "react-feather";
-import { Store } from "../types";
-import { setAudioMuted, setVideoMuted } from "../redux/computer";
 
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import JitsiContext from "../contexts/JitsiContext";
+import { MutedState } from "../types/firebaseTypes";
 
 const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
@@ -20,23 +17,24 @@ const useStyles = makeStyles((theme: Theme) => {
         width: "100%",
       },
     },
+    iconButton: {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.text.primary,
+      marginLeft: theme.spacing(0.5),
+      marginBottom: theme.spacing(0.5),
+    },
   });
 });
 
 const LocalCall: React.FC = () => {
   const classes = useStyles();
-  const [jitsi] = useContext(JitsiContext);
+  const [jitsi, _1, _2, muted, setMuted] = useContext(JitsiContext);
   const [attached, setAttached] = useState<boolean>(false);
-  const audioMuted = useSelector((state: Store) => state.computer.audioMuted);
-  const videoMuted = useSelector((state: Store) => state.computer.videoMuted);
-  const dispatch = useDispatch();
 
   const attachJitsyToComponent = () => {
     if (jitsi) {
-      console.log("Attaching jisti");
       try {
         jitsi.attachLocalTrackToComponent("local-jitsi");
-        console.log("done attaching");
         setAttached(true);
       } catch (e) {
         // console.warn(e);
@@ -48,12 +46,7 @@ const LocalCall: React.FC = () => {
     if (jitsi) {
       try {
         await jitsi.toggleMute([type]);
-        console.log("muting now");
-        if (type === "audio") {
-          dispatch(setAudioMuted(!audioMuted));
-        } else if (type === "video") {
-          dispatch(setVideoMuted(!videoMuted));
-        }
+        setMuted((prev: MutedState) => ({ ...prev, [type]: !prev[type] }));
       } catch (e) {
         console.warn(e.message);
       }
@@ -77,20 +70,28 @@ const LocalCall: React.FC = () => {
       >
         <video autoPlay></video>
       </Box>
+      <Box
+        position="absolute"
+        borderColor="secondary.main"
+        border={3}
+        style={{ bottom: 0, left: 0, right: 0, top: 0 }}
+      ></Box>
       <Box position="absolute" style={{ bottom: 0, left: 0 }}>
         <IconButton
           color="primary"
           size="small"
+          classes={{ root: classes.iconButton }}
           onClick={() => toggleMute("audio")}
         >
-          {audioMuted ? <MicOff size={20} /> : <Mic size={20} />}
+          {muted.audio ? <MicOff size={20} /> : <Mic size={20} />}
         </IconButton>
         <IconButton
           color="primary"
           size="small"
           onClick={() => toggleMute("video")}
+          classes={{ root: classes.iconButton }}
         >
-          {videoMuted ? <VideoOff size={20} /> : <Video size={20} />}
+          {muted.video ? <VideoOff size={20} /> : <Video size={20} />}
         </IconButton>
       </Box>
     </Box>

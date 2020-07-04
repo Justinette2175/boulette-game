@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { userStillHasWordsToWrite } from "../../utils";
 import WordsSelector from "./WordsSelector";
 import PlayerAndAvatar from "../../components/PlayerAndAvatar";
+import RemoteCallsStrip from "../../components/RemoteCallsStrip";
 
 import {
   Button,
@@ -15,7 +16,7 @@ import { Plus, ArrowRight, CheckCircle } from "react-feather";
 
 import COPY from "../../copy";
 import GameContext from "../../contexts/GameContext";
-import { useGamePlayers, useGameRef, useOwnerIsOnDevice } from "../../hooks";
+import { useGameRef, useOwnerIsOnDevice, useGamePlayers } from "../../hooks";
 import DeviceIdContext from "../../contexts/DeviceIdContext";
 import useGameWords from "../../hooks/useGameWords";
 import { FirebasePlayer, GameStage } from "../../types/firebaseTypes";
@@ -52,6 +53,7 @@ const AddWords: React.FC = () => {
 
   return (
     <>
+      <RemoteCallsStrip />
       <Box pt={8} px={4}>
         <Typography variant="h1" gutterBottom>
           {COPY.ADD_WORDS_TITLE[language]}
@@ -98,7 +100,7 @@ const AddWords: React.FC = () => {
           {playersMissingWords.length > 0 && (
             <Box>
               <Typography variant="body1">
-                Still waiting for {playersMissingWords.join(",")}.
+                Still waiting for {playersMissingWords.join(", ")}.
               </Typography>
             </Box>
           )}

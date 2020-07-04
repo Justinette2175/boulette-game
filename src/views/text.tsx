@@ -6,7 +6,6 @@ const WORDS = ["mommy", "pool", "love", "blitz"];
 
 const Test: React.FC = () => {
   const [words, setWords] = useState([]);
-  console.log("wrods are", words);
   return (
     <Box>
       <CurrentPlayerViewInterface
@@ -14,7 +13,6 @@ const Test: React.FC = () => {
         onFound={() => {
           const w = [...words];
           w.shift();
-          console.log("w after shift", w);
           setWords(w);
         }}
         onStart={() => setWords(WORDS.map((w) => ({ text: w })))}

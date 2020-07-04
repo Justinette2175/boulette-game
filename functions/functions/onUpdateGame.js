@@ -31,7 +31,6 @@ const handleSelectedWords = async (ref) => {
   wordsSnapshot.forEach((snap, i) => {
     words[snap.id] = { ...snap.data(), id: snap.id, found: false };
   });
-  console.log("words are", words);
   const batch = db.batch();
   rounds.forEach((r) => {
     batch.update(ref.collection("rounds").doc(r.id), {

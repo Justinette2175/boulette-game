@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Box, Grid } from "@material-ui/core";
-import { Store } from "../types";
-import { useSelector } from "react-redux";
 import RemoteCall from "./RemoteCall";
-import CallWrapper from "./CallWrapper";
+import { useGamePlayers, useGameDevices } from "../hooks";
+import DeviceIdContext from "../contexts/DeviceIdContext";
 import LocalCall from "./LocalCall";
 
 interface IProps {
@@ -17,40 +16,23 @@ const RemoteCallsStrip: React.FC<IProps> = ({
   includeNames = true,
   audioOnly,
 }) => {
-  const gameUsers = useSelector((state: Store) => state.game.users);
-  const computerUsers = useSelector((state: Store) => state.computer.users);
+  const deviceId = useContext(DeviceIdContext);
+  const devices = useGameDevices();
 
-  const usersByJitsiId = gameUsers
-    .filter((us) => computerUsers.indexOf(us.id) < 0)
-    .filter((user) => !!user.jitsyId)
-    .reduce((acc: any, u) => {
-      if (u.jitsyId && acc[u.jitsyId]) {
-        acc[u.jitsyId].push(u);
-      } else if (u.jitsyId) {
-        acc[u.jitsyId] = [u];
-      }
-      return acc;
-    }, {});
+  const playersByJitsiId = devices.filter(
+    (device) => !!device.jitsiId && device.id !== deviceId
+  );
 
   return (
-    <Box width="100%">
-      <Grid container spacing={1}>
-        {includeLocal && (
-          <Grid item>
-            <LocalCall />
-          </Grid>
-        )}
-        {Object.keys(usersByJitsiId).map((key: string) => {
-          const usersOnThatJitsi = usersByJitsiId[key];
+    <Box overflow="auto" width="100%" style={{ backgroundColor: "black" }}>
+      <Grid container spacing={0} wrap="nowrap">
+        <Grid item>
+          <LocalCall />
+        </Grid>
+        {playersByJitsiId.map((device) => {
           return (
             <Grid item>
-              {includeNames ? (
-                <CallWrapper usersOnThatJitsi={usersOnThatJitsi}>
-                  <RemoteCall jitsiId={key} audioOnly={audioOnly} />
-                </CallWrapper>
-              ) : (
-                <RemoteCall jitsiId={key} audioOnly={audioOnly} />
-              )}
+              <RemoteCall jitsiId={device.jitsiId} audioOnly={audioOnly} />
             </Grid>
           );
         })}

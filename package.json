@@ -19,6 +19,7 @@
     "@types/react-redux": "^7.1.7",
     "@types/react-router-dom": "^5.1.5",
     "@types/yup": "^0.26.35",
+    "awesome-debounce-promise": "^2.1.0",
     "firebase": "^7.14.0",
     "formik": "^2.1.4",
     "js-cookie": "^2.2.1",
@@ -27,6 +28,7 @@
     "node-sass": "^4.13.1",
     "randomstring": "^1.1.5",
     "react": "^16.13.1",
+    "react-async-hook": "^3.6.1",
     "react-dom": "^16.13.1",
     "react-feather": "^2.0.8",
     "react-motion": "^0.5.2",
@@ -39,6 +41,7 @@
     "redux-thunk": "^2.3.0",
     "sass": "^1.26.3",
     "typescript": "^3.8.3",
+    "use-constant": "^1.0.0",
     "uuidv4": "^6.0.7",
     "yup": "^0.28.3"
   },

@@ -124,7 +124,6 @@ class Game {
   };
 
   load = async () => {
-    console.log("Loading");
     return await this._fetchAllDataAndStartListening();
   };
 
@@ -133,7 +132,6 @@ class Game {
       const newUserId = await this.store.db.runTransaction(
         async (transaction: any) => {
           const gameDoc = await transaction.get(this.store.gameRef);
-          console.log("Game doc is", gameDoc.data());
           if (!gameDoc.exists) {
             throw new Error("This game ID does not exist...");
           }

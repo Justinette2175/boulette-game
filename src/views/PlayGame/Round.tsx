@@ -32,7 +32,6 @@ const Round: React.FC<IProps> = ({ openInstructions }) => {
   const updateRemainingTime = (endOfCurrentTurn: number) => {
     const now = moment().unix();
     let duration = endOfCurrentTurn - now;
-    console.log("duration", duration);
     if (duration < 1 || isNaN(duration)) {
       stopTimer();
       if (currentPlayerIsOnDevice) {
@@ -54,7 +53,6 @@ const Round: React.FC<IProps> = ({ openInstructions }) => {
 
   useEffect(() => {
     if (currentRound && currentRound.endOfCurrentTurn) {
-      console.log("New end of current turn", currentRound.endOfCurrentTurn);
       setIntervalRunning(true);
     } else {
       setIntervalRunning(false);
@@ -76,9 +74,6 @@ const Round: React.FC<IProps> = ({ openInstructions }) => {
       <TimerContext.Provider value={[timeRemaining, stopTimer]}>
         <ScoreBoard openInstructions={openInstructions} />
         <TeamView />
-        {/* <Box position="fixed" style={{ left: 0, bottom: 0, right: 0 }}>
-        <RemoteCallsStrip audioOnly includeNames={false} />
-      </Box> */}
       </TimerContext.Provider>
     </Box>
   );

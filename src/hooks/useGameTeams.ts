@@ -10,7 +10,6 @@ const useGameTeams = (): Array<FirebaseGameTeam> => {
     return gameRef.collection("teams").onSnapshot((snap: any) => {
       const gameTeams: Array<FirebaseGameTeam> = [];
       snap.forEach((team: any) => {
-        console.log("team is", team);
         gameTeams.push({ ...team.data(), id: team.id });
       });
       setTeams(gameTeams);

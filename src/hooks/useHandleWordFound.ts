@@ -18,14 +18,19 @@ const useHandleWordFound = (): ((wordFoundId: string) => void) => {
     wordsLeft[wordFoundId].foundBy = currentPlayer.id;
     newWord = getNewWord(wordsLeft);
 
-    await gameRef
-      .collection("rounds")
-      .doc(round.id)
-      .update({
-        [`score.${currentTeam.id}`]: firebase.firestore.FieldValue.increment(1),
-        currentWord: newWord,
-        [`wordsLeft.${wordFoundId}.foundBy`]: currentPlayer.id,
-      });
+    const batch = firebase.firestore().batch();
+
+    batch.update(gameRef.collection("rounds").doc(round.id), {
+      [`score.${currentTeam.id}`]: firebase.firestore.FieldValue.increment(1),
+      currentWord: newWord,
+      [`wordsLeft.${wordFoundId}.foundBy`]: currentPlayer.id,
+    });
+
+    batch.update(gameRef, {
+      [`score.${currentTeam.id}`]: firebase.firestore.FieldValue.increment(1),
+    });
+
+    await batch.commit();
 
     // Set currentWord, update wordsLeft, and update score
 
@@ -51,7 +56,9 @@ const useHandleWordFound = (): ((wordFoundId: string) => void) => {
             }
           );
         } else {
-          // Finish game
+          await transaction.update(gameRef, {
+            stage: "ENDED",
+          });
         }
       });
     }
