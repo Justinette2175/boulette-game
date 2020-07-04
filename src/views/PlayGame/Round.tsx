@@ -26,19 +26,17 @@ const Round: React.FC<IProps> = ({ openInstructions }) => {
 
   const stopTimer = () => {
     setIntervalRunning(false);
-    setTimeRemaining(null);
   };
 
   const updateRemainingTime = (endOfCurrentTurn: number) => {
     const now = moment().unix();
     let duration = endOfCurrentTurn - now;
+    setTimeRemaining(duration);
     if (duration < 1 || isNaN(duration)) {
       stopTimer();
       if (currentPlayerIsOnDevice) {
         handleEndTurn();
       }
-    } else {
-      setTimeRemaining(duration);
     }
   };
 
@@ -55,6 +53,7 @@ const Round: React.FC<IProps> = ({ openInstructions }) => {
     if (currentRound && currentRound.endOfCurrentTurn) {
       setIntervalRunning(true);
     } else {
+      setTimeRemaining(null);
       setIntervalRunning(false);
     }
   }, [currentRound && currentRound.endOfCurrentTurn]);
@@ -69,9 +68,15 @@ const Round: React.FC<IProps> = ({ openInstructions }) => {
     return clearIfUnmount;
   }, []);
 
+  const formattedTimeRemaining =
+    timeRemaining === null
+      ? currentRound?.remainingTimeFromPreviousRound ||
+        currentRound?.secondsPerTurn
+      : timeRemaining;
+
   return (
     <Box>
-      <TimerContext.Provider value={[timeRemaining, stopTimer]}>
+      <TimerContext.Provider value={[formattedTimeRemaining, stopTimer]}>
         <ScoreBoard openInstructions={openInstructions} />
         <TeamView />
       </TimerContext.Provider>

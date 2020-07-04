@@ -27,7 +27,7 @@ const ViewTeamsView: React.FC = () => {
   return (
     <>
       <RemoteCallsStrip />
-      <Box pt={8} px={4}>
+      <Box py={8} px={4}>
         <Typography variant="h1">{COPY.TEAMS_VIEW_TITLE[language]}</Typography>
         <Grid container spacing={2}>
           {teams.map((t) => (

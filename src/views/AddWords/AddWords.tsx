@@ -54,7 +54,7 @@ const AddWords: React.FC = () => {
   return (
     <>
       <RemoteCallsStrip />
-      <Box pt={8} px={4}>
+      <Box py={8} px={4}>
         <Typography variant="h1" gutterBottom>
           {COPY.ADD_WORDS_TITLE[language]}
         </Typography>

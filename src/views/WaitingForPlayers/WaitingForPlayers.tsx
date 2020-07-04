@@ -29,7 +29,7 @@ const WaitingForPlayers: React.FC = () => {
   return (
     <>
       <RemoteCallsStrip />
-      <Box pt={8} px={4}>
+      <Box py={8} px={4}>
         <Box maxWidth="700px">
           <Typography variant="h1" gutterBottom>
             {COPY.DEVICE_PLAYERS_TITLE[language]}

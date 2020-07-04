@@ -85,7 +85,7 @@ const StartGame: React.FC = () => {
   }
 
   return (
-    <Box pt={8} display="flex" justifyContent="center">
+    <Box pt={8} px={4} display="flex" justifyContent="center">
       <Box width="100%" maxWidth="500px">
         <Typography variant="h2">{COPY.START_GAME_TITLE[language]}</Typography>
         <Typography variant="body1">

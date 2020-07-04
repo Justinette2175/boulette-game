@@ -9,7 +9,7 @@ interface IProps {
 const PlayerAndAvatar: React.FC<IProps> = ({ name }) => {
   return (
     <Box display="flex" alignItems="center">
-      <UserAvatar mr={1} />
+      {/* <UserAvatar mr={1} /> */}
       {name && <Typography style={{ marginBottom: 0 }}>{name}</Typography>}
     </Box>
   );

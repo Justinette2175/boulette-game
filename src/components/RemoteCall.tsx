@@ -69,7 +69,12 @@ const RemoteCall: React.FC<IProps> = ({ audioOnly, jitsiId }) => {
         </Typography>
       </Box>
 
-      {!audioOnly && <video autoPlay></video>}
+      {!audioOnly && (
+        <video
+          style={{ width: "100%", height: "auto", maxHeight: "112px" }}
+          autoPlay
+        ></video>
+      )}
       <audio autoPlay></audio>
     </Box>
   );

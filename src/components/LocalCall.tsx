@@ -68,7 +68,10 @@ const LocalCall: React.FC = () => {
         minHeight="110px"
         style={{ backgroundColor: "black" }}
       >
-        <video autoPlay></video>
+        <video
+          style={{ width: "100%", height: "auto", maxHeight: "112px" }}
+          autoPlay
+        ></video>
       </Box>
       <Box
         position="absolute"

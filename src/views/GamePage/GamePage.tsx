@@ -27,6 +27,7 @@ const GamePage: React.FC<GamePageProps> = ({
   const firebase = useContext(FirebaseContext);
 
   const listenToGame = (gameId: string): (() => null) => {
+    console.log("Listening to game");
     try {
       setLoading(true);
       return firebase
@@ -68,11 +69,11 @@ const GamePage: React.FC<GamePageProps> = ({
   };
 
   useEffect(() => {
-    if (game && game.id) {
+    if (game && game.id && deviceId) {
       const unsubscribeFromDeviceInGame = listenToDeviceInGame();
       return unsubscribeFromDeviceInGame;
     }
-  }, [game && game.id]);
+  }, [game?.id, deviceId]);
 
   useEffect(() => {
     if (gameId) {
