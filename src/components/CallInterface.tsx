@@ -5,7 +5,7 @@ import { Store, User, TeamId } from "../types";
 import { useSelector } from "react-redux";
 import { NEON_GREEN, NEON_PINK, PALETTE_PURPLE } from "../theme";
 import ParticipantCall from "./ParticipantCall";
-import JitsiContext from "../contexts/JitsiContext";
+import TwillioContext from "../contexts/TwillioContext";
 
 const useStyles = makeStyles({
   container: {
@@ -54,8 +54,6 @@ const CallInterface: React.FC<IProps> = ({ teamId }) => {
   const computerUsers = useSelector((state: Store) => state.computer.users);
   const classes = useStyles({ teamId });
 
-  const [jitsi, existingTracksIds] = useContext(JitsiContext);
-
   const usersByJitsyIds = gameUsers
     .filter((us) => computerUsers.indexOf(us.id) < 0)
     .filter((user) => !!user.jitsyId)
@@ -82,12 +80,6 @@ const CallInterface: React.FC<IProps> = ({ teamId }) => {
                   </Typography>
                 </Box>
               ))}
-              {existingTracksIds[key] &&
-                jitsi &&
-                jitsi.remoteTracks &&
-                jitsi.remoteTracks[key] && (
-                  <ParticipantCall jitsyId={key} j={jitsi} />
-                )}
             </Box>
           );
         })}

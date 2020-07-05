@@ -2,13 +2,14 @@ import React, { useContext } from "react";
 
 import AddWords from "../AddWords";
 import PlayGame from "../PlayGame";
-import GameEnded from "../../views/GameEnded";
+import GameEnded from "../GameEnded";
 import WaitingForPlayers from "../WaitingForPlayers";
-import ViewTeamsView from "../../views/ViewTeamsView";
+import ViewTeamsView from "../ViewTeamsView";
 
 import GameContext from "../../contexts/GameContext";
 import TeamsContext from "../../contexts/TeamsContext";
-import JitsiWrapper from "./JitsiWrapper";
+// import JitsiWrapper from "./JitsiWrapper";
+import TwillioWrapper from "./TwillioWrapper";
 import { useGameTeams } from "../../hooks";
 interface IProps {}
 
@@ -30,9 +31,9 @@ const JitsiView: React.FC<IProps> = () => {
   }
 
   return (
-    <JitsiWrapper>
+    <TwillioWrapper>
       <TeamsContext.Provider value={teams || []}>{view}</TeamsContext.Provider>
-    </JitsiWrapper>
+    </TwillioWrapper>
   );
 };
 

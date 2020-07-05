@@ -7,9 +7,11 @@ import { useGameRef } from "../../hooks";
 import Round from "./Round";
 import { Box } from "@material-ui/core";
 import RemoteCallsStrip from "../../components/RemoteCallsStrip";
+import RoundAndInstructions from "../../components/RoundAndInstructions";
 
 const Game: React.FC = () => {
   const game = useContext(GameContext);
+  const [callsDisplayed, setCallsDisplayed] = useState<boolean>(true);
   const gameRef = useGameRef();
   const [currentRound, setCurrentRound] = useState<FirebaseGameRound>(null);
   const [instructionsVisible, setInstructionsVisible] = useState<boolean>(
@@ -41,9 +43,14 @@ const Game: React.FC = () => {
 
   return (
     <>
-      <RemoteCallsStrip />
       <CurrentRoundContext.Provider value={currentRound}>
-        <Round openInstructions={() => setInstructionsVisible(true)} />
+        <RoundAndInstructions
+          openInstructions={() => setInstructionsVisible(true)}
+          callsDisplayed={callsDisplayed}
+          setCallsDisplayed={setCallsDisplayed}
+        />
+        {callsDisplayed && <RemoteCallsStrip />}
+        <Round />
         <RoundInstructions
           open={instructionsVisible}
           onClose={() => setInstructionsVisible(false)}

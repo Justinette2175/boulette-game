@@ -113,5 +113,6 @@ export interface JitsiTracks {
       audio?: boolean;
       video?: boolean;
     };
+    sid?: string;
   };
 }

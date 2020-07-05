@@ -3,7 +3,7 @@ import useInterval from "../utils/useInterval";
 import { Box, Typography } from "@material-ui/core";
 
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import JitsiContext from "../contexts/JitsiContext";
+import TwillioContext from "../contexts/TwillioContext";
 
 const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
@@ -19,21 +19,19 @@ const useStyles = makeStyles((theme: Theme) => {
 });
 
 interface IProps {
-  jitsiId: string;
-  audioOnly?: boolean;
+  sid: string;
+  local?: boolean;
 }
 
-const RemoteCall: React.FC<IProps> = ({ audioOnly, jitsiId }) => {
+const RemoteCall: React.FC<IProps> = ({ sid, local }) => {
   const classes = useStyles();
-  const [jitsi, existingTracksIds] = useContext(JitsiContext);
+  const [twillio, _, connected] = useContext(TwillioContext);
   const [attached, setAttached] = useState<boolean>(false);
 
-  const trackExists = existingTracksIds[jitsiId];
-
   const attachJitsyToComponent = () => {
-    if (jitsi && jitsiId) {
+    if (twillio && sid) {
       try {
-        jitsi.attachRemoteTrackToComponent(jitsiId, `${jitsiId}-jitsi`);
+        twillio.attachParticipantMedia(sid, `call-${sid}`, !!local);
         setAttached(true);
       } catch (e) {
         console.log("Error:RemoteCall:attchJitsiToComponent", e);
@@ -42,40 +40,27 @@ const RemoteCall: React.FC<IProps> = ({ audioOnly, jitsiId }) => {
   };
 
   useEffect(() => {
-    if (!trackExists) {
-      setAttached(false);
-    } else {
+    if (connected && sid) {
       attachJitsyToComponent();
     }
-  }, [trackExists]);
+  }, [connected, sid]);
 
   return (
     <Box
-      id={`${jitsiId}-jitsi`}
+      id={`call-${sid}`}
       position="relative"
       className={classes.container}
-      minWidth={!audioOnly ? "200px" : "0"}
-      minHeight={!audioOnly ? "110px" : "0"}
+      minWidth="200px"
+      minHeight="110px"
       style={{ backgroundColor: "black" }}
     >
-      <Box
-        position="absolute"
-        style={{ top: 0, right: 0, left: 0 }}
-        bgcolor="secondary.light"
-        p={1}
-      >
-        <Typography align="center">
-          {trackExists ? "true" : "false "}
-        </Typography>
-      </Box>
-
-      {!audioOnly && (
+      {/* {!audioOnly && (
         <video
           style={{ width: "100%", height: "auto", maxHeight: "112px" }}
           autoPlay
         ></video>
       )}
-      <audio autoPlay></audio>
+      <audio autoPlay></audio> */}
     </Box>
   );
 };

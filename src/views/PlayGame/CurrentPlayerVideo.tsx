@@ -1,89 +1,32 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useContext } from "react";
 
 import { Box } from "@material-ui/core";
-import useCurrentPlayerIsOnDevice from "../../hooks/useCurrentPlayerIsOnDevice";
-import JitsiContext from "../../contexts/JitsiContext";
+import TwillioContext from "../../contexts/TwillioContext";
 import CurrentRoundContext from "../../contexts/CurrentRoundContext";
-import { useGameRef } from "../../hooks";
-
-const RETRY_INTERVAL = 1000;
 
 const CurrentPlayerVideo = () => {
   const round = useContext(CurrentRoundContext);
   const currentPlayer = round?.currentPlayer;
-  const gameRef = useGameRef();
-  const [attached, setAttached] = useState<boolean>(false);
-  const [currentPlayerJitsiId, setCurrentPlayerJitsiId] = useState<string>(
-    null
-  );
+  const [twillio, existingTracks, connected] = useContext(TwillioContext);
+  const currentPlayerSid = existingTracks[currentPlayer?.deviceId]?.sid;
 
-  const [jitsi, existingTracksIds] = useContext(JitsiContext);
-
-  const trackExists =
-    currentPlayerJitsiId && existingTracksIds[currentPlayerJitsiId];
-
-  const listenToCurrentPlayerJitsiId = () => {
-    try {
-      if (!currentPlayer.deviceId) {
-        throw new Error("Current player has no device Id");
-      }
-      return gameRef
-        .collection("devices")
-        .doc(currentPlayer.deviceId)
-        .onSnapshot((doc: any) => {
-          if (doc.exists) {
-            const { jitsiId } = doc.data();
-            setCurrentPlayerJitsiId(jitsiId);
-          }
-        });
-    } catch (e) {
-      console.log("Error:CurrentPlayerVideo:getPlayerDevice", e);
-    }
-  };
-
-  const attachTrack = () => {
-    if (
-      jitsi &&
-      currentPlayerJitsiId &&
-      existingTracksIds[currentPlayerJitsiId]
-    ) {
+  const attachCallToComponent = (sid: string) => {
+    if (twillio && sid) {
       try {
-        jitsi.attachRemoteTrackToComponent(
-          currentPlayerJitsiId,
-          "current-player-jitsi"
-        );
-        setAttached(true);
+        twillio.attachParticipantMedia(sid, "current-player");
       } catch (e) {
-        console.log("Error:CurrentPlayerVideo:attachTrack:", e);
+        console.log("Error:CurrentPlayerVideo:attachCallToComponent", e);
       }
     }
   };
 
   useEffect(() => {
-    if (currentPlayer) {
-      setAttached(false);
-      const unsubscribeToJitsiId = listenToCurrentPlayerJitsiId();
-      return unsubscribeToJitsiId;
+    if (connected && currentPlayerSid) {
+      attachCallToComponent(currentPlayerSid);
     }
-  }, [currentPlayer]);
+  }, [connected, currentPlayerSid]);
 
-  useEffect(() => {
-    if (currentPlayerJitsiId && trackExists) {
-      attachTrack();
-    } else {
-      setAttached(false);
-    }
-  }, [currentPlayerJitsiId, trackExists]);
-
-  return (
-    <Box id="current-player-jitsi" width="100%">
-      <video
-        autoPlay
-        style={{ width: "100%", height: "auto", maxHeight: "500px" }}
-      ></video>
-      <audio autoPlay></audio>
-    </Box>
-  );
+  return <Box id="current-player" width="100%"></Box>;
 };
 
 export default CurrentPlayerVideo;

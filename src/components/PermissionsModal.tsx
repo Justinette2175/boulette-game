@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { Dialog, Box, Typography } from "@material-ui/core";
 import COPY from "../copy";
 
-import JitsyContext from "../contexts/JitsiContext";
+import TwillioContext from "../contexts/TwillioContext";
 import useInterval from "../utils/useInterval";
 
 const CHECK_PERMISSIONS_INTERVAL = 1000;
@@ -16,7 +16,7 @@ const PermissionsModal: React.FC<IProps> = ({ open, onClose }) => {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const language = "EN";
 
-  const [jitsi] = useContext(JitsyContext);
+  const [jitsi] = useContext(TwillioContext);
 
   const hasAllMediaPermissions = async () => {
     try {
@@ -32,7 +32,7 @@ const PermissionsModal: React.FC<IProps> = ({ open, onClose }) => {
       const checkPermissions = async () => {
         const ok = await hasAllMediaPermissions();
         if (ok && jitsi) {
-          await jitsi.createLocalTracks();
+          // await jitsi.createLocalTracks();
           onClose();
           setHasPermission(true);
         }

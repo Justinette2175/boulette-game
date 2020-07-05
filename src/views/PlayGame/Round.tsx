@@ -13,11 +13,9 @@ import TeamView from "./TeamView";
 
 const INTERVAL_TIME = 1000;
 
-interface IProps {
-  openInstructions: () => void;
-}
+interface IProps {}
 
-const Round: React.FC<IProps> = ({ openInstructions }) => {
+const Round: React.FC<IProps> = () => {
   const currentRound = useContext(CurrentRoundContext);
   const [intervalRunning, setIntervalRunning] = useState<boolean>(false);
   const [timeRemaining, setTimeRemaining] = useState<number>(null);
@@ -77,7 +75,7 @@ const Round: React.FC<IProps> = ({ openInstructions }) => {
   return (
     <Box>
       <TimerContext.Provider value={[formattedTimeRemaining, stopTimer]}>
-        <ScoreBoard openInstructions={openInstructions} />
+        <ScoreBoard />
         <TeamView />
       </TimerContext.Provider>
     </Box>

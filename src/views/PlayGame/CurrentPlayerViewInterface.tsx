@@ -75,9 +75,6 @@ const CurrentPlayerViewInterface: React.FC<IProps> = ({
           <Bowl />
         </Box>
       </Box>
-      {/* <Box position="absolute" bottom={0} left={0}>
-        <LocalCall />
-      </Box> */}
     </Box>
   );
 };

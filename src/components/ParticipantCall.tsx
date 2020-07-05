@@ -1,16 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
+import TwillioContext from "../contexts/TwillioContext";
 import { Box } from "@material-ui/core";
-import { User } from "../types";
-import Jitsy from "../services/jitsy";
 
 interface IProps {
   jitsyId: string;
-  j: Jitsy;
 }
-const ParticipantCall: React.FC<IProps> = ({ jitsyId, j }) => {
+const ParticipantCall: React.FC<IProps> = ({ jitsyId }) => {
+  const [twillio, existingTracksIds] = useContext(TwillioContext);
   useEffect(() => {
     try {
-      j.attachRemoteTrackToComponent(jitsyId, `${jitsyId}-jitsi`);
+      // twillio.attachRemoteTrackToComponent(jitsyId, `${jitsyId}-jitsi`);
     } catch (e) {
       console.warn(e);
     }

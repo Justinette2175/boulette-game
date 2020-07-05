@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
-import JitsiContext from "../../contexts/JitsiContext";
 import DeviceIdContext from "../../contexts/DeviceIdContext";
 import { FirebaseContext } from "../../firebase";
-import Jitsy from "../../services/jitsy";
 
 import { useGameRef } from "../../hooks";
 import GameContext from "../../contexts/GameContext";
@@ -12,39 +10,27 @@ import {
   JitsiTracks,
 } from "../../types/firebaseTypes";
 import Twillio from "../../services/twillio";
+import TwillioContext from "../../contexts/TwillioContext";
 
 interface IProps {}
 
-export const JitsiWrapper: React.FC<IProps> = ({ children }) => {
+export const TwillioWrapper: React.FC<IProps> = ({ children }) => {
   const game = useContext(GameContext);
-  const jitsi = useRef<Jitsy>(null);
-  const gameRef = useGameRef();
+  const twillio = useRef<Twillio>(null);
   const deviceId = useContext(DeviceIdContext);
   const firebase = useContext(FirebaseContext);
   const [existingTracksIds, setExistingTracksIds] = useState<JitsiTracks>({});
   const [permissionModalVisible, setPermissionModalVisible] = useState<boolean>(
     false
   );
-  const [muted, setMuted] = useState<MutedState>({
-    audio: false,
-    video: false,
-  });
-  const [jitsiIdForDevice, setJitsiIdForDevice] = useState<string>(null);
+  const [connected, setConnected] = useState(false);
 
-  const setJitsiId = async (jitsiId: string) => {
-    if (deviceId) {
-      const updatedDevice: FirebaseGameDevice = {
-        jitsiId,
-      };
-      await gameRef.collection("devices").doc(deviceId).set(updatedDevice);
-      setJitsiIdForDevice(jitsiId);
-    }
-  };
+  console.log("esixting tracks", existingTracksIds);
 
-  const updateTrackExistence = (id: string, exists: boolean) => {
+  const updateTrackExistence = (id: string, sid: string, exists: boolean) => {
     setExistingTracksIds((ex) => ({
       ...ex,
-      [id]: { ...ex[id], exists: true },
+      [id]: { ...ex[id], sid, exists },
     }));
   };
 
@@ -67,16 +53,21 @@ export const JitsiWrapper: React.FC<IProps> = ({ children }) => {
 
   const initiateCall = async () => {
     try {
-      const j = new Jitsy(
+      const tokenData = await firebase.functions.httpsCallable(
+        "generateTwillioToken"
+      )({ gameId: game.id, deviceId });
+      const token = tokenData.data;
+      const myTwillio = new Twillio(
         game.id,
+        token,
+        () => setConnected(true),
         updateTrackExistence,
         () => setPermissionModalVisible(false),
-        setJitsiId,
         updateMuteState
       );
-      jitsi.current = j;
+      twillio.current = myTwillio;
     } catch (e) {
-      console.log("Error:JitsiContext:newJitsi", e);
+      console.log("Error:TwillioWrapper:initiateCall", e);
     }
   };
 
@@ -85,28 +76,21 @@ export const JitsiWrapper: React.FC<IProps> = ({ children }) => {
       initiateCall();
     }
     return async () => {
-      await jitsi?.current?.leave();
-      jitsi.current = null;
+      twillio.current = null;
     };
   }, [game?.id]);
 
   return (
-    <JitsiContext.Provider
-      value={[
-        jitsi?.current,
-        existingTracksIds,
-        jitsiIdForDevice,
-        muted,
-        setMuted,
-      ]}
+    <TwillioContext.Provider
+      value={[twillio?.current, existingTracksIds, connected]}
     >
       {children}
       {/* <PermissionsModal
         open={permissionModalVisible}
         onClose={() => setPermissionModalVisible(false)}
       /> */}
-    </JitsiContext.Provider>
+    </TwillioContext.Provider>
   );
 };
 
-export default JitsiWrapper;
+export default TwillioWrapper;

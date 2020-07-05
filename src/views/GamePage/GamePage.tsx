@@ -4,7 +4,7 @@ import { FirebaseContext } from "../../firebase";
 import { FirebaseGame } from "../../types/firebaseTypes";
 import DeviceIdContext from "../../contexts/DeviceIdContext";
 
-import JitsiViews from "./JitsiViews";
+import InCallViews from "./InCallViews";
 
 import GameContext from "../../contexts/GameContext";
 import { Redirect } from "react-router-dom";
@@ -88,7 +88,7 @@ const GamePage: React.FC<GamePageProps> = ({
   } else if (!playerIsInGame) {
     view = <JoinGame />;
   } else if (game) {
-    view = <JitsiViews />;
+    view = <InCallViews />;
   }
 
   if (gameNotFound) {
