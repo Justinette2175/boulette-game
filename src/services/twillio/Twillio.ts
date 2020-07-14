@@ -1,12 +1,10 @@
 const { connect, createLocalTracks } = require("twilio-video");
 
-const DEV_TOKEN = process.env.REACT_APP_TWILLIO_ACCESS_TOKEN_DEV;
-
 class Twillio {
   room: any;
   gameId: string;
   onConnected: () => void;
-  closePermissionsModal: () => void;
+  updatePermissionsModalVisibility: (newState: boolean) => void;
   updateTrackExistence: (id: string, sid: string, exists: boolean) => void;
   onMuteStateChanged: (
     participantSid: string,
@@ -19,7 +17,7 @@ class Twillio {
     token: string,
     onConnected: () => void,
     updateTrackExistence: (id: string, sid: string, exists: boolean) => void,
-    closePermissionsModal: () => void,
+    updatePermissionsModalVisibility: (newState: boolean) => void,
     onMuteStateChanged: (
       participantSid: string,
       trackType: "audio" | "video",
@@ -29,7 +27,7 @@ class Twillio {
     this.gameId = gameId;
     this.onConnected = onConnected;
     this.updateTrackExistence = updateTrackExistence;
-    this.closePermissionsModal = closePermissionsModal;
+    this.updatePermissionsModalVisibility = updatePermissionsModalVisibility;
     this.onMuteStateChanged = onMuteStateChanged;
 
     this.connectToRoom(token);
@@ -64,14 +62,18 @@ class Twillio {
         this.updateTrackExistence(participant.identity, participant.sid, true);
       });
 
-      room.on("participantDisconnected", (participant: any) => {
-        console.log(`Participant disconnected: ${participant.identity}`);
+      room.on("disconnected", (participant: any) => {
+        console.log(`Participant disconnected: ${participant}`);
         this.updateTrackExistence(participant.identity, null, false);
       });
 
       this.room = room;
+      this.updatePermissionsModalVisibility(false);
       this.onConnected();
     } catch (e) {
+      if (e.name === "NotAllowedError") {
+        this.updatePermissionsModalVisibility(true);
+      }
       console.log("Error:Twillio:connectToRoom", e);
     }
   }
@@ -99,6 +101,34 @@ class Twillio {
       });
     } catch (e) {
       console.log("Error:Twillio:attachParticipantMedia", e);
+    }
+  }
+
+  toggleMute(type: "audio" | "video", isOn: boolean) {
+    if (!this.room) {
+      return;
+    }
+    const localParticipant = this.room.localParticipant;
+    let tracks;
+    if (type === "audio") {
+      tracks = localParticipant.audioTracks;
+    } else {
+      tracks = localParticipant.videoTracks;
+    }
+    tracks.forEach((publication: any) => {
+      if (isOn) {
+        publication.track.enable();
+      } else {
+        publication.track.disable();
+      }
+    });
+    this.onMuteStateChanged(localParticipant.identity, type, isOn);
+  }
+
+  leave() {
+    console.log("Trying to leave room");
+    if (this.room) {
+      this.room.disconnect();
     }
   }
 }

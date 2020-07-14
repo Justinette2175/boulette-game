@@ -51,7 +51,7 @@ export default {
   },
   ADD_DEVICE_PLAYER_BUTTON: {
     FR: "",
-    EN: "Add a player on this device",
+    EN: "Player on this device",
   },
   REMOTE_PLAYERS_TITLE: {
     FR: "",

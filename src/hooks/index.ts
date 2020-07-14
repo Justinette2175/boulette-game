@@ -9,3 +9,4 @@ export { default as useHandleEndTurn } from "./useHandleEndTurn";
 export { default as useCurrentPlayerIsOnDevice } from "./useCurrentPlayerIsOnDevice";
 export { default as useGameDevices } from "./useGameDevices";
 export { default as useDebouncedAsync } from "./useDebouncedAsync";
+export { default as useUseCode } from "./useUseCode";

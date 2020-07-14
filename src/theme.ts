@@ -1,5 +1,12 @@
 import { createMuiTheme } from "@material-ui/core/styles";
-import { yellow, indigo, cyan, amber } from "@material-ui/core/colors";
+import {
+  deepOrange,
+  deepPurple,
+  yellow,
+  grey,
+  cyan,
+  amber,
+} from "@material-ui/core/colors";
 
 export const PALETTE_PURPLE = "#8500FF";
 export const PALETTE_AQUA = "#00EDB5";
@@ -14,22 +21,18 @@ export const NEON_GREEN = "#39FF14";
 export default createMuiTheme({
   palette: {
     type: "light",
-    text: {
-      primary: indigo[900],
-      secondary: "rgba(0, 0, 0, 0.45)",
-    },
     primary: {
-      main: amber[400],
-      contrastText: indigo[900],
+      main: deepPurple[500],
+      dark: "#4A2787",
+      contrastText: "#FFF",
     },
     secondary: {
-      main: cyan[400],
-      dark: cyan[600],
-      contrastText: indigo[900],
+      dark: deepOrange[100],
+      main: deepOrange[50],
     },
     background: {
-      default: cyan[100],
-      paper: cyan[50],
+      default: deepOrange[50],
+      paper: "#FFF5F4",
     },
     grey: {
       50: "#F7F7F5",
@@ -43,7 +46,6 @@ export default createMuiTheme({
       800: "#000000",
       900: "#000000",
     },
-    divider: yellow[500],
   },
   props: {
     MuiButton: {
@@ -62,23 +64,30 @@ export default createMuiTheme({
     },
   },
   typography: {
-    fontFamily: ["Rubik", "sans-serif"].join(","),
+    fontFamily: ["Quicksand", "sans-serif"].join(","),
+    fontWeightBold: 700,
+    fontWeightRegular: 600,
     h1: {
+      fontWeight: 700,
       fontSize: "3rem",
       marginBottom: "24px",
     },
     h2: {
-      fontSize: "1.5rem",
+      fontWeight: 700,
+      fontSize: "1.6rem",
       marginBottom: "18px",
     },
     h3: {
-      fontSize: "1.5rem",
+      fontSize: "1.3rem",
+      fontWeight: 700,
     },
     h4: {
-      fontSize: "1.3rem",
-      lineHeight: "1.8rem",
+      fontWeight: 700,
+      fontSize: "1rem",
+      lineHeight: "1.6rem",
     },
     body1: {
+      fontWeight: 600,
       fontSize: "1rem",
       lineHeight: "1.6rem",
       maxWidth: "400px",
@@ -89,8 +98,8 @@ export default createMuiTheme({
       maxWidth: "400px",
     },
     button: {
-      textTransform: "initial",
-      fontWeight: 500,
+      textTransform: "uppercase",
+      fontWeight: 700,
     },
     caption: {
       lineHeight: "0.9rem",

@@ -1,37 +1,28 @@
 import React, { useContext, useEffect } from "react";
 import { Box, Grid } from "@material-ui/core";
 import RemoteCall from "./RemoteCall";
-import { useGamePlayers, useGameDevices } from "../hooks";
 import DeviceIdContext from "../contexts/DeviceIdContext";
 import TwillioContext from "../contexts/TwillioContext";
 
-interface IProps {}
+interface IProps {
+  direction: "row" | "column";
+}
 
-const RemoteCallsStrip: React.FC<IProps> = () => {
+const RemoteCallsStrip: React.FC<IProps> = ({ direction }) => {
   const deviceId = useContext(DeviceIdContext);
   const [_, existingTracks] = useContext(TwillioContext);
 
   const localDeviceTrack = existingTracks[deviceId];
 
   return (
-    <Box overflow="auto" width="100%" style={{ backgroundColor: "black" }}>
-      <Grid container spacing={0} wrap="nowrap">
-        {localDeviceTrack && (
-          <Grid item>
-            <RemoteCall local sid={localDeviceTrack.sid} />
-          </Grid>
-        )}
+    <Box display="flex" flexDirection={direction} flexWrap="nowrap">
+      {localDeviceTrack && <RemoteCall local track={localDeviceTrack} />}
 
-        {Object.keys(existingTracks).map((id) => {
-          if (id !== deviceId && existingTracks[id].exists) {
-            return (
-              <Grid item>
-                <RemoteCall sid={existingTracks[id].sid} />
-              </Grid>
-            );
-          } else return null;
-        })}
-      </Grid>
+      {Object.keys(existingTracks).map((id) => {
+        if (id !== deviceId && existingTracks[id].exists) {
+          return <RemoteCall track={existingTracks[id]} />;
+        } else return null;
+      })}
     </Box>
   );
 };

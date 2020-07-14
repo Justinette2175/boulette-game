@@ -9,6 +9,8 @@ import ButtonsGroup from "../../components/ButtonsGroup";
 
 import COPY from "../../copy";
 import { useAddPlayer } from "../../hooks";
+import GameContext from "../../contexts/GameContext";
+import { ViewWrapper } from "../../components/Containers";
 
 interface FormValues {
   name: string;
@@ -17,8 +19,8 @@ interface FormValues {
 interface IProps {}
 
 const JoinGame: React.FC<IProps> = () => {
-  const [error, setError] = useState<Error>(null);
-  const addPlayer = useAddPlayer();
+  const game = useContext(GameContext);
+  const [addPlayer, loading, error] = useAddPlayer({ sameDevice: false });
   const language = "EN";
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Required"),
@@ -28,8 +30,20 @@ const JoinGame: React.FC<IProps> = () => {
     await addPlayer(values.name);
   };
 
+  if (game?.stage !== "WAITING_FOR_PLAYERS") {
+    return <Box>It's too late to join this game, it has already started.</Box>;
+  }
+
+  if (game?.numberOfDevices >= game?.maxNumberOfDevices) {
+    return (
+      <Box>
+        Cannot join this game because there already are too many players...
+      </Box>
+    );
+  }
+
   return (
-    <Box pt={8} px={4}>
+    <ViewWrapper>
       {error && (
         <Box mb={2}>
           <Alert severity="error">{error.message}</Alert>
@@ -56,7 +70,7 @@ const JoinGame: React.FC<IProps> = () => {
               <Button
                 type="submit"
                 variant="contained"
-                disabled={!isValid}
+                disabled={!isValid || loading}
                 color="secondary"
               >
                 {COPY.JOIN_GAME_BUTTON[language]}
@@ -65,7 +79,7 @@ const JoinGame: React.FC<IProps> = () => {
           </Form>
         )}
       </Formik>
-    </Box>
+    </ViewWrapper>
   );
 };
 

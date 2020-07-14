@@ -3,14 +3,7 @@ import React, { useContext } from "react";
 import { Formik, Form, FieldArray } from "formik";
 import * as Yup from "yup";
 
-import {
-  Dialog,
-  Box,
-  DialogTitle,
-  DialogContent,
-  Button,
-  Typography,
-} from "@material-ui/core";
+import { Dialog, Box, Button, Typography } from "@material-ui/core";
 import TextInput from "../../components/TextInput";
 
 import { getUserWords } from "../../utils";
@@ -19,6 +12,7 @@ import GameContext from "../../contexts/GameContext";
 import { FirebasePlayer, NewWord } from "../../types/firebaseTypes";
 import useGameRef from "../../hooks/useGameRef";
 import FirebaseContext from "../../firebase/FirebaseContext";
+import { Modal } from "../../components/Containers";
 
 interface IProps {
   user: FirebasePlayer;
@@ -66,59 +60,52 @@ const WordsSelector: React.FC<IProps> = ({ user, open, onClose }) => {
   }
 
   return (
-    <Dialog
-      onClose={onClose}
-      open={open}
-      maxWidth="md"
-      PaperProps={{ elevation: 0 }}
-    >
-      <Box p={6}>
-        <Typography variant="h2">Selecting words for {user.name}</Typography>
-        <Typography variant="body1">
-          Type the words you want to add to the bowl. You have {wordsToFill}{" "}
-          words left.
-        </Typography>
-        <Formik
-          validateOnMount={true}
-          initialValues={{
-            words: [],
-          }}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          {({ isValid }) => (
-            <Form>
-              <FieldArray
-                name="words"
-                render={() => (
-                  <Box>
-                    {Array.apply(null, Array(wordsToFill)).map((_, i) => (
-                      <Box>
-                        <TextInput
-                          key={`words.${i}`}
-                          name={`words.${i}`}
-                          fullWidth
-                        />
-                      </Box>
-                    ))}
-                    <Box mt={2}>
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        disabled={!isValid}
-                      >
-                        Submit
-                      </Button>
+    <Modal onClose={onClose} open={open}>
+      <Typography variant="h2">Selecting words for {user.name}</Typography>
+      <Typography variant="body1">
+        Type the words you want to add to the bowl. You have {wordsToFill} words
+        left.
+      </Typography>
+      <Formik
+        validateOnMount={true}
+        initialValues={{
+          words: [],
+        }}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ isValid }) => (
+          <Form>
+            <FieldArray
+              name="words"
+              render={() => (
+                <Box>
+                  {Array.apply(null, Array(wordsToFill)).map((_, i) => (
+                    <Box>
+                      <TextInput
+                        key={`words.${i}`}
+                        name={`words.${i}`}
+                        fullWidth
+                      />
                     </Box>
+                  ))}
+                  <Box mt={2}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      disabled={!isValid}
+                    >
+                      Submit
+                    </Button>
                   </Box>
-                )}
-              />
-            </Form>
-          )}
-        </Formik>
-      </Box>
-    </Dialog>
+                </Box>
+              )}
+            />
+          </Form>
+        )}
+      </Formik>
+    </Modal>
   );
 };
 

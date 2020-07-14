@@ -1,18 +1,14 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  DialogTitle,
-  Dialog,
-  DialogContent,
-  Typography,
-  Box,
-  Button,
-} from "@material-ui/core";
-import { Store } from "../../types";
+import React, { useContext } from "react";
+import { Typography, Box, Button } from "@material-ui/core";
 import CurrentRoundContext from "../../contexts/CurrentRoundContext";
-import useCurrentRoundIndex from "../../utils/useCurrentRoundIndex";
 import roundInstructionsCopy from "../../copy/roundInstructions";
-import { updateInstructionsVisibility } from "../../redux/computer";
+import { Modal } from "../../components/Containers";
+
+import Describe from "../../assets/images/describe.png";
+import OneWord from "../../assets/images/one-word.png";
+import Mime from "../../assets/images/mime.png";
+import Sounds from "../../assets/images/sounds.png";
+import FacialExpressions from "../../assets/images/facial-expressions.png";
 
 const instructions = roundInstructionsCopy as any;
 
@@ -27,28 +23,54 @@ const RoundInstructionsModal: React.FC<RoundInstructionsModalProps> = ({
   roundId,
 }) => {
   const roundInstructions = instructions[roundId].EN;
+  const getImageSource = () => {
+    switch (roundId) {
+      case "1":
+        return Describe;
+      case "2":
+        return OneWord;
+      case "3":
+        return Mime;
+      case "4":
+        return Sounds;
+      case "5":
+        return FacialExpressions;
+    }
+  };
   return (
-    <Dialog disableBackdropClick open={open} onClose={onClose}>
-      <Box p={6}>
+    <Modal disableBackdropClick open={open} onClose={onClose}>
+      <Box display="flex" flexDirection="column">
         <Typography variant="body1">Round {roundId} </Typography>
         <Typography variant="h2">{roundInstructions.title}</Typography>
-        {roundInstructions.paragraphs.map((p: string) => (
-          <Typography gutterBottom variant="body1">
-            {p}
-          </Typography>
-        ))}
-        <Box mt={2}>
-          <Typography variant="h2" component="p">
-            Good Luck!
-          </Typography>
+        <Box
+          display="flex"
+          flexDirection="row-reverse"
+          justifyContent="center"
+          flexWrap="wrap"
+        >
+          <Box display="flex" justifyContent="center" mb={3}>
+            <Box maxWidth="300px">
+              <img src={getImageSource()} width="100%" />
+            </Box>
+          </Box>
+          <Box mb={3}>
+            {roundInstructions.paragraphs.map((p: string) => (
+              <Typography gutterBottom variant="body1">
+                {p}
+              </Typography>
+            ))}
+          </Box>
         </Box>
-        <Box display="flex" justifyContent="flex-end">
-          <Button color="primary" variant="contained" onClick={onClose}>
-            Got it, let's go!
-          </Button>
-        </Box>
+        <Button
+          color="primary"
+          variant="contained"
+          size="large"
+          onClick={onClose}
+        >
+          Got it, let's go!
+        </Button>
       </Box>
-    </Dialog>
+    </Modal>
   );
 };
 

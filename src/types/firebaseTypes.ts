@@ -20,6 +20,12 @@ export interface NewGame {
   secondsPerTurn: number;
   stage: "WAITING_FOR_PLAYERS";
   shortId: string;
+  numberOfDevices: 1;
+  payment: {
+    paid: false;
+  };
+  maxNumberOfDevices: number;
+  devices: { [key: string]: boolean };
 }
 
 export interface FirebaseGame {
@@ -37,6 +43,13 @@ export interface FirebaseGame {
   score: {
     [teamId: string]: number;
   };
+  numberOfDevices: number;
+  payment: {
+    paid: boolean;
+    code: string;
+  };
+  maxNumberOfDevices: number;
+  devices: { [key: string]: boolean };
 }
 
 export interface FirebaseGameDevice {
@@ -106,13 +119,25 @@ export interface FirebaseGameTeam {
   lastPlayerToHavePlayed: FirebasePlayer;
 }
 
-export interface JitsiTracks {
-  [key: string]: {
-    exists: boolean;
-    muted?: {
-      audio?: boolean;
-      video?: boolean;
-    };
-    sid?: string;
+export interface VideoTrack {
+  exists: boolean;
+  on?: {
+    audio?: boolean;
+    video?: boolean;
   };
+  sid?: string;
+}
+
+export interface VideoTracks {
+  [key: string]: VideoTrack;
+}
+
+export interface Code {
+  numberOfPlays: number;
+  playsUsed: number;
+  paypalTransactionId: string;
+  createdOn: string;
+  cost: number;
+  currency: string;
+  email: string;
 }

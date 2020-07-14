@@ -11,8 +11,8 @@ const GameLink: React.FC<BoxProps> = (props) => {
       <Box {...props}>
         <Box display="flex" alignItems="center">
           <Typography
-            color="secondary"
-            variant="caption"
+            color="primary"
+            variant="body1"
           >{`${BASE_URL}/games/${game.id}`}</Typography>
         </Box>
       </Box>

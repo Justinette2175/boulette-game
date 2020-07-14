@@ -1,18 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
 import App from "./App";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import * as serviceWorker from "./serviceWorker";
 import theme from "./theme";
-import { BrowserRouter } from "react-router-dom";
+import { Router } from "react-router-dom";
+import history from "./history";
 
 ReactDOM.render(
   <React.StrictMode>
     <MuiThemeProvider theme={theme}>
-      <BrowserRouter>
+      <Router history={history}>
         <App />
-      </BrowserRouter>
+      </Router>
     </MuiThemeProvider>
   </React.StrictMode>,
   document.getElementById("root")

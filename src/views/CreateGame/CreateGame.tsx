@@ -15,6 +15,46 @@ import ButtonsGroup from "../../components/ButtonsGroup";
 import COPY from "../../copy";
 import DeviceIdContext from "../../contexts/DeviceIdContext";
 
+import iss from "../../assets/images/iss.png";
+import { ViewWrapper, LighterBox } from "../../components/Containers";
+import { H1 } from "../../components/Typography";
+
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+const useStyles = makeStyles((theme: Theme) => {
+  return createStyles({
+    leftBox: {
+      display: "flex",
+      flexDirection: "column",
+      [theme.breakpoints.up("sm")]: {
+        maxWidth: "400px",
+        marginRight: theme.spacing(2),
+      },
+    },
+    h1: {
+      [theme.breakpoints.down("xs")]: {
+        maxWidth: "300px",
+      },
+    },
+    rightBox: {
+      flex: 0,
+      [theme.breakpoints.up("sm")]: {
+        maxWidth: "400px",
+        flex: 3,
+      },
+    },
+    imageWrapper: {
+      [theme.breakpoints.down("xs")]: {
+        position: "absolute",
+        top: "48px",
+        left: "58%",
+        width: "160px",
+      },
+    },
+  });
+});
+
+const MAX_NUMBER_OF_DEVICES_FOR_UNPAID = 2;
+
 interface FormValues {
   ownerName: string;
   wordsPerPlayer: number;
@@ -56,6 +96,14 @@ const StartGame: React.FC = () => {
         },
         stage: "WAITING_FOR_PLAYERS",
         shortId: gameShortId,
+        numberOfDevices: 1,
+        payment: {
+          paid: false,
+        },
+        maxNumberOfDevices: MAX_NUMBER_OF_DEVICES_FOR_UNPAID,
+        devices: {
+          [deviceId]: true,
+        },
       };
 
       // Create Game
@@ -79,79 +127,106 @@ const StartGame: React.FC = () => {
   const handleSubmit = (values: FormValues) => {
     createGame(values);
   };
+  const classes = useStyles();
 
   if (gameId) {
     return <Redirect to={`/games/${gameId}`} />;
   }
 
   return (
-    <Box pt={8} px={4} display="flex" justifyContent="center">
-      <Box width="100%" maxWidth="500px">
-        <Typography variant="h2">{COPY.START_GAME_TITLE[language]}</Typography>
-        <Typography variant="body1">
-          {COPY.START_GAME_PARA[language]}
-        </Typography>
-        <Formik
-          validateOnMount={true}
-          initialValues={{
-            ownerName: "",
-            wordsPerPlayer: 5,
-            secondsPerTurn: 45,
-          }}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          {({ isValid }) => (
-            <Form>
-              <TextInput
-                fullWidth
-                id="owner-name"
-                name="ownerName"
-                label={COPY.PLAYER_NAME_LABEL[language]}
-              />
-              <Select
-                fullWidth
-                label={COPY.WORDS_PER_PLAYER_LABEL[language]}
-                name="wordsPerPlayer"
-                options={[
-                  { label: "3", value: 3 },
-                  { label: "4", value: 4 },
-                  { label: "5", value: 5 },
-                  { label: "6", value: 6 },
-                  { label: "7", value: 7 },
-                  { label: "8", value: 8 },
-                  { label: "9", value: 9 },
-                  { label: "10", value: 10 },
-                ]}
-              />
-              <Select
-                fullWidth
-                label={COPY.SECONDS_PER_TURN_LABEL[language]}
-                name="secondsPerTurn"
-                options={[
-                  { label: "10", value: 10 },
-                  { label: "30", value: 30 },
-                  { label: "45", value: 45 },
-                  { label: "60", value: 60 },
-                  { label: "75", value: 70 },
-                  { label: "90", value: 90 },
-                ]}
-              />
-              <ButtonsGroup>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={!isValid}
-                  color="primary"
-                >
-                  {COPY.START_GAME_BUTTON[language]}
-                </Button>
-              </ButtonsGroup>
-            </Form>
-          )}
-        </Formik>
+    <ViewWrapper>
+      <Box
+        display="flex"
+        flexDirection="row"
+        justifyContent="space-between"
+        position="relative"
+      >
+        <Box flex={4} className={classes.leftBox}>
+          <H1>{COPY.START_GAME_TITLE[language]}</H1>
+          <Typography variant="body1">
+            {COPY.START_GAME_PARA[language]}
+          </Typography>
+          <LighterBox maxWidth={400} mt={3}>
+            <Formik
+              validateOnMount={true}
+              initialValues={{
+                ownerName: "",
+                wordsPerPlayer: 5,
+                secondsPerTurn: 45,
+              }}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
+            >
+              {({ isValid }) => (
+                <Form>
+                  <TextInput
+                    fullWidth
+                    id="owner-name"
+                    name="ownerName"
+                    label={COPY.PLAYER_NAME_LABEL[language]}
+                  />
+                  <Select
+                    fullWidth
+                    label={COPY.WORDS_PER_PLAYER_LABEL[language]}
+                    name="wordsPerPlayer"
+                    options={[
+                      { label: "3", value: 3 },
+                      { label: "4", value: 4 },
+                      { label: "5", value: 5 },
+                      { label: "6", value: 6 },
+                      { label: "7", value: 7 },
+                      { label: "8", value: 8 },
+                      { label: "9", value: 9 },
+                      { label: "10", value: 10 },
+                    ]}
+                  />
+                  <Select
+                    fullWidth
+                    label={COPY.SECONDS_PER_TURN_LABEL[language]}
+                    name="secondsPerTurn"
+                    options={[
+                      { label: "10", value: 10 },
+                      { label: "30", value: 30 },
+                      { label: "45", value: 45 },
+                      { label: "60", value: 60 },
+                      { label: "75", value: 70 },
+                      { label: "90", value: 90 },
+                    ]}
+                  />
+                  <ButtonsGroup>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      disabled={!isValid}
+                      color="primary"
+                    >
+                      {COPY.START_GAME_BUTTON[language]}
+                    </Button>
+                  </ButtonsGroup>
+                </Form>
+              )}
+            </Formik>
+          </LighterBox>
+        </Box>
+        <Box className={classes.rightBox}>
+          <Box
+            display="flex"
+            justifyContent="center"
+            className={classes.imageWrapper}
+          >
+            <Box maxWidth="350px">
+              <Box>
+                <img
+                  width="100%"
+                  src={iss}
+                  alt="Drawing of the international space station"
+                />
+              </Box>
+            </Box>
+          </Box>
+        </Box>
       </Box>
-    </Box>
+    </ViewWrapper>
   );
 };
 

@@ -1,9 +1,11 @@
 import React, { useEffect, useContext, useState } from "react";
-import useInterval from "../utils/useInterval";
-import { Box, Typography } from "@material-ui/core";
+import { Box } from "@material-ui/core";
 
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import TwillioContext from "../contexts/TwillioContext";
+import { VideoTrack } from "../types/firebaseTypes";
+import { Mic, MicOff, Video, VideoOff } from "react-feather";
+import { RoundButton } from "../components/Buttons";
 
 const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
@@ -19,19 +21,22 @@ const useStyles = makeStyles((theme: Theme) => {
 });
 
 interface IProps {
-  sid: string;
+  track: VideoTrack;
   local?: boolean;
 }
 
-const RemoteCall: React.FC<IProps> = ({ sid, local }) => {
+const RemoteCall: React.FC<IProps> = ({ track, local }) => {
   const classes = useStyles();
   const [twillio, _, connected] = useContext(TwillioContext);
   const [attached, setAttached] = useState<boolean>(false);
 
+  const sid = track?.sid || null;
+  const videoOn = track?.on?.video || null;
+
   const attachJitsyToComponent = () => {
     if (twillio && sid) {
       try {
-        twillio.attachParticipantMedia(sid, `call-${sid}`, !!local);
+        twillio.attachParticipantMedia(track.sid, `call-${sid}`, !!local);
         setAttached(true);
       } catch (e) {
         console.log("Error:RemoteCall:attchJitsiToComponent", e);
@@ -40,27 +45,40 @@ const RemoteCall: React.FC<IProps> = ({ sid, local }) => {
   };
 
   useEffect(() => {
-    if (connected && sid) {
+    if (connected && sid && videoOn) {
       attachJitsyToComponent();
     }
-  }, [connected, sid]);
+  }, [connected, sid, videoOn]);
 
   return (
-    <Box
-      id={`call-${sid}`}
-      position="relative"
-      className={classes.container}
-      minWidth="200px"
-      minHeight="110px"
-      style={{ backgroundColor: "black" }}
-    >
-      {/* {!audioOnly && (
-        <video
-          style={{ width: "100%", height: "auto", maxHeight: "112px" }}
-          autoPlay
-        ></video>
+    <Box position="relative">
+      <Box
+        id={`call-${sid}`}
+        position="relative"
+        className={classes.container}
+        minWidth="200px"
+        minHeight="110px"
+        style={{ backgroundColor: "black" }}
+      ></Box>
+      {local && (
+        <Box position="absolute" p={0.5} style={{ bottom: 0, left: 0 }}>
+          <RoundButton
+            size="small"
+            color="primary"
+            onClick={() => twillio.toggleMute("audio", !track.on.audio)}
+          >
+            {track?.on?.audio ? <Mic size={25} /> : <MicOff size={25} />}
+          </RoundButton>
+          <RoundButton
+            size="small"
+            color="primary"
+            onClick={() => twillio.toggleMute("video", !track.on.audio)}
+            style={{ marginLeft: "8px" }}
+          >
+            {track?.on?.video ? <Video size={25} /> : <VideoOff size={25} />}
+          </RoundButton>
+        </Box>
       )}
-      <audio autoPlay></audio> */}
     </Box>
   );
 };

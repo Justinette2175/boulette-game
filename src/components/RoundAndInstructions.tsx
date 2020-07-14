@@ -2,43 +2,35 @@ import React, { useContext } from "react";
 import { BookOpen } from "react-feather";
 import { Box, Typography, Button, useTheme } from "@material-ui/core";
 import CurrentRoundContext from "../contexts/CurrentRoundContext";
+import { SidePaddingWrapper } from "./Containers";
 
 import COPY from "../copy";
 
 interface IProps {
   openInstructions: () => void;
-  callsDisplayed: boolean;
-  setCallsDisplayed: (newState: any) => void;
 }
 
-const RoundAndInstructions: React.FC<IProps> = ({
-  openInstructions,
-  callsDisplayed,
-  setCallsDisplayed,
-}) => {
+const RoundAndInstructions: React.FC<IProps> = ({ openInstructions }) => {
   const round = useContext(CurrentRoundContext);
   const language = "EN";
 
   const theme = useTheme();
 
   return (
-    <Box width="100%" bgcolor="secondary.light">
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        bgcolor="secondary.dark"
-        px={2}
-        py={1}
-      >
-        <Box display="flex" alignItems="center">
+    <Box
+      display="flex"
+      alignItems="center"
+      justifyContent="space-between"
+      bgcolor="secondary.dark"
+    >
+      <SidePaddingWrapper>
+        <Box display="flex" alignItems="center" py={1}>
           <Box mr={2}>
             <Typography
-              variant="body1"
+              variant="h3"
               style={{
                 marginBottom: 0,
                 color: theme.palette.secondary.contrastText,
-                fontWeight: 500,
               }}
             >
               {COPY.ROUND[language]} {round?.id}
@@ -54,15 +46,7 @@ const RoundAndInstructions: React.FC<IProps> = ({
             {COPY.READ_INSTRUCTIONS_BUTTON[language]}
           </Button>
         </Box>
-        <Button
-          size="small"
-          variant="contained"
-          color="primary"
-          onClick={() => setCallsDisplayed((prev: boolean) => !prev)}
-        >
-          {callsDisplayed ? "Hide videos" : "Show videos"}
-        </Button>
-      </Box>
+      </SidePaddingWrapper>
     </Box>
   );
 };

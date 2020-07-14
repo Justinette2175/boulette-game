@@ -2,15 +2,13 @@ import React, { useEffect, useState, useRef, useContext } from "react";
 import DeviceIdContext from "../../contexts/DeviceIdContext";
 import { FirebaseContext } from "../../firebase";
 
-import { useGameRef } from "../../hooks";
 import GameContext from "../../contexts/GameContext";
-import {
-  MutedState,
-  FirebaseGameDevice,
-  JitsiTracks,
-} from "../../types/firebaseTypes";
+import { VideoTracks } from "../../types/firebaseTypes";
 import Twillio from "../../services/twillio";
 import TwillioContext from "../../contexts/TwillioContext";
+import DisplayVideoContext from "../../contexts/DisplayVideoContext";
+
+import PermissionsModal from "../../components/PermissionsModal";
 
 interface IProps {}
 
@@ -19,18 +17,25 @@ export const TwillioWrapper: React.FC<IProps> = ({ children }) => {
   const twillio = useRef<Twillio>(null);
   const deviceId = useContext(DeviceIdContext);
   const firebase = useContext(FirebaseContext);
-  const [existingTracksIds, setExistingTracksIds] = useState<JitsiTracks>({});
+  const [existingTracksIds, setExistingTracksIds] = useState<VideoTracks>({});
   const [permissionModalVisible, setPermissionModalVisible] = useState<boolean>(
     false
   );
   const [connected, setConnected] = useState(false);
-
-  console.log("esixting tracks", existingTracksIds);
+  const [_, setDisplayVideo] = useContext(DisplayVideoContext);
 
   const updateTrackExistence = (id: string, sid: string, exists: boolean) => {
     setExistingTracksIds((ex) => ({
       ...ex,
-      [id]: { ...ex[id], sid, exists },
+      [id]: {
+        ...ex[id],
+        sid,
+        exists,
+        on: {
+          audio: true,
+          video: true,
+        },
+      },
     }));
   };
 
@@ -43,8 +48,8 @@ export const TwillioWrapper: React.FC<IProps> = ({ children }) => {
       ...ex,
       [id]: {
         ...ex[id],
-        muted: {
-          ...ex[id].muted,
+        on: {
+          ...ex[id]?.on,
           [trackType]: isOn,
         },
       },
@@ -62,7 +67,7 @@ export const TwillioWrapper: React.FC<IProps> = ({ children }) => {
         token,
         () => setConnected(true),
         updateTrackExistence,
-        () => setPermissionModalVisible(false),
+        (newState: boolean) => setPermissionModalVisible(newState),
         updateMuteState
       );
       twillio.current = myTwillio;
@@ -72,23 +77,30 @@ export const TwillioWrapper: React.FC<IProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    if (game?.id) {
+    if (
+      !twillio.current &&
+      game?.numberOfDevices > 1 &&
+      permissionModalVisible === false
+    ) {
       initiateCall();
+      setDisplayVideo(true);
     }
     return async () => {
       twillio.current = null;
     };
-  }, [game?.id]);
+  }, [game?.numberOfDevices, permissionModalVisible]);
+
+  console.log("current", twillio.current);
 
   return (
     <TwillioContext.Provider
       value={[twillio?.current, existingTracksIds, connected]}
     >
       {children}
-      {/* <PermissionsModal
+      <PermissionsModal
         open={permissionModalVisible}
         onClose={() => setPermissionModalVisible(false)}
-      /> */}
+      />
     </TwillioContext.Provider>
   );
 };

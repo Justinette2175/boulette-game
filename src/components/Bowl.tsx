@@ -1,7 +1,5 @@
 import React from "react";
-import Bol from "../assets/images/bol.png";
-import BolBlanc from "../assets/images/bol-blanc.png";
-import BolVert from "../assets/images/bol-vert.png";
+import BowlImg from "../assets/images/bowl.png";
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -30,9 +28,8 @@ const useStyles = makeStyles({
 const Bowl: React.FC = () => {
   const classes = useStyles();
   return (
-    <Box width="90vw" maxWidth="800px" position="relative" minWidth="450px">
-      <img className={classes.bowlBackground} src={BolBlanc} width="100%"></img>
-      <img className={classes.bowl} src={Bol} width="100%"></img>
+    <Box width="97%" maxWidth="800px" position="relative" minWidth="450px">
+      <img className={classes.bowl} src={BowlImg} width="100%"></img>
     </Box>
   );
 };

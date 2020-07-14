@@ -4,10 +4,11 @@ import * as Yup from "yup";
 
 import COPY from "../../copy";
 
-import { Button, Typography, Box, Dialog } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import TextInput from "../../components/TextInput";
 import ButtonsGroup from "../../components/ButtonsGroup";
 import useAddPlayer from "../../hooks/useAddPlayer";
+import { Modal } from "../../components/Containers";
 
 interface IProps {
   open: boolean;
@@ -20,7 +21,7 @@ interface FormValues {
 
 const AddPlayerOnDevice: React.FC<IProps> = ({ open, onClose }) => {
   const language = "EN";
-  const addPlayer = useAddPlayer();
+  const [addPlayer, loading, error] = useAddPlayer({ sameDevice: true });
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Required"),
@@ -32,47 +33,40 @@ const AddPlayerOnDevice: React.FC<IProps> = ({ open, onClose }) => {
   };
 
   return (
-    <Dialog
-      onClose={onClose}
-      open={open}
-      maxWidth="md"
-      PaperProps={{ elevation: 0 }}
-    >
-      <Box p={6}>
-        <Typography variant="h2">
-          {COPY.ADD_DEVICE_PLAYER_BUTTON[language]}
-        </Typography>
-        <Formik
-          validateOnMount={true}
-          initialValues={{
-            name: "",
-          }}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          {({ isValid }) => (
-            <Form>
-              <TextInput
-                id="name"
-                name="name"
-                fullWidth
-                label={COPY.PLAYER_NAME_LABEL[language]}
-              />
-              <ButtonsGroup>
-                <Button
-                  type="submit"
-                  disabled={!isValid}
-                  variant="contained"
-                  color="primary"
-                >
-                  {COPY.SUBMIT[language]}
-                </Button>
-              </ButtonsGroup>
-            </Form>
-          )}
-        </Formik>
-      </Box>
-    </Dialog>
+    <Modal onClose={onClose} open={open}>
+      <Typography variant="h2">
+        {COPY.ADD_DEVICE_PLAYER_BUTTON[language]}
+      </Typography>
+      <Formik
+        validateOnMount={true}
+        initialValues={{
+          name: "",
+        }}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ isValid }) => (
+          <Form>
+            <TextInput
+              id="name"
+              name="name"
+              fullWidth
+              label={COPY.PLAYER_NAME_LABEL[language]}
+            />
+            <ButtonsGroup>
+              <Button
+                type="submit"
+                disabled={!isValid || loading}
+                variant="contained"
+                color="primary"
+              >
+                {COPY.SUBMIT[language]}
+              </Button>
+            </ButtonsGroup>
+          </Form>
+        )}
+      </Formik>
+    </Modal>
   );
 };
 

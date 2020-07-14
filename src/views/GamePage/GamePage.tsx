@@ -27,7 +27,6 @@ const GamePage: React.FC<GamePageProps> = ({
   const firebase = useContext(FirebaseContext);
 
   const listenToGame = (gameId: string): (() => null) => {
-    console.log("Listening to game");
     try {
       setLoading(true);
       return firebase

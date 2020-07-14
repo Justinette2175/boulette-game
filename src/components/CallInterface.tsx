@@ -4,8 +4,6 @@ import { makeStyles } from "@material-ui/styles";
 import { Store, User, TeamId } from "../types";
 import { useSelector } from "react-redux";
 import { NEON_GREEN, NEON_PINK, PALETTE_PURPLE } from "../theme";
-import ParticipantCall from "./ParticipantCall";
-import TwillioContext from "../contexts/TwillioContext";
 
 const useStyles = makeStyles({
   container: {
