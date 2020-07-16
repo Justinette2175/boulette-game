@@ -28,7 +28,10 @@ const Round: React.FC<IProps> = () => {
 
   const updateRemainingTime = (endOfCurrentTurn: number) => {
     const now = moment().unix();
+    console.log("endOfCurrentTurn", endOfCurrentTurn);
+    console.log("NOW IS", now);
     let duration = endOfCurrentTurn - now;
+    console.log("duration", duration);
     setTimeRemaining(duration);
     if (duration < 1 || isNaN(duration)) {
       stopTimer();

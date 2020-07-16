@@ -13,36 +13,11 @@ interface IProps {
 }
 
 const PermissionsModal: React.FC<IProps> = ({ open, onClose }) => {
-  const [hasPermission, setHasPermission] = useState<boolean>(false);
   const language = "EN";
 
-  const [jitsi] = useContext(TwillioContext);
+  const [twillio] = useContext(TwillioContext);
 
-  const hasAllMediaPermissions = async () => {
-    try {
-      await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-      return true;
-    } catch (e) {
-      return false;
-    }
-  };
-
-  useInterval(
-    () => {
-      const checkPermissions = async () => {
-        const ok = await hasAllMediaPermissions();
-        if (ok && jitsi) {
-          // await jitsi.createLocalTracks();
-          onClose();
-          setHasPermission(true);
-        }
-      };
-      checkPermissions();
-    },
-    hasPermission ? null : CHECK_PERMISSIONS_INTERVAL
-  );
-
-  if (!jitsi) {
+  if (!twillio) {
     return null;
   }
   return (

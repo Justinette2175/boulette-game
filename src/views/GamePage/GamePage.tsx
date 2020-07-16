@@ -91,7 +91,7 @@ const GamePage: React.FC<GamePageProps> = ({
   }
 
   if (gameNotFound) {
-    return <Redirect to="/" />;
+    return <Redirect to="/games/new" />;
   }
 
   return <GameContext.Provider value={game}>{view}</GameContext.Provider>;

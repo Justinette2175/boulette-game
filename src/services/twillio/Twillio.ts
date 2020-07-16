@@ -3,6 +3,7 @@ const { connect, createLocalTracks } = require("twilio-video");
 class Twillio {
   room: any;
   gameId: string;
+  isLargeScreen: boolean;
   onConnected: () => void;
   updatePermissionsModalVisibility: (newState: boolean) => void;
   updateTrackExistence: (id: string, sid: string, exists: boolean) => void;
@@ -15,6 +16,7 @@ class Twillio {
   constructor(
     gameId: string,
     token: string,
+    isLargeScreen: boolean,
     onConnected: () => void,
     updateTrackExistence: (id: string, sid: string, exists: boolean) => void,
     updatePermissionsModalVisibility: (newState: boolean) => void,
@@ -25,6 +27,7 @@ class Twillio {
     ) => void
   ) {
     this.gameId = gameId;
+    this.isLargeScreen = isLargeScreen;
     this.onConnected = onConnected;
     this.updateTrackExistence = updateTrackExistence;
     this.updatePermissionsModalVisibility = updatePermissionsModalVisibility;
@@ -38,8 +41,9 @@ class Twillio {
       const localTracks = await createLocalTracks({
         audio: true,
         maxAudioBitrate: 16000, //For music remove this line
-        video: { height: 720, frameRate: 24, width: 1280 },
-        // mobile: video: { height: 480, frameRate: 24, width: 640 }
+        video: this.isLargeScreen
+          ? { height: 720, frameRate: 24, width: 1280, facingMode: "user" }
+          : { height: 480, frameRate: 24, width: 640, facingMode: "user" },
       });
       const room = await connect(token, {
         name: this.gameId,
@@ -54,12 +58,12 @@ class Twillio {
       );
 
       room.participants.forEach((participant: any) => {
-        this.updateTrackExistence(participant.identity, participant.sid, true);
+        this.handleParticipantConnected(participant);
       });
 
       room.on("participantConnected", (participant: any) => {
         console.log(`Participant connected: ${participant.identity}`);
-        this.updateTrackExistence(participant.identity, participant.sid, true);
+        this.handleParticipantConnected(participant);
       });
 
       room.on("disconnected", (participant: any) => {
@@ -78,6 +82,21 @@ class Twillio {
     }
   }
 
+  handleParticipantConnected(participant: any) {
+    this.updateTrackExistence(participant.identity, participant.sid, true);
+    participant.tracks.forEach((publication: any) => {
+      if (publication.isSubscribed) {
+        this.handleTrackDisabled(publication.track);
+      }
+      publication.on("subscribed", () => {
+        this.handleTrackDisabled(publication.track);
+      });
+      publication.on("unsubscribed", () => {
+        console.log("publication   u nsubscribed");
+      });
+    });
+  }
+
   attachParticipantMedia(sid: string, elementId: string, isLocal?: boolean) {
     try {
       let participant: any;
@@ -89,6 +108,7 @@ class Twillio {
       participant.tracks.forEach((publication: any) => {
         const element = document.getElementById(elementId);
         if (element && publication.track) {
+          element.textContent = "";
           element.appendChild(publication.track.attach());
         }
       });
@@ -96,12 +116,26 @@ class Twillio {
       participant.on("trackSubscribed", (track: any) => {
         const element = document.getElementById(elementId);
         if (element) {
+          element.textContent = "";
           element.appendChild(track.attach());
         }
       });
     } catch (e) {
       console.log("Error:Twillio:attachParticipantMedia", e);
     }
+  }
+
+  handleTrackDisabled(track: any) {
+    track.on("disabled", () => {
+      console.log("Track disabled", track);
+      /* Hide the associated <video> element and show an avatar image. */
+    });
+  }
+
+  handleTrackEnabled(track: any) {
+    track.on("enabled", () => {
+      console.log("Track enabled", track);
+    });
   }
 
   toggleMute(type: "audio" | "video", isOn: boolean) {

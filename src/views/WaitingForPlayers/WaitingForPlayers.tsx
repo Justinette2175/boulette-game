@@ -129,7 +129,7 @@ const WaitingForPlayers: React.FC = () => {
       >
         <Box flex={1} className={classes.leftBox}>
           {/* Title */}
-          <H1 className={classes.h1}>{COPY.DEVICE_PLAYERS_TITLE[language]}</H1>
+          <H1 className={classes.h1}>Salle d'attente</H1>
 
           {/* Players and add player on device */}
           <Box
@@ -156,7 +156,7 @@ const WaitingForPlayers: React.FC = () => {
                 variant="outlined"
                 color="primary"
               >
-                {COPY.ADD_DEVICE_PLAYER_BUTTON[language]}
+                joueur.euse sur cet appareil
               </Button>
             </Box>
           </Box>
@@ -164,8 +164,7 @@ const WaitingForPlayers: React.FC = () => {
           {/* Sharing instructions */}
           <Box mt={3}>
             <Typography variant="body1" gutterBottom>
-              Partage ce lien avec les joueurs qui ne sont pas à la même place
-              que toi.
+              Partagez ce lien avec vos ami.e.s pour ajouter des appareils.
             </Typography>
             <GameLink />
           </Box>
@@ -180,12 +179,12 @@ const WaitingForPlayers: React.FC = () => {
                 variant="contained"
                 size="large"
               >
-                {COPY.JOIN_PLAYERS_NEXT_BUTTON[language]}
+                Commencer la partie
               </Button>
               {players.length < 4 && (
                 <Box mt={1}>
                   <Typography variant="caption">
-                    Boulette requires at least 4 players.
+                    Il faut au minimum 4 joueur.euse.s pour commencer la partie.
                   </Typography>
                 </Box>
               )}
@@ -224,8 +223,8 @@ const WaitingForPlayers: React.FC = () => {
               <>
                 <Typography variant="h2">Débloquer plus d'appareils</Typography>
                 <Typography variant="body1">
-                  Limité à 3 appareils maximum pour la version gratuite. T’as
-                  trop d’amis? Achète un code pour jouer à jusqu’à 10 appareils.
+                  Limité à 3 appareils maximum pour la version gratuite. Achetez
+                  un code pour jouer à jusqu’à 10 appareils.
                 </Typography>
                 <Box display="flex" flexDirection="column" mt={3}>
                   <Button

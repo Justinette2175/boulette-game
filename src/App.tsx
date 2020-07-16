@@ -4,13 +4,15 @@ import "./App.css";
 import { Firebase, FirebaseContext } from "./firebase";
 import DeviceIdContext from "./contexts/DeviceIdContext";
 import DisplayVideoContext from "./contexts/DisplayVideoContext";
-import { red } from "@material-ui/core/colors";
+import { red, deepPurple } from "@material-ui/core/colors";
 
 import { CssBaseline, Container, Box, useTheme } from "@material-ui/core";
 
 import CreateGame from "./views/CreateGame";
 
 import GamePage from "./views/GamePage";
+
+import HomePage from "./views/Home";
 
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import BuyCode from "./views/BuyCode";
@@ -20,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
     bg: {
       minHeight: "100vh",
-      backgroundColor: red[200],
+      backgroundColor: theme.palette.primary.dark,
     },
     container: {
       backgroundColor: theme.palette.background.default,
@@ -91,6 +93,11 @@ const App: React.FC = () => {
                   >
                     <Switch>
                       <Route
+                        exact
+                        path="/games/new"
+                        render={() => <CreateGame />}
+                      />
+                      <Route
                         path="/games/:gameId"
                         render={(props) => <GamePage {...props} />}
                       />
@@ -99,7 +106,7 @@ const App: React.FC = () => {
                         path="/buycode"
                         render={(props) => <BuyCode {...props} />}
                       />
-                      <Route exact path="/" render={() => <CreateGame />} />
+                      <Route exact path="/" component={HomePage} />
                     </Switch>
                   </Box>
                 </Container>

@@ -73,6 +73,7 @@ export default createMuiTheme({
       marginBottom: "24px",
     },
     h2: {
+      maxWidth: "400px",
       fontWeight: 700,
       fontSize: "1.6rem",
       marginBottom: "18px",

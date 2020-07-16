@@ -61,11 +61,7 @@ const WordsSelector: React.FC<IProps> = ({ user, open, onClose }) => {
 
   return (
     <Modal onClose={onClose} open={open}>
-      <Typography variant="h2">Selecting words for {user.name}</Typography>
-      <Typography variant="body1">
-        Type the words you want to add to the bowl. You have {wordsToFill} words
-        left.
-      </Typography>
+      <Typography variant="h2">{user.name}, entrez vos boulettes</Typography>
       <Formik
         validateOnMount={true}
         initialValues={{

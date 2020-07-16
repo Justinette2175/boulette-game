@@ -142,10 +142,7 @@ const StartGame: React.FC = () => {
         position="relative"
       >
         <Box flex={4} className={classes.leftBox}>
-          <H1>{COPY.START_GAME_TITLE[language]}</H1>
-          <Typography variant="body1">
-            {COPY.START_GAME_PARA[language]}
-          </Typography>
+          <H1>Créer une partie</H1>
           <LighterBox maxWidth={400} mt={3}>
             <Formik
               validateOnMount={true}
@@ -163,11 +160,11 @@ const StartGame: React.FC = () => {
                     fullWidth
                     id="owner-name"
                     name="ownerName"
-                    label={COPY.PLAYER_NAME_LABEL[language]}
+                    label="Nom du créateur.trice"
                   />
                   <Select
                     fullWidth
-                    label={COPY.WORDS_PER_PLAYER_LABEL[language]}
+                    label="Nombre de boulettes par joueur.euse"
                     name="wordsPerPlayer"
                     options={[
                       { label: "3", value: 3 },
@@ -182,7 +179,7 @@ const StartGame: React.FC = () => {
                   />
                   <Select
                     fullWidth
-                    label={COPY.SECONDS_PER_TURN_LABEL[language]}
+                    label="Temps par tour"
                     name="secondsPerTurn"
                     options={[
                       { label: "10", value: 10 },
@@ -200,7 +197,7 @@ const StartGame: React.FC = () => {
                       disabled={!isValid}
                       color="primary"
                     >
-                      {COPY.START_GAME_BUTTON[language]}
+                      Continuer à créer votre partie
                     </Button>
                   </ButtonsGroup>
                 </Form>

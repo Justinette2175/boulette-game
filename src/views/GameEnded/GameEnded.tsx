@@ -124,7 +124,12 @@ const GameEnded: React.FC = () => {
       </Box>
       <Box mt={2} maxWidth="500px">
         <NextButton>
-          <Button variant="contained" color="primary" component={Link} to="/">
+          <Button
+            variant="contained"
+            color="primary"
+            component={Link}
+            to="/games/new"
+          >
             {COPY.PLAY_OTHER_GAME_BUTTON[language]}
           </Button>
         </NextButton>

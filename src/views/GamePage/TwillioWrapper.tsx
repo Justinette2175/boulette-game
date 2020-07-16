@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef, useContext } from "react";
 import DeviceIdContext from "../../contexts/DeviceIdContext";
 import { FirebaseContext } from "../../firebase";
 
+import { useMediaQuery, useTheme } from "@material-ui/core";
+
 import GameContext from "../../contexts/GameContext";
 import { VideoTracks } from "../../types/firebaseTypes";
 import Twillio from "../../services/twillio";
@@ -23,6 +25,9 @@ export const TwillioWrapper: React.FC<IProps> = ({ children }) => {
   );
   const [connected, setConnected] = useState(false);
   const [_, setDisplayVideo] = useContext(DisplayVideoContext);
+
+  const theme = useTheme();
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
 
   const updateTrackExistence = (id: string, sid: string, exists: boolean) => {
     setExistingTracksIds((ex) => ({
@@ -65,6 +70,7 @@ export const TwillioWrapper: React.FC<IProps> = ({ children }) => {
       const myTwillio = new Twillio(
         game.id,
         token,
+        isLargeScreen,
         () => setConnected(true),
         updateTrackExistence,
         (newState: boolean) => setPermissionModalVisible(newState),
@@ -77,20 +83,14 @@ export const TwillioWrapper: React.FC<IProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    if (
-      !twillio.current &&
-      game?.numberOfDevices > 1 &&
-      permissionModalVisible === false
-    ) {
-      initiateCall();
+    if (!twillio.current && game?.numberOfDevices > 1) {
+      // initiateCall();
       setDisplayVideo(true);
     }
-    return async () => {
+    return () => {
       twillio.current = null;
     };
-  }, [game?.numberOfDevices, permissionModalVisible]);
-
-  console.log("current", twillio.current);
+  }, [game?.numberOfDevices]);
 
   return (
     <TwillioContext.Provider

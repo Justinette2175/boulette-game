@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { userStillHasWordsToWrite } from "../../utils";
 import WordsSelector from "./WordsSelector";
 import PlayerAndAvatar from "../../components/PlayerAndAvatar";
@@ -90,9 +90,10 @@ const AddWords: React.FC = () => {
   const deviceId = useContext(DeviceIdContext);
   const gameRef = useGameRef();
   const words = useGameWords();
-  const language = "EN";
   const { wordsPerPlayer } = game;
-  const allWordsAreSet = players.length <= words.length;
+  const allWordsAreSet =
+    players.length > 0 && players.length * game.wordsPerPlayer <= words.length;
+
   const deviceUsers = players.filter((p) => p.deviceId === deviceId);
   const ownerIsOnDevice = useOwnerIsOnDevice();
 
@@ -114,6 +115,12 @@ const AddWords: React.FC = () => {
   const theme = useTheme();
   const classes = useStyles();
 
+  useEffect(() => {
+    if (allWordsAreSet) {
+      handleNext();
+    }
+  }, [allWordsAreSet]);
+
   return (
     <ViewWrapper>
       <Box
@@ -123,15 +130,12 @@ const AddWords: React.FC = () => {
         position="relative"
       >
         <Box flex={4} className={classes.leftBox}>
-          {/* title */}
-          <H1 className={classes.h1}>{COPY.ADD_WORDS_TITLE[language]}</H1>
+          <H1 className={classes.h1}>Préparez vos boulettes</H1>
 
-          <Box>
-            <Typography variant="body1" className={classes.instructions}>
-              Chaque joueur sur cet appareil doit entrer ses mots. Ça peut être
-              des expressions, des personnes, tout est correct.
-            </Typography>
-          </Box>
+          <Typography variant="body1" className={classes.instructions}>
+            Chaque joueur sur cet appareil doit entrer ses mots. Ça peut être
+            des expressions, des personnes, tout est correct.
+          </Typography>
 
           {/* add words */}
           <Box bgcolor="background.paper" className={classes.wordsWrapper}>
@@ -177,21 +181,12 @@ const AddWords: React.FC = () => {
 
           {/* missing words */}
           <NextButton>
-            {playersMissingWords.length > 0 && ownerIsOnDevice ? (
+            {playersMissingWords.length > 0 && ownerIsOnDevice && (
               <Box>
                 <Typography variant="body1">
                   Still waiting for {playersMissingWords.join(", ")}.
                 </Typography>
               </Box>
-            ) : (
-              <Button
-                onClick={handleNext}
-                color="primary"
-                variant="contained"
-                size="large"
-              >
-                {COPY.NEXT[language]}
-              </Button>
             )}
           </NextButton>
         </Box>

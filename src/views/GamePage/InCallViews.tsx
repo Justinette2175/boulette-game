@@ -50,7 +50,6 @@ const InCallViews: React.FC<IProps> = () => {
           <Box
             style={{ backgroundColor: "black" }}
             overflow="auto"
-            maxWidth="100%"
             maxHeight={displayVideo ? "auto" : 0}
           >
             {displayVideo && (

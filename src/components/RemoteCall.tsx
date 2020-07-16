@@ -10,11 +10,17 @@ import { RoundButton } from "../components/Buttons";
 const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
     container: {
-      width: "200px",
+      height: "110px",
       display: "flex",
-      alignItems: "flex-end",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "black",
+      [theme.breakpoints.up("md")]: {
+        height: "120px",
+      },
       "& video": {
-        width: "100%",
+        maxHeight: "100%",
+        maxWidth: "200px",
       },
     },
   });
@@ -52,14 +58,7 @@ const RemoteCall: React.FC<IProps> = ({ track, local }) => {
 
   return (
     <Box position="relative">
-      <Box
-        id={`call-${sid}`}
-        position="relative"
-        className={classes.container}
-        minWidth="200px"
-        minHeight="110px"
-        style={{ backgroundColor: "black" }}
-      ></Box>
+      <Box id={`call-${sid}`} className={classes.container}></Box>
       {local && (
         <Box position="absolute" p={0.5} style={{ bottom: 0, left: 0 }}>
           <RoundButton
@@ -69,14 +68,14 @@ const RemoteCall: React.FC<IProps> = ({ track, local }) => {
           >
             {track?.on?.audio ? <Mic size={25} /> : <MicOff size={25} />}
           </RoundButton>
-          <RoundButton
+          {/* <RoundButton
             size="small"
             color="primary"
             onClick={() => twillio.toggleMute("video", !track.on.audio)}
             style={{ marginLeft: "8px" }}
           >
             {track?.on?.video ? <Video size={25} /> : <VideoOff size={25} />}
-          </RoundButton>
+          </RoundButton> */}
         </Box>
       )}
     </Box>

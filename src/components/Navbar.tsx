@@ -35,7 +35,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ toggleDisplayVideos, hasVideo }) => {
   const classes = useStyles();
-  const displayVideos = useContext(DisplayVideoContext);
+  const [displayVideos] = useContext(DisplayVideoContext);
   return (
     <Box className={classes.container}>
       <Typography component="h1" style={{ fontWeight: 700 }}>

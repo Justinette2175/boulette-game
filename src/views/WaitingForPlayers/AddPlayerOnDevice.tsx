@@ -4,7 +4,7 @@ import * as Yup from "yup";
 
 import COPY from "../../copy";
 
-import { Button, Typography } from "@material-ui/core";
+import { Button, Typography, Box } from "@material-ui/core";
 import TextInput from "../../components/TextInput";
 import ButtonsGroup from "../../components/ButtonsGroup";
 import useAddPlayer from "../../hooks/useAddPlayer";
@@ -35,7 +35,7 @@ const AddPlayerOnDevice: React.FC<IProps> = ({ open, onClose }) => {
   return (
     <Modal onClose={onClose} open={open}>
       <Typography variant="h2">
-        {COPY.ADD_DEVICE_PLAYER_BUTTON[language]}
+        Ajouter un.e joueur.euse sur cet appareil
       </Typography>
       <Formik
         validateOnMount={true}
@@ -47,22 +47,22 @@ const AddPlayerOnDevice: React.FC<IProps> = ({ open, onClose }) => {
       >
         {({ isValid }) => (
           <Form>
-            <TextInput
-              id="name"
-              name="name"
-              fullWidth
-              label={COPY.PLAYER_NAME_LABEL[language]}
-            />
-            <ButtonsGroup>
+            <Box display="flex" flexDirection="column">
+              <TextInput
+                id="name"
+                name="name"
+                fullWidth
+                placeholder="Nom du joueur.euse"
+              />
               <Button
                 type="submit"
                 disabled={!isValid || loading}
                 variant="contained"
                 color="primary"
               >
-                {COPY.SUBMIT[language]}
+                Ajouter
               </Button>
-            </ButtonsGroup>
+            </Box>
           </Form>
         )}
       </Formik>
