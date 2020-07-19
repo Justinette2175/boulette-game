@@ -19,6 +19,7 @@ const Round: React.FC<IProps> = () => {
   const currentRound = useContext(CurrentRoundContext);
   const [intervalRunning, setIntervalRunning] = useState<boolean>(false);
   const [timeRemaining, setTimeRemaining] = useState<number>(null);
+  const [delay, setDelay] = useState<number>(0);
   const handleEndTurn = useHandleEndTurn();
   const currentPlayerIsOnDevice = useCurrentPlayerIsOnDevice();
 
@@ -28,10 +29,7 @@ const Round: React.FC<IProps> = () => {
 
   const updateRemainingTime = (endOfCurrentTurn: number) => {
     const now = moment().unix();
-    console.log("endOfCurrentTurn", endOfCurrentTurn);
-    console.log("NOW IS", now);
-    let duration = endOfCurrentTurn - now;
-    console.log("duration", duration);
+    let duration = endOfCurrentTurn + delay / 1000 - now;
     setTimeRemaining(duration);
     if (duration < 1 || isNaN(duration)) {
       stopTimer();
@@ -50,14 +48,30 @@ const Round: React.FC<IProps> = () => {
     intervalRunning ? INTERVAL_TIME : null
   );
 
+  const setTimestampDelay = (setAt: any) => {
+    const localNow = moment();
+    const momentSetAt = moment(setAt.toDate());
+    const difference = localNow.diff(momentSetAt);
+    setDelay(difference);
+  };
+
   useEffect(() => {
-    if (currentRound && currentRound.endOfCurrentTurn) {
+    if (
+      !!currentRound &&
+      !!currentRound.endOfCurrentTurn &&
+      !!currentRound.endOfCurrentTurnSetAt
+    ) {
+      setTimestampDelay(currentRound.endOfCurrentTurnSetAt);
       setIntervalRunning(true);
     } else {
       setTimeRemaining(null);
       setIntervalRunning(false);
     }
-  }, [currentRound && currentRound.endOfCurrentTurn]);
+  }, [
+    currentRound &&
+      currentRound.endOfCurrentTurn &&
+      currentRound.endOfCurrentTurnSetAt,
+  ]);
 
   const clearIfUnmount = () => {
     if (useCurrentPlayerIsOnDevice && timeRemaining) {

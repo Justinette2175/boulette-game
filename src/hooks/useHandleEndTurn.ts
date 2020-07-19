@@ -43,6 +43,7 @@ const useHandleEndTurn = (): (() => void) => {
 
       await transaction.update(gameRef.collection("rounds").doc(round.id), {
         endOfCurrentTurn: null,
+        endOfCurrentTurnSetAt: null,
         currentPlayer: newPlayer,
         currentTeam: newTeam,
         currentWord: null,

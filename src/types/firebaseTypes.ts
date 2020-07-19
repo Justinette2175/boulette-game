@@ -81,6 +81,7 @@ export interface FirebaseGameRound {
   index: number;
   secondsPerTurn: number;
   endOfCurrentTurn: number;
+  endOfCurrentTurnSetAt: any;
   score: {
     [teamId: string]: number;
   };

@@ -4,10 +4,12 @@ import useGameRef from "./useGameRef";
 import moment from "moment";
 
 import { getNewWord } from "../utils";
+import FirebaseContext from "../firebase/FirebaseContext";
 
 const useHandleStartTurn = (): (() => void) => {
   const gameRef = useGameRef();
   const round = useContext(CurrentRoundContext);
+  const firebase = useContext(FirebaseContext);
 
   const handleStartTurn = async () => {
     const { remainingTimeFromPreviousRound, secondsPerTurn, wordsLeft } = round;
@@ -19,11 +21,11 @@ const useHandleStartTurn = (): (() => void) => {
     const nowInSeconds = moment().unix();
     const endOfCurrentTurn = nowInSeconds + secondLengthOfTurn;
     const currentWord = getNewWord(wordsLeft);
-
+    const endOfCurrentTurnSetAt = firebase.firestore.FieldValue.serverTimestamp();
     await gameRef
       .collection("rounds")
       .doc(round.id)
-      .update({ endOfCurrentTurn, currentWord });
+      .update({ endOfCurrentTurn, endOfCurrentTurnSetAt, currentWord });
   };
 
   return handleStartTurn;
