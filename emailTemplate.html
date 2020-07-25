@@ -1,0 +1,311 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="https://www.w3.org/1999/xhtml">
+  <head>
+    <title>Thank you for your purchase</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 " />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap");
+
+      html,
+      body,
+      div,
+      span,
+      applet,
+      object,
+      iframe,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      p,
+      blockquote,
+      pre,
+      a,
+      abbr,
+      acronym,
+      address,
+      big,
+      cite,
+      code,
+      del,
+      dfn,
+      em,
+      img,
+      ins,
+      kbd,
+      q,
+      s,
+      samp,
+      small,
+      strike,
+      strong,
+      sub,
+      sup,
+      tt,
+      var,
+      b,
+      u,
+      i,
+      center,
+      dl,
+      dt,
+      dd,
+      ol,
+      ul,
+      li,
+      fieldset,
+      form,
+      label,
+      legend,
+      table,
+      caption,
+      tbody,
+      tfoot,
+      thead,
+      tr,
+      th,
+      td,
+      article,
+      aside,
+      canvas,
+      details,
+      embed,
+      figure,
+      figcaption,
+      footer,
+      header,
+      hgroup,
+      menu,
+      nav,
+      output,
+      ruby,
+      section,
+      summary,
+      time,
+      mark,
+      audio,
+      video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+      }
+      /* HTML5 display-role reset for older browsers */
+      article,
+      aside,
+      details,
+      figcaption,
+      figure,
+      footer,
+      header,
+      hgroup,
+      menu,
+      nav,
+      section {
+        display: block;
+      }
+      body {
+        line-height: 1;
+      }
+      ol,
+      ul {
+        list-style: none;
+      }
+      blockquote,
+      q {
+        quotes: none;
+      }
+      blockquote:before,
+      blockquote:after,
+      q:before,
+      q:after {
+        content: "";
+        content: none;
+      }
+      table {
+        border-collapse: collapse;
+        border-spacing: 0;
+      }
+
+      body {
+        background-color: #d3fff5;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      p,
+      li,
+      td,
+      th,
+      button, 
+      a,
+      span {
+        text-decoration:none; 
+        font-family: "Quicksand", "arial","sans-serif";
+        font-weight: 500;
+        font-size: 1.1rem;
+        line-height: 1.6rem;
+      }
+
+      a{
+        color: inherit
+      }
+
+      input, button, submit { border:none; } 
+
+      p{
+        margin-bottom: 15px;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-weight: 700;
+      }
+
+      h1 {
+        font-size: 2.6rem;
+        max-width: 300px;
+        line-height: 3rem;
+        margin-bottom: 30px;
+      }
+
+      h2{
+        font-size: 1.7rem;
+        margin-bottom: 15px;
+      }
+      h3{
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+      }
+      .container {
+        background-color: #e9fffa;
+        width: 100%;
+        max-width: 700px;
+        margin: 0 auto;
+        min-height: 100vh;
+        display: "flex";
+        flex-direction: column;
+      }
+      .logo {
+        font-weight: 700;
+        margin-bottom: 15px;
+        display:block;
+      }
+      .purple-bg {
+        background-color: #4a2787;
+        color: white;
+      }
+      .purple-bg h1, .purple-bg h2, .purple-bg h3, .purple-bg p, .purple-bg a {
+        color: white !important;
+      }
+
+      .content {
+        padding: 30px;
+      }
+      .receipt-table table {
+        width: 100%;
+        text-align: center;
+      }
+      .receipt-table tr th,
+      td {
+        padding: 15px;
+      }
+      .table-data-row {
+        border-bottom: 1px solid #4a2787;
+      }
+
+      .table-header-row {
+        border-top: 2px solid #4a2787;
+        border-bottom: 2px solid #4a2787;
+        font-weight: 700;
+      }
+      .info {
+        margin-bottom: 30px;
+      }
+      .info li span {
+        font-weight: 700;
+      }
+
+      button, .button-link{
+        padding: 10px 15px;
+        background-color: #64ffda;
+        transition: 0.25s;
+        display: inline-block;
+        font-weight: 700;
+      }
+
+      button:hover, .button-link:hover{
+        cursor: pointer;
+        background-color: #1de9b6;
+      }
+
+      .centered-content {
+        text-align: center;
+        margin: 0 auto;
+        padding: 30px;
+      }
+      .medium-teal-bg {
+        background-color:#d3fff5
+      }
+      .bold{
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="purple-bg content">
+        <span class="logo">boulette.ca</span>
+        <h1>Thank you for your purchase!</h1>
+        <h3>Your code is:</h3>
+        <h2>{{code}}</h2>
+      </div>
+      <div class="content">
+        <h3>Sales Receipt</h2>
+        <p>{{date}}</p>
+        <div class="info">
+          <ul>
+            <li><span>email: </span> {{email}}</li>
+            <li><span>code: </span> {{code}}</li>
+            <li><span>paypal reference:</span> {{paypalId}}</li>
+          </ul>
+        </div>
+        <div class="receipt-table">
+          <table>
+            <tr class="table-header-row">
+              <th class="bold">Item</th>
+              <th class="bold">Price</th>
+            </tr>
+            <tr class="table-data-row">
+              <td>{{description}}</td>
+              <td>{{cost}} {{currency}}</td>
+            </tr>
+            <tr class="table-data-row">
+              <td class="bold">TOTAL</td>
+              <td>{{cost}} {{currency}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="centered-content">
+        <p>You can now use this code! Create a game and invite friends to play boulette.</p>
+        <a href="http://boulette.ca" class="button-link">Play boulette</a>
+      </div>
+      <div class="centered-content purple-bg">
+        <p>Thanks for supporting boulette.ca with your purchase. If you experience a problem with your code, please let us know by emailing us at info@boulette.ca.</p>
+        <p>We hope you enjoy playing!</p>
+      </div>
+    </div>
+  </body>
+</html>

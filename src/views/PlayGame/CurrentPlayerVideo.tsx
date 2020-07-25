@@ -1,50 +1,28 @@
-import React, { useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
-import { Box } from "@material-ui/core";
 import TwillioContext from "../../contexts/TwillioContext";
 import CurrentRoundContext from "../../contexts/CurrentRoundContext";
 
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-const useStyles = makeStyles((theme: Theme) => {
-  return createStyles({
-    videoWrapper: {
-      width: "100%",
-      display: "flex",
-      justifyContent: "center",
-      backgroundColor: "black",
-      "& video": {
-        width: "100%",
-        maxWidth: "100%",
-      },
-    },
-  });
-});
+import Participant from "../../components/Twillio/Participant";
 
-const CurrentPlayerVideo = () => {
+const CurrentPlayerVideo = (): any => {
   const round = useContext(CurrentRoundContext);
   const currentPlayer = round?.currentPlayer;
-  const [twillio, existingTracks, connected] = useContext(TwillioContext);
-  const currentPlayerSid = existingTracks[currentPlayer?.deviceId]?.sid;
-
-  const attachCallToComponent = (sid: string) => {
-    if (twillio && sid) {
-      try {
-        twillio.attachParticipantMedia(sid, "current-player");
-      } catch (e) {
-        console.log("Error:CurrentPlayerVideo:attachCallToComponent", e);
-      }
-    }
-  };
-
-  const classes = useStyles();
+  const [_, participants] = useContext(TwillioContext);
+  const [participant, setParticipant] = useState<any>(null);
 
   useEffect(() => {
-    if (connected && currentPlayerSid) {
-      attachCallToComponent(currentPlayerSid);
+    if (currentPlayer && participants.length > 0) {
+      const activeParticipant = participants.find(
+        (p: any) => p.identity === currentPlayer.deviceId
+      );
+      setParticipant(activeParticipant);
+    } else {
+      setParticipant(null);
     }
-  }, [connected, currentPlayerSid]);
+  }, [currentPlayer, participants]);
 
-  return <Box className={classes.videoWrapper} id="current-player"></Box>;
+  return <Participant participant={participant} large />;
 };
 
 export default CurrentPlayerVideo;

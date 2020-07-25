@@ -1,4 +1,4 @@
-const { connect, createLocalTracks } = require("twilio-video");
+const { connect } = require("twilio-video");
 
 class Twillio {
   room: any;
@@ -6,7 +6,12 @@ class Twillio {
   isLargeScreen: boolean;
   onConnected: () => void;
   updatePermissionsModalVisibility: (newState: boolean) => void;
-  updateTrackExistence: (id: string, sid: string, exists: boolean) => void;
+  updateTrackExistence: (
+    id: string,
+    sid: string,
+    type: "audio" | "video",
+    exists: boolean
+  ) => void;
   onMuteStateChanged: (
     participantSid: string,
     trackType: "audio" | "video",
@@ -18,7 +23,12 @@ class Twillio {
     token: string,
     isLargeScreen: boolean,
     onConnected: () => void,
-    updateTrackExistence: (id: string, sid: string, exists: boolean) => void,
+    updateTrackExistence: (
+      id: string,
+      sid: string,
+      type: "audio" | "video",
+      exists: boolean
+    ) => void,
     updatePermissionsModalVisibility: (newState: boolean) => void,
     onMuteStateChanged: (
       participantSid: string,
@@ -38,24 +48,26 @@ class Twillio {
 
   async connectToRoom(token: string) {
     try {
-      const localTracks = await createLocalTracks({
+      const room = await connect(token, {
+        name: this.gameId,
         audio: true,
         maxAudioBitrate: 16000, //For music remove this line
         video: this.isLargeScreen
           ? { height: 720, frameRate: 24, width: 1280, facingMode: "user" }
           : { height: 480, frameRate: 24, width: 640, facingMode: "user" },
       });
-      const room = await connect(token, {
-        name: this.gameId,
-        tracks: localTracks,
-      });
 
       const localParticipant = room.localParticipant;
-      this.updateTrackExistence(
-        localParticipant.identity,
-        localParticipant.sid,
-        true
-      );
+
+      // this.updateTrackExistence(
+      //   localParticipant.identity,
+      //   localParticipant.sid,
+      //   "video",
+      //   true
+      // );
+
+      this.handleParticipantConnected(localParticipant, true);
+      // this.handleParticipantConnected(localParticipant);
 
       room.participants.forEach((participant: any) => {
         this.handleParticipantConnected(participant);
@@ -68,7 +80,6 @@ class Twillio {
 
       room.on("disconnected", (participant: any) => {
         console.log(`Participant disconnected: ${participant}`);
-        this.updateTrackExistence(participant.identity, null, false);
       });
 
       this.room = room;
@@ -82,17 +93,47 @@ class Twillio {
     }
   }
 
-  handleParticipantConnected(participant: any) {
-    this.updateTrackExistence(participant.identity, participant.sid, true);
+  handleParticipantConnected(participant: any, local?: boolean) {
+    // this.updateTrackExistence(participant.identity, participant.sid, true);
+    console.log("paricipant connected", participant);
     participant.tracks.forEach((publication: any) => {
+      console.log("Publication is", publication);
+      if (local) {
+        this.updateTrackExistence(
+          participant.identity,
+          participant.sid,
+          publication?.track?.kind,
+          true
+        );
+      }
       if (publication.isSubscribed) {
-        this.handleTrackDisabled(publication.track);
+        console.log("publication is subscribed");
+        this.updateTrackExistence(
+          participant.identity,
+          participant.sid,
+          publication?.track?.kind,
+          true
+        );
+        this.addTrackEventListeners(publication.track);
       }
       publication.on("subscribed", () => {
-        this.handleTrackDisabled(publication.track);
+        console.log("publication   subscribed", publication);
+        this.updateTrackExistence(
+          participant.identity,
+          participant.sid,
+          publication?.track?.kind,
+          true
+        );
+        this.addTrackEventListeners(publication.track);
       });
       publication.on("unsubscribed", () => {
-        console.log("publication   u nsubscribed");
+        this.updateTrackExistence(
+          participant.identity,
+          participant.sid,
+          publication?.track?.kind,
+          false
+        );
+        console.log("publication   u nsubscribed", publication);
       });
     });
   }
@@ -110,14 +151,26 @@ class Twillio {
         if (element && publication.track) {
           element.textContent = "";
           element.appendChild(publication.track.attach());
+        } else {
+          if (!element) {
+            throw new Error(`Element to attach track ${elementId} not found`);
+          }
+          if (!publication.track) {
+            throw new Error(
+              `publication.track to attach track ${elementId} not found`
+            );
+          }
         }
       });
 
       participant.on("trackSubscribed", (track: any) => {
+        console.log("Handling track subscribed");
         const element = document.getElementById(elementId);
         if (element) {
           element.textContent = "";
           element.appendChild(track.attach());
+        } else {
+          throw new Error(`Element to attach track ${elementId} not found`);
         }
       });
     } catch (e) {
@@ -125,16 +178,13 @@ class Twillio {
     }
   }
 
-  handleTrackDisabled(track: any) {
+  addTrackEventListeners(track: any) {
+    track.on("enabled", () => {
+      console.log("Track enabled", track);
+    });
     track.on("disabled", () => {
       console.log("Track disabled", track);
       /* Hide the associated <video> element and show an avatar image. */
-    });
-  }
-
-  handleTrackEnabled(track: any) {
-    track.on("enabled", () => {
-      console.log("Track enabled", track);
     });
   }
 

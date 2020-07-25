@@ -49,8 +49,10 @@ const Round: React.FC<IProps> = () => {
   );
 
   const setTimestampDelay = (setAt: any) => {
+    console.log("Setting timestamp deplay", setAt);
     const localNow = moment();
-    const momentSetAt = moment(setAt.toDate());
+    const momentSetAt = moment.utc(setAt, "X");
+    console.log(momentSetAt);
     const difference = localNow.diff(momentSetAt);
     setDelay(difference);
   };
@@ -68,9 +70,9 @@ const Round: React.FC<IProps> = () => {
       setIntervalRunning(false);
     }
   }, [
-    currentRound &&
-      currentRound.endOfCurrentTurn &&
-      currentRound.endOfCurrentTurnSetAt,
+    !!currentRound &&
+      !!currentRound.endOfCurrentTurn &&
+      !!currentRound.endOfCurrentTurnSetAt,
   ]);
 
   const clearIfUnmount = () => {

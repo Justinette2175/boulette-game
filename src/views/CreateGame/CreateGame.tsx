@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Formik, Form } from "formik";
+import { useAsync } from "react-async-hook";
 import { Redirect } from "react-router-dom";
 import { FirebaseContext } from "../../firebase";
 import { NewGame } from "../../types/firebaseTypes";
@@ -7,12 +8,11 @@ import * as Yup from "yup";
 import { generateGameId } from "../../utils";
 import moment from "moment";
 
-import { Button, Typography, Box } from "@material-ui/core";
+import { Button, Box } from "@material-ui/core";
 import TextInput from "../../components/TextInput";
 import Select from "../../components/Select";
 import ButtonsGroup from "../../components/ButtonsGroup";
 
-import COPY from "../../copy";
 import DeviceIdContext from "../../contexts/DeviceIdContext";
 
 import iss from "../../assets/images/iss.png";
@@ -20,6 +20,7 @@ import { ViewWrapper, LighterBox } from "../../components/Containers";
 import { H1 } from "../../components/Typography";
 
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { LoadingView } from "../../components/Loading";
 const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
     leftBox: {
@@ -62,10 +63,10 @@ interface FormValues {
 }
 
 const StartGame: React.FC = () => {
-  const language = "EN";
   const firebase = useContext(FirebaseContext);
   const deviceId = useContext(DeviceIdContext);
   const [gameId, setGameId] = useState<string>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error>(null);
 
   const validationSchema = Yup.object().shape({
@@ -79,6 +80,7 @@ const StartGame: React.FC = () => {
     secondsPerTurn,
     ownerName,
   }: FormValues) => {
+    setLoading(true);
     try {
       const batch = firebase.firestore().batch();
       const gameShortId = generateGameId();
@@ -118,9 +120,11 @@ const StartGame: React.FC = () => {
 
       await batch.commit();
       setGameId(gameRef.id);
+      setLoading(false);
     } catch (e) {
       console.log("Error:StartGame:createGame", e);
       setError(e);
+      setLoading(false);
     }
   };
 
@@ -131,6 +135,10 @@ const StartGame: React.FC = () => {
 
   if (gameId) {
     return <Redirect to={`/games/${gameId}`} />;
+  }
+
+  if (loading) {
+    return <LoadingView />;
   }
 
   return (

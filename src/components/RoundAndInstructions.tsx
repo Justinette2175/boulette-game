@@ -14,32 +14,19 @@ const RoundAndInstructions: React.FC<IProps> = ({ openInstructions }) => {
   const round = useContext(CurrentRoundContext);
   const language = "EN";
 
-  const theme = useTheme();
-
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent="space-between"
-      bgcolor="secondary.dark"
-    >
+    <Box display="flex" alignItems="center" justifyContent="space-between">
       <SidePaddingWrapper>
         <Box display="flex" alignItems="center" py={1}>
           <Box mr={2}>
-            <Typography
-              variant="h3"
-              style={{
-                marginBottom: 0,
-                color: theme.palette.secondary.contrastText,
-              }}
-            >
+            <Typography variant="h3">
               {COPY.ROUND[language]} {round?.id}
             </Typography>
           </Box>
           <Button
             onClick={openInstructions}
             size="small"
-            variant="contained"
+            variant="outlined"
             color="primary"
             startIcon={<BookOpen size={14} />}
           >

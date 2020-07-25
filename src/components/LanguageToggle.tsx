@@ -3,7 +3,7 @@ import { Button } from "@material-ui/core";
 
 import { Settings } from "react-feather";
 
-const SettingsContainer: React.FC = () => {
+const LanguageToggle: React.FC = () => {
   const language = "EN";
 
   const toggleLanguage = () => {
@@ -22,4 +22,4 @@ const SettingsContainer: React.FC = () => {
   );
 };
 
-export default SettingsContainer;
+export default LanguageToggle;

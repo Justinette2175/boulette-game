@@ -1,8 +1,7 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Code } from "../types/firebaseTypes";
 import { FirebaseContext } from "../firebase";
 import useGameRef from "./useGameRef";
-import DeviceIdContext from "../contexts/DeviceIdContext";
 
 const MAX_NUMBER_OF_DEVICES_FOR_PAID = 8;
 

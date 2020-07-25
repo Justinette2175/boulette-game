@@ -1,16 +1,17 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 
 import TextInput from "../../components/TextInput";
 import { Box, Typography, Button } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
 import ButtonsGroup from "../../components/ButtonsGroup";
 
 import COPY from "../../copy";
 import { useAddPlayer } from "../../hooks";
 import GameContext from "../../contexts/GameContext";
 import { ViewWrapper } from "../../components/Containers";
+import { ErrorView } from "../../components/Error";
+import { LoadingView } from "../../components/Loading";
 
 interface FormValues {
   name: string;
@@ -31,24 +32,27 @@ const JoinGame: React.FC<IProps> = () => {
   };
 
   if (game?.stage !== "WAITING_FOR_PLAYERS") {
-    return <Box>It's too late to join this game, it has already started.</Box>;
+    return (
+      <Box>
+        <ErrorView>
+          It's too late to join this game, it has already started.
+        </ErrorView>
+      </Box>
+    );
   }
 
   if (game?.numberOfDevices >= game?.maxNumberOfDevices) {
     return (
       <Box>
-        Cannot join this game because there already are too many players...
+        <ErrorView>
+          Cannot join this game because there already are too many players...
+        </ErrorView>
       </Box>
     );
   }
 
   return (
     <ViewWrapper>
-      {error && (
-        <Box mb={2}>
-          <Alert severity="error">{error.message}</Alert>
-        </Box>
-      )}
       <Typography variant="h2">{COPY.JOIN_GAME_TITLE[language]}</Typography>
       <Formik
         validateOnMount={true}
@@ -70,7 +74,7 @@ const JoinGame: React.FC<IProps> = () => {
               <Button
                 type="submit"
                 variant="contained"
-                disabled={!isValid || loading}
+                // disabled={!isValid || loading}
                 color="secondary"
               >
                 {COPY.JOIN_GAME_BUTTON[language]}

@@ -1,9 +1,11 @@
 import React, { useContext } from "react";
-import { Box, Typography, Button } from "@material-ui/core";
+import { Box, Typography, Button, Container } from "@material-ui/core";
+import { Link } from "react-router-dom";
 
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
 import DisplayVideoContext from "../contexts/DisplayVideoContext";
+import { SidePaddingWrapper } from "./Containers";
 
 const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
@@ -11,19 +13,8 @@ const useStyles = makeStyles((theme: Theme) => {
       height: "55px",
       display: "flex",
       alignItems: "center",
-      justifyContent: "space-between",
       color: theme.palette.primary.contrastText,
       backgroundColor: theme.palette.primary.dark,
-      padding: `${theme.spacing(2)}px`,
-      [theme.breakpoints.up("sm")]: {
-        padding: `${theme.spacing(2)}px ${theme.spacing(4)}px`,
-      },
-      [theme.breakpoints.up("md")]: {
-        padding: `${theme.spacing(2)}px ${theme.spacing(6)}px`,
-      },
-      [theme.breakpoints.up("lg")]: {
-        padding: `${theme.spacing(2)}px ${theme.spacing(8)}px`,
-      },
     },
   });
 });
@@ -38,14 +29,33 @@ const Navbar: React.FC<NavbarProps> = ({ toggleDisplayVideos, hasVideo }) => {
   const [displayVideos] = useContext(DisplayVideoContext);
   return (
     <Box className={classes.container}>
-      <Typography component="h1" style={{ fontWeight: 700 }}>
-        boulette.ca
-      </Typography>
-      {hasVideo && (
-        <Button size="small" variant="contained" onClick={toggleDisplayVideos}>
-          {displayVideos ? "Hide Videos" : "Show Videos"}
-        </Button>
-      )}
+      <Container disableGutters maxWidth="lg">
+        <SidePaddingWrapper>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Typography
+              component={Link}
+              to="/"
+              style={{ fontWeight: 700, marginBottom: 0, color: "white" }}
+            >
+              boulette.ca
+            </Typography>
+            {hasVideo && (
+              <Button
+                size="small"
+                variant="contained"
+                color="secondary"
+                onClick={toggleDisplayVideos}
+              >
+                {displayVideos ? "Hide Videos" : "Show Videos"}
+              </Button>
+            )}
+          </Box>
+        </SidePaddingWrapper>
+      </Container>
     </Box>
   );
 };

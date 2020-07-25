@@ -1,11 +1,6 @@
-import React, { useContext, useState } from "react";
+import React from "react";
 import { Dialog, Box, Typography } from "@material-ui/core";
 import COPY from "../copy";
-
-import TwillioContext from "../contexts/TwillioContext";
-import useInterval from "../utils/useInterval";
-
-const CHECK_PERMISSIONS_INTERVAL = 1000;
 
 interface IProps {
   open: boolean;
@@ -14,12 +9,6 @@ interface IProps {
 
 const PermissionsModal: React.FC<IProps> = ({ open, onClose }) => {
   const language = "EN";
-
-  const [twillio] = useContext(TwillioContext);
-
-  if (!twillio) {
-    return null;
-  }
   return (
     <Dialog open={open} maxWidth="md" PaperProps={{ elevation: 0 }}>
       <Box p={6}>

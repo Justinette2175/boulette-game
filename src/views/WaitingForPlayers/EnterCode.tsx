@@ -68,16 +68,18 @@ const EnterCode: React.FC<IProps> = ({ open, onClose, code }) => {
             </Form>
           )}
         </Formik>
-        <Button
-          color="primary"
-          variant="outlined"
-          startIcon={<Gift size={20} />}
-          component={Link}
-          to="/buycode"
-          style={{ marginTop: theme.spacing(1) }}
-        >
-          Acheter un code
-        </Button>
+        {!code && (
+          <Button
+            color="primary"
+            variant="outlined"
+            startIcon={<Gift size={20} />}
+            component={Link}
+            to="/buycode"
+            style={{ marginTop: theme.spacing(1) }}
+          >
+            Acheter un code
+          </Button>
+        )}
       </Box>
     </Modal>
   );

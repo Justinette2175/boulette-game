@@ -9,6 +9,7 @@ import InCallViews from "./InCallViews";
 import GameContext from "../../contexts/GameContext";
 import { Redirect } from "react-router-dom";
 import JoinGame from "../JoinGame/JoinGame";
+import { LoadingView } from "../../components/Loading";
 
 interface GamePageProps {
   match: { params: { gameId: string } };
@@ -83,7 +84,7 @@ const GamePage: React.FC<GamePageProps> = ({
 
   let view;
   if (loading) {
-    view = <div>Loading</div>;
+    view = <LoadingView />;
   } else if (!playerIsInGame) {
     view = <JoinGame />;
   } else if (game) {

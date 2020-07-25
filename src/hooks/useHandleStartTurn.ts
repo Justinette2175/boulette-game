@@ -21,7 +21,7 @@ const useHandleStartTurn = (): (() => void) => {
     const nowInSeconds = moment().unix();
     const endOfCurrentTurn = nowInSeconds + secondLengthOfTurn;
     const currentWord = getNewWord(wordsLeft);
-    const endOfCurrentTurnSetAt = firebase.firestore.FieldValue.serverTimestamp();
+    const endOfCurrentTurnSetAt = moment().unix();
     await gameRef
       .collection("rounds")
       .doc(round.id)

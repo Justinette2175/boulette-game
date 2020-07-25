@@ -121,7 +121,7 @@ export interface FirebaseGameTeam {
 }
 
 export interface VideoTrack {
-  exists: boolean;
+  exists: { audio?: boolean; video?: boolean };
   on?: {
     audio?: boolean;
     video?: boolean;

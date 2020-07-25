@@ -7,6 +7,7 @@ import { useGameRef } from "../../hooks";
 import Round from "./Round";
 import RoundAndInstructions from "../../components/RoundAndInstructions";
 import { Box } from "@material-ui/core";
+import { LoadingView } from "../../components/Loading";
 
 const Game: React.FC = () => {
   const game = useContext(GameContext);
@@ -38,6 +39,10 @@ const Game: React.FC = () => {
       return unsubscribe;
     }
   }, [game.currentRound]);
+
+  if (!currentRound) {
+    return <LoadingView />;
+  }
 
   return (
     <Box flexGrow={1}>

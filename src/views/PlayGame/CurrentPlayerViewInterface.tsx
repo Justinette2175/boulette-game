@@ -41,7 +41,7 @@ const CurrentPlayerViewInterface: React.FC<IProps> = ({
     <Box position="relative" flexGrow={1}>
       <Box
         display="flex"
-        height="240px"
+        height="200px"
         flexDirection="column"
         justifyContent="center"
         alignItems="center"

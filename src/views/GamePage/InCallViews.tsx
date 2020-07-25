@@ -11,9 +11,9 @@ import ViewTeamsView from "../ViewTeamsView";
 import GameContext from "../../contexts/GameContext";
 import TeamsContext from "../../contexts/TeamsContext";
 import DisplayVideoContext from "../../contexts/DisplayVideoContext";
-import TwillioWrapper from "./TwillioWrapper";
+import TwillioWrapper from "../../components/Twillio/TwillioWrapper";
 import { useGameTeams } from "../../hooks";
-import RemoteCallsStrip from "../../components/RemoteCallsStrip";
+import ParticipantsStrip from "../../components/Twillio/ParticipantsStrip";
 
 interface IProps {}
 
@@ -50,10 +50,10 @@ const InCallViews: React.FC<IProps> = () => {
           <Box
             style={{ backgroundColor: "black" }}
             overflow="auto"
-            maxHeight={displayVideo ? "auto" : 0}
+            maxHeight={displayVideo ? "100%" : 0}
           >
             {displayVideo && (
-              <RemoteCallsStrip direction={matches ? "column" : "row"} />
+              <ParticipantsStrip direction={matches ? "column" : "row"} />
             )}
           </Box>
           {view}

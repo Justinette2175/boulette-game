@@ -6,22 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles({
   bowlBackground: {},
   bowl: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    transform: "scale(0.98)",
-  },
-  coloredBowl: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    opacity: 0,
-    transition: ".5s",
-    transform: "scale(0.98)",
-    "&:hover": {
-      cursor: "pointer",
-      opacity: 1,
-    },
+    display: "block",
   },
 });
 

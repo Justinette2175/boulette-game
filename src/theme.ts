@@ -1,22 +1,5 @@
 import { createMuiTheme } from "@material-ui/core/styles";
-import {
-  deepOrange,
-  deepPurple,
-  yellow,
-  grey,
-  cyan,
-  amber,
-} from "@material-ui/core/colors";
-
-export const PALETTE_PURPLE = "#8500FF";
-export const PALETTE_AQUA = "#00EDB5";
-export const PALETTE_ORANGE = "#FF4500";
-export const PALETTE_PURPLE_DARK = "#220075";
-export const GRADIENT_AQUA = `linear-gradient(${PALETTE_PURPLE},${PALETTE_AQUA})`;
-export const GRADIENT_ORANGE = `linear-gradient(${PALETTE_PURPLE},${PALETTE_ORANGE})`;
-export const NEON_PINK = "#fe019a";
-export const NEON_YELLOW = "#FCFF00";
-export const NEON_GREEN = "#39FF14";
+import { deepPurple, teal } from "@material-ui/core/colors";
 
 export default createMuiTheme({
   palette: {
@@ -27,12 +10,13 @@ export default createMuiTheme({
       contrastText: "#FFF",
     },
     secondary: {
-      dark: deepOrange[100],
-      main: deepOrange[50],
+      light: teal["A200"],
+      main: teal["A200"],
+      dark: teal["A400"],
     },
     background: {
-      default: deepOrange[50],
-      paper: "#FFF5F4",
+      default: "#E9FFFA",
+      paper: "#D3FFF5",
     },
     grey: {
       50: "#F7F7F5",
@@ -76,6 +60,7 @@ export default createMuiTheme({
       maxWidth: "400px",
       fontWeight: 700,
       fontSize: "1.6rem",
+      lineHeight: "2.3rem",
       marginBottom: "18px",
     },
     h3: {
@@ -88,15 +73,15 @@ export default createMuiTheme({
       lineHeight: "1.6rem",
     },
     body1: {
-      fontWeight: 600,
-      fontSize: "1rem",
-      lineHeight: "1.6rem",
       maxWidth: "400px",
-      marginBottom: "8px",
+      fontWeight: 600,
+      fontSize: "1.1rem",
+      lineHeight: "1.7rem",
+      marginBottom: "16px",
     },
     body2: {
-      fontSize: "0.9rem",
       maxWidth: "400px",
+      fontSize: "0.9rem",
     },
     button: {
       textTransform: "uppercase",

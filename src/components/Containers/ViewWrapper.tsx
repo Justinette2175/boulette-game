@@ -6,6 +6,7 @@ const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
     viewWrapper: {
       padding: `${theme.spacing(6)}px ${theme.spacing(2)}px`,
+      minHeight: "calc(100vh - 55px)",
       [theme.breakpoints.up("sm")]: {
         padding: `${theme.spacing(6)}px ${theme.spacing(4)}px`,
       },

@@ -10,7 +10,8 @@ interface UseAddPlayerOptions {
 }
 
 const useAddPlayer = (
-  options?: UseAddPlayerOptions
+  options?: UseAddPlayerOptions,
+  onSuccess?: () => void
 ): [(name: string) => void, boolean, Error] => {
   const gameRef = useGameRef();
   const deviceId = useContext(DeviceIdContext);
@@ -73,9 +74,11 @@ const useAddPlayer = (
             });
           }
           await transaction.set(newPlayerRef, newPlayer);
+          if (onSuccess) {
+            onSuccess();
+          }
           setLoading(false);
         } else {
-          console.log("Can't join too many");
           throw new Error(
             "Cannot join game because there already are too many players."
           );

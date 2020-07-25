@@ -4,7 +4,6 @@ import "./App.css";
 import { Firebase, FirebaseContext } from "./firebase";
 import DeviceIdContext from "./contexts/DeviceIdContext";
 import DisplayVideoContext from "./contexts/DisplayVideoContext";
-import { red, deepPurple } from "@material-ui/core/colors";
 
 import { CssBaseline, Container, Box, useTheme } from "@material-ui/core";
 
@@ -17,22 +16,25 @@ import HomePage from "./views/Home";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import BuyCode from "./views/BuyCode";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import PrivacyPolicyPage from "./views/PrivacyPolicy";
+
+import Background from "./assets/images/background.png";
 
 const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
     bg: {
       minHeight: "100vh",
-      backgroundColor: theme.palette.primary.dark,
-    },
-    container: {
       backgroundColor: theme.palette.background.default,
-      minHeight: "100vh",
-      maxHeight: "100vh",
       display: "flex",
       flexDirection: "column",
-
-      overflowY: "auto",
+    },
+    container: {
+      display: "flex",
+      flexDirection: "column",
       overflowX: "hidden",
+      background: `url(${Background})`,
+      backgroundRepeat: "repeat",
     },
   });
 });
@@ -74,17 +76,17 @@ const App: React.FC = () => {
             >
               <>
                 <CssBaseline />
+                <Navbar
+                  hasVideo={displayVideos !== null}
+                  toggleDisplayVideos={() =>
+                    setDisplayVideos((prev: boolean) => !prev)
+                  }
+                ></Navbar>
                 <Container
                   className={classes.container}
                   disableGutters
                   maxWidth="lg"
                 >
-                  <Navbar
-                    hasVideo={displayVideos !== null}
-                    toggleDisplayVideos={() =>
-                      setDisplayVideos((prev: boolean) => !prev)
-                    }
-                  ></Navbar>
                   <Box
                     flexGrow={1}
                     alignItems="stretch"
@@ -106,12 +108,16 @@ const App: React.FC = () => {
                         path="/buycode"
                         render={(props) => <BuyCode {...props} />}
                       />
-                      <Route exact path="/" component={HomePage} />
+                      <Route
+                        exact
+                        path="/privacypolicy"
+                        component={PrivacyPolicyPage}
+                      />
+                      <Route component={HomePage} />
                     </Switch>
                   </Box>
                 </Container>
-                {/* <SettingsContainer />
-                 */}
+                <Footer />
               </>
             </DisplayVideoContext.Provider>
           </DeviceIdContext.Provider>
